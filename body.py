@@ -95,13 +95,18 @@ if event.command in ['PRIVMSG']:
     #    self.join_channel("#MLAS1")
 
     if event.command.lower() in ["~rande621", "!rande621"]:
-        j=requests.get("http://e621.net/post/index.json",
-                       params=dict(limit="100", tags=event.params)).json()
-        if (len(j) > 0):
-            self.send_message(event.respond, u'http://e621.net/post/show/{}'.format(random.choice(j)[u'id']).encode('utf-8','replace'))
-        else:
-            self.send_message(event.respond, "No Results")
-    
+        try:
+            j=requests.get("http://e621.net/post/index.json",
+                           params=dict(limit="100", tags=event.params)).json()
+            if (len(j) > 0):
+                self.send_message(event.respond, u'http://e621.net/post/show/{}'.format(random.choice(j)[u'id']).encode('utf-8','replace'))
+            else:
+                self.send_message(event.respond, "No Results")
+        except:
+            print "ERROR\n",traceback.print_tb(sys.exc_info()[2]),"\nERROREND"
+            self.send_message(event.respond, "An error occurred while fetching your post.")
+
+
     if event.command.lower() in ["~newguy", "!newguy"]:
         self.send_message(event.respond, u'{}, please enjoy the following image albums http://newguy.mlas1.org http://imgur.com/a/F2XQv http://imgur.com/a/0O33r http://imgur.com/a/wJmdV http://imgur.com/a/wVDx6 http://imgur.com/a/ueAHb http://imgur.com/a/h2xJa http://imgur.com/a/hEuEd'.format(
                             event.params).encode('utf-8', 'replace'))
