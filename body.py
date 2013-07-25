@@ -88,11 +88,11 @@ if event.command in ['PRIVMSG']:
             ).encode('utf-8','replace')
         )
 
-    if event.command.lower() in ["~part", "!part"]:
-        self.part_channel("#MLAS1", "I'm taking my ball and going home.")
+    #if event.command.lower() in ["~part", "!part"]:
+    #    self.part_channel("#MLAS1", "I'm taking my ball and going home.")
 
-    if event.command.lower() in ["~join", "!join"]:
-        self.join_channel("#MLAS1")
+    #if event.command.lower() in ["~join", "!join"]:
+    #    self.join_channel("#MLAS1")
 
     if event.command.lower() in ["~rande621", "!rande621"]:
         j=requests.get("http://e621.net/post/index.json",
