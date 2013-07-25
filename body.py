@@ -103,8 +103,8 @@ if event.command in ['PRIVMSG']:
             else:
                 self.send_message(event.respond, "No Results")
         except:
-            print "ERROR\n",traceback.print_tb(sys.exc_info()[2]),"\nERROREND"
             self.send_message(event.respond, "An error occurred while fetching your post.")
+            raise
 
 
     if event.command.lower() in ["~newguy", "!newguy"]:
