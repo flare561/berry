@@ -97,9 +97,8 @@ if event.command in ['PRIVMSG']:
     if event.command.lower() in ["~rande621", "!rande621"]:
         j=requests.get("http://e621.net/post/index.json",
                        params=dict(limit="100", tags=event.params)).json()
-        resultCount = len(j)
-        if (resultCount > 0):
-            self.send_message(event.respond, u'http://e621.net/post/show/{}'.format(j[random.randint(0,resultCount)][u'id']).encode('utf-8','replace'))
+        if (len(j) > 0):
+            self.send_message(event.respond, u'http://e621.net/post/show/{}'.format(random.choice(j)[u'id']).encode('utf-8','replace'))
         else:
             self.send_message(event.respond, "No Results")
     
