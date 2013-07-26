@@ -202,7 +202,8 @@ if event.command in ['PRIVMSG']:
 
             if len(results) < 1:
                 responseStr = "No results available, try the query page:"
-            responseStr = '; '.join(results).encode('utf-8', errors='replace')
+            else:
+                responseStr = '; '.join(results).encode('utf-8', errors='replace')
             if len(responseStr) > 384:
                 responseStr = responseStr[:384] + "..."
             responseStr += " http://www.wolframalpha.com/input/?i={}".format(urllib.quote(event.params, ''))
