@@ -86,7 +86,7 @@ if event.command in ['PRIVMSG']:
         self.send_message(
             event.respond,
             u'{}: {}'.format(
-                j[u'titleNoFormatting'],
+                HTMLParser.HTMLParser().unescape(j[u'titleNoFormatting']),
                 j[u'unescapedUrl']
             ).encode('utf-8','replace')
         )
