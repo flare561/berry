@@ -1,4 +1,5 @@
 import HTMLParser,datetime,re,urllib,json,random,requests;from ircutils import format
+import xml.etree.ElementTree as ET
  
 #Invite Responder
 if event.command=="INVITE":
@@ -92,12 +93,12 @@ if event.command in ['PRIVMSG']:
         )
 
     #testing command, part channel
-    #if event.command.lower() in ["~part", "!part"]:
-    #    self.part_channel("#MLAS1", "I'm taking my ball and going home.")
+    if event.command.lower() in ["~part", "!part"]:
+        self.part_channel("#MLAS1", "I'm taking my ball and going home.")
 
     #testing command, join channel
-    #if event.command.lower() in ["~join", "!join"]:
-    #    self.join_channel("#MLAS1")
+    if event.command.lower() in ["~join", "!join"]:
+        self.join_channel("#MLAS1")
 
     #Random e621
     if event.command.lower() in ["~rande621", "!rande621"]:
@@ -152,24 +153,28 @@ if event.command in ['PRIVMSG']:
 
     #help command
     if event.command.lower() in ["~help", "!help"]:
+        commands=dict(
+            select="Usage: ~select <args> Used to select a random word from a given list",
+            flip="Usage: ~flip Used to flip a coin, responds with heads or tails",
+            yt="Usage: ~yt <terms> Used to search youtube with the given terms",
+            g="Usage: ~g <terms> Used to search google with the given terms",
+            rande621="Usage: ~rande621 <tags> Used to search e621.net for a random picture with the given tags",
+            newguy="Usage: ~newguy <nick> If you don't know what this does ask an oldguy to teach you",
+            oldguy="Usage: ~oldguy <nick> Reminds us why we came here",
+            randjur="Usage: ~randjur <number> Used to post random imgur pictures, <number> defines the number of results with a max of 10",
+            feels="Usage: ~feels Just in case",
+            help="Usage: ~help <command> The fuck do you think it does?",
+            wolf="Usage: ~wolf <query> searches wolfram alpha for your query"
+            )
         if len(event.params) <= 0:
             self.send_message(
                 event.respond,
-                "Currently supported commands: select, flip, yt, g, rande621, newguy, oldguy, randjur, feels, help. For more information on a command type ~help <command>"
-            )
+                "Currently supported commands: {}. ".format(
+                    ', '.join([x for x in commands.keys()])) + 
+                "For more information on a command type ~help <command>"
+                )
         else:
-            commands=dict(
-                select="Usage: ~select <args> Used to select a random word from a given list",
-                flip="Usage: ~flip Used to flip a coin, responds with heads or tails",
-                yt="Usage: ~yt <terms> Used to search youtube with the given terms",
-                g="Usage: ~g <terms> Used to search google with the given terms",
-                rande621="Usage: ~rande621 <tags> Used to search e621.net for a random picture with the given tags",
-                newguy="Usage: ~newguy <nick> If you don't know what this does ask an oldguy to teach you",
-                oldguy="Usage: ~oldguy <nick> Reminds us why we came here",
-                randjur="Usage: ~randjur <number> Used to post random imgur pictures, <number> defines the number of results with a max of 10",
-                feels="Usage: ~feels Just in case",
-                help="Usage: ~help <command> The fuck do you think it does?"
-            )
+            
             try:
                 response=commands[event.params]
             except:
@@ -178,3 +183,34 @@ if event.command in ['PRIVMSG']:
                 event.respond,
                 response
             )
+
+    #Wolfram Alpha
+    if event.command.lower() in ["!wolf", "~wolf"]:
+        try:
+            s=requests.get("http://api.wolframalpha.com/v2/query", 
+                params=dict(
+                    input=event.params,
+                    appid="V6V3YG-RWXPH9KWXJ"
+                    )
+                ).text
+            results =[]
+            root = ET.fromstring(s.encode('utf-8', errors='replace'))
+            for child in root.findall('pod'):
+                if child.attrib.has_key("primary"):
+                    if child.attrib["primary"] == 'true':
+                        results.append(child.find('subpod').find('plaintext').text.replace('\n', ' '))
+
+            responseStr = '; '.join(results).encode('utf-8', errors='replace')
+            if len(responseStr) > 384:
+                responseStr = responseStr[:384] + "..."
+            responseStr += " http://www.wolframalpha.com/input/?i={}".format(urllib.quote(event.params, ''))
+            self.send_message(
+                event.respond,
+                responseStr
+            )
+        except:
+            self.send_message(
+                event.respond,
+                "Error with the service"
+            )
+            raise

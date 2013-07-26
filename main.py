@@ -10,5 +10,5 @@ class q(bot.SimpleBot):
       print traceback.print_tb(sys.exc_info()[2])
  
 if __name__ == "__main__":
-  s=q("FlareBot");s.connect("irc.mlas1.com", channel="#flaretest")
+  s=q("LyraBot");s.connect("irc.mlas1.com", channel="#bottest")
   s.start()
