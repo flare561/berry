@@ -92,13 +92,13 @@ if event.command in ['PRIVMSG']:
             ).encode('utf-8','replace')
         )
 
-    #testing command, part channel
-    if event.command.lower() in ["~part", "!part"]:
-        self.part_channel("#MLAS1", "I'm taking my ball and going home.")
+    ##testing command, part channel
+    #if event.command.lower() in ["~part", "!part"]:
+    #    self.part_channel("#MLAS1", "I'm taking my ball and going home.")
 
-    #testing command, join channel
-    if event.command.lower() in ["~join", "!join"]:
-        self.join_channel("#MLAS1")
+    ##testing command, join channel
+    #if event.command.lower() in ["~join", "!join"]:
+    #    self.join_channel("#MLAS1")
 
     #Random e621
     if event.command.lower() in ["~rande621", "!rande621"]:
