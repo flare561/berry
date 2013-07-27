@@ -173,7 +173,8 @@ if event.command in ['PRIVMSG']:
             isup="Usage: ~isup <site> used to check if a given website is up using isup.me",
             gimg="Usage: ~gimg <terms> Used to search google images with the given terms",
             rs="Usage: ~rs <terms> Used to search for results on reddit, it's simply a google search with the restriction site:reddit.com",
-            emote="Usage ~emote <emote> Used to show an emote in the browser, relies on BPM. Example: ~emote [](/vseyeroll)"
+            emote="Usage: ~emote <emote> Used to show an emote in the browser, relies on BPM. Example: ~emote [](/vseyeroll)",
+			imply="Usage: ~imply <text> Used to imply things."
             )
         if len(event.params) <= 0:
             self.send_message(
@@ -398,4 +399,8 @@ if event.command in ['PRIVMSG']:
 
     #Emotes!
     if event.command.lower() in ["~emote", "!emote"]:
-        self.send_message(event.respond, 'http://www.mlas1.com/emotes.html?emote={}'.format(event.params))
+        self.send_message(event.respond, 'http://mlas1.com/emotes.html?emote={}'.format(event.params))
+
+    #Imply
+    if event.command.lower() in ["~imply", "!imply"]:
+        self.send_message(event.respond, format.color(">" + event.params, format.GREEN))
