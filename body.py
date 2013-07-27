@@ -92,13 +92,13 @@ if event.command in ['PRIVMSG']:
             ).encode('utf-8','replace')
         )
 
-    #testing command, part channel
-    if event.command.lower() in ["~part", "!part"]:
-        self.part_channel("#MLAS1", "I'm taking my ball and going home.")
+    ##testing command, part channel
+    #if event.command.lower() in ["~part", "!part"]:
+    #    self.part_channel("#MLAS1", "I'm taking my ball and going home.")
 
-    #testing command, join channel
-    if event.command.lower() in ["~join", "!join"]:
-        self.join_channel("#MLAS1")
+    ##testing command, join channel
+    #if event.command.lower() in ["~join", "!join"]:
+    #    self.join_channel("#MLAS1")
 
     #Random e621
     if event.command.lower() in ["~rande621", "!rande621"]:
@@ -149,7 +149,7 @@ if event.command in ['PRIVMSG']:
 
     #feels
     if event.command.lower() in ["~feels", "!feels"]:
-        self.send_message(event.respond, 'http://imgur.com/a/PJIsu')
+        self.send_message(event.respond, 'http://imgur.com/a/PJIsu/layout/blog')
 
     #help command
     if event.command.lower() in ["~help", "!help"]:
@@ -172,7 +172,7 @@ if event.command in ['PRIVMSG']:
             pony="Usage: ~pony Used to show the time remaining until the next episode of MLP airs",
             isup="Usage: ~isup <site> used to check if a given website is up using isup.me",
             gimg="Usage: ~gimg <terms> Used to search google images with the given terms",
-            rs="Usage: ~rs <terms> Used to search for results on reddit, it's simply a google search with the restriction site:reddit.com"
+            rs="Usage: ~rs <terms> Used to search for results on reddit, it's simply a google search with the restriction site:reddit.com",
             )
         if len(event.params) <= 0:
             self.send_message(
@@ -394,3 +394,7 @@ if event.command in ['PRIVMSG']:
                 j[u'unescapedUrl']
             ).encode('utf-8','replace')
         )
+
+    #feels
+    if event.command.lower().startswith("[](/"):
+        self.send_message(event.respond, 'https://dl.dropboxusercontent.com/u/6653073/emotes.html?emote={}'.format(event.command.lower()))
