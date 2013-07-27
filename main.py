@@ -8,7 +8,8 @@ class q(bot.SimpleBot):
     try:
       event.paramstr=' '.join(event.params)
       event.respond = event.target if event.target != self.nickname else event.source
-      execfile("body.py")
+      if not event.source == self.nickname:
+        execfile("body.py")
     except:
       print "ERROR",str(sys.exc_info())
       print traceback.print_tb(sys.exc_info()[2])
