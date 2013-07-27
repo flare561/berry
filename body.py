@@ -167,12 +167,13 @@ if event.command in ['PRIVMSG']:
             wolf="Usage: ~wolf <query> Searches wolfram alpha for your query",
             test="Usage: ~test Used to verify the bot is responding to messages",
             gr="Usage: ~gr <query> links to the google results for a given query",
-            roll="Usage: ~roll <x>d<n> rolls a number, x, of n sided dice, example: 3d20",
+            roll="Usage: ~roll <x>d<n> rolls a number, x, of n sided dice, example: ~roll 3d20",
             ud="Usage: ~ud <query> Used to search Urban Dictionary for the first definition of a word",
             pony="Usage: ~pony Used to show the time remaining until the next episode of MLP airs",
             isup="Usage: ~isup <site> used to check if a given website is up using isup.me",
             gimg="Usage: ~gimg <terms> Used to search google images with the given terms",
             rs="Usage: ~rs <terms> Used to search for results on reddit, it's simply a google search with the restriction site:reddit.com",
+            emote="Usage ~emote <emote> Used to show an emote in the browser, relies on BPM. Example: ~emote [](/vseyeroll)"
             )
         if len(event.params) <= 0:
             self.send_message(
@@ -395,6 +396,6 @@ if event.command in ['PRIVMSG']:
             ).encode('utf-8','replace')
         )
 
-    #feels
-    if event.command.lower().startswith("[](/"):
-        self.send_message(event.respond, 'https://dl.dropboxusercontent.com/u/6653073/emotes.html?emote={}'.format(event.command.lower()))
+    #Emotes!
+    if event.command.lower() in ["~emote", "!emote"]:
+        self.send_message(event.respond, 'https://dl.dropboxusercontent.com/u/6653073/emotes.html?emote={}'.format(event.params))
