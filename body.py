@@ -398,4 +398,4 @@ if event.command in ['PRIVMSG']:
 
     #Emotes!
     if event.command.lower() in ["~emote", "!emote"]:
-        self.send_message(event.respond, 'https://dl.dropboxusercontent.com/u/6653073/emotes.html?emote={}'.format(event.params))
+        self.send_message(event.respond, 'http://www.mlas1.com/emotes.html?emote={}'.format(event.params))
