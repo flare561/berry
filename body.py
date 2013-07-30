@@ -1,4 +1,4 @@
-import HTMLParser,re,urllib,json,random,requests,datetime;from ircutils import format
+import HTMLParser,re,urllib,json,random,requests,datetime,socket,os,sys;from ircutils import format
 import xml.etree.ElementTree as ET
  
 #Invite Responder
@@ -173,7 +173,7 @@ if event.command in ['PRIVMSG']:
             isup="Usage: ~isup <site> used to check if a given website is up using isup.me",
             gimg="Usage: ~gimg <terms> Used to search google images with the given terms",
             rs="Usage: ~rs <terms> Used to search for results on reddit, it's simply a google search with the restriction site:reddit.com",
-            emote="Usage: ~emote <emote> Used to show an emote in the browser, relies on BPM. Example: ~emote [](/vseyeroll)",
+            emote="Usage: ~emote <emote> Used to show an emote in the browser, relies on BPM. Example: ~emote vseyeroll",
 			imply="Usage: ~imply <text> Used to imply things."
             )
         if len(event.params) <= 0:
@@ -244,7 +244,7 @@ if event.command in ['PRIVMSG']:
             )
 
     #Google Results
-    if event.command.lower() in ["~gr", "!gr:"]:
+    if event.command.lower() in ["~gr", "!gr"]:
         self.send_message(
             event.respond,
             "http://google.com/#q={}".format(urllib.quote(event.params, ''))
@@ -404,3 +404,20 @@ if event.command in ['PRIVMSG']:
     #Imply
     if event.command.lower() in ["~imply", "!imply"]:
         self.send_message(event.respond, format.color(">" + event.params, format.GREEN))
+
+    #DNS
+    if event.command.lower() in ["~dns", "!dns"]:
+        try:
+            records = socket.getaddrinfo(event.params, 80)
+            addresses = set([x[4][0] for x in records])
+            self.send_message(event.respond, " ".join(addresses))
+        except:
+            self.send_message(event.respond, "You must give a valid host name to look up")
+
+    #Reboot
+    if event.command.lower() in ["~reboot", "!reboot"]:
+        if event.source in ["derram", "marred", "flare", "Princess_Pwny", "Herabek", "Esplin", "RisenLM"]:
+            self.quit("My primary function is failure.")
+            os.execl(sys.executable, *([sys.executable]+sys.argv))
+        else:
+            self.send_message(event.respond, "YOU'RE NOT THE BOSS OF ME!")
