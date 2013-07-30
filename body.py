@@ -92,13 +92,15 @@ if event.command in ['PRIVMSG']:
             ).encode('utf-8','replace')
         )
 
-    ##testing command, part channel
-    #if event.command.lower() in ["~part", "!part"]:
-    #    self.part_channel("#MLAS1", "I'm taking my ball and going home.")
+    #testing command, part channel
+    if event.command.lower() in ["~part", "!part"]:
+        if self.config.debug:
+            self.part_channel("#MLAS1", "I'm taking my ball and going home.")
 
-    ##testing command, join channel
-    #if event.command.lower() in ["~join", "!join"]:
-    #    self.join_channel("#MLAS1")
+    #testing command, join channel
+    if event.command.lower() in ["~join", "!join"]:
+        if self.config.debug:
+            self.join_channel("#MLAS1")
 
     #Random e621
     if event.command.lower() in ["~rande621", "!rande621"]:
@@ -138,7 +140,7 @@ if event.command in ['PRIVMSG']:
                 raise
         j=requests.get("https://api.imgur.com/3/gallery.json", 
                 headers=dict(
-                    Authorization="Client-ID d85094527f204d5"
+                    Authorization="Client-ID " + self.config.imgurKey
                 )).json()[u'data']
         if count > 10:
             count = 10
@@ -201,7 +203,7 @@ if event.command in ['PRIVMSG']:
             s=requests.get("http://api.wolframalpha.com/v2/query", 
                 params=dict(
                     input=event.params,
-                    appid="V6V3YG-RWXPH9KWXJ"
+                    appid=self.config.wolframKey
                     )
                 ).text
             results =[]
@@ -417,8 +419,9 @@ if event.command in ['PRIVMSG']:
 
     #Reboot
     if event.command.lower() in ["~reboot", "!reboot"]:
-        if event.source in ["derram", "marred", "flare", "Princess_Pwny", "Herabek", "Esplin", "RisenLM"]:
+        if event.source in self.config.authorizedUsers:
             self.quit("My primary function is failure.")
             os.execl(sys.executable, *([sys.executable]+sys.argv))
         else:
+            print self.config.authorizedUsers
             self.send_message(event.respond, "YOU'RE NOT THE BOSS OF ME!")

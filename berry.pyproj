@@ -26,30 +26,12 @@
   <ItemGroup>
     <Compile Include="body.py" />
     <Compile Include="main.py" />
-    <Compile Include="WolframAlpha\simplejson\decoder.py" />
-    <Compile Include="WolframAlpha\simplejson\encoder.py" />
-    <Compile Include="WolframAlpha\simplejson\scanner.py" />
-    <Compile Include="WolframAlpha\simplejson\tool.py" />
-    <Compile Include="WolframAlpha\simplejson\__init__.py" />
-    <Compile Include="WolframAlpha\wap.py" />
-    <Compile Include="WolframAlpha\wapex.py" />
-    <Compile Include="WolframAlpha\wapex2.py" />
-    <Compile Include="WolframAlpha\wapex3.py" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\2.7" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="WolframAlpha\" />
-    <Folder Include="WolframAlpha\simplejson\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="WolframAlpha\.DS_Store" />
-    <Content Include="WolframAlpha\simplejson\decoder.pyc" />
-    <Content Include="WolframAlpha\simplejson\encoder.pyc" />
-    <Content Include="WolframAlpha\simplejson\scanner.pyc" />
-    <Content Include="WolframAlpha\simplejson\_speedups.c" />
-    <Content Include="WolframAlpha\simplejson\__init__.pyc" />
+    <Content Include="config.ini" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
 </Project>
