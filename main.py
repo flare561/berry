@@ -25,6 +25,7 @@ class Config:
         self.imgurKey = config.get("Default", "imgurKey")
         self.wolframKey = config.get("Default", "wolframKey")
         self.authorizedUsers = config.get("Default", "authorizedUsers").split(',')
+        self.password = config.get("Default", "password")
 
 
 if __name__ == "__main__":

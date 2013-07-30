@@ -21,33 +21,32 @@ if event.command in ['PRIVMSG']:
         self.send_message(event.respond,'Flip: {}'.format(random.choice(['Heads','Tails'])))
          
     #Youtube info fetcher
-    if event.message[0] not in '*(9&_[{<>},.])-0':
-        ytmatch=re.compile(
-            "https?:\/\/(?:[0-9A-Z-]+\.)?(?:youtu\.be\/|youtube\.com\S*[^\w\-\s"
-            "])([\w\-]{11})(?=[^\w\-]|$)(?![?=&+%\w]*(?:['\"][^<>]*>|<\/a>))[?="
-            "&+%\w-]*",
-            flags=re.I)
-        matches=ytmatch.findall(event.message)
-        for x in matches:
-            try:
-                j=requests.get(
-                    'https://gdata.youtube.com/feeds/api/videos/'+x,
-                    params=dict(
-                        v=2,
-                        alt="jsonc"
-                    )
-                ).json()[u'data']
-                self.send_message(
-                    event.respond,
-                    u'{title} | {views:,} | {rating:.0%} | {time}'.format(
-                        title  = j['title'],
-                        views  = j['viewCount'],
-                        rating = j['rating']/5,
-                        time   = datetime.timedelta(seconds=j[u'duration'])
-                    ).encode('utf-8','replace')
+    ytmatch=re.compile(
+        "https?:\/\/(?:[0-9A-Z-]+\.)?(?:youtu\.be\/|youtube\.com\S*[^\w\-\s"
+        "])([\w\-]{11})(?=[^\w\-]|$)(?![?=&+%\w]*(?:['\"][^<>]*>|<\/a>))[?="
+        "&+%\w-]*",
+        flags=re.I)
+    matches=ytmatch.findall(event.message)
+    for x in matches:
+        try:
+            j=requests.get(
+                'https://gdata.youtube.com/feeds/api/videos/'+x,
+                params=dict(
+                    v=2,
+                    alt="jsonc"
                 )
-            except:
-                pass
+            ).json()[u'data']
+            self.send_message(
+                event.respond,
+                u'{title} | {views:,} | {rating:.0%} | {time}'.format(
+                    title  = j['title'],
+                    views  = j['viewCount'],
+                    rating = j['rating']/5,
+                    time   = datetime.timedelta(seconds=j[u'duration'])
+                ).encode('utf-8','replace')
+            )
+        except:
+            pass
 
     #Youtube search
     if event.command.lower() in ['~yt','!yt']:
@@ -419,9 +418,31 @@ if event.command in ['PRIVMSG']:
 
     #Reboot
     if event.command.lower() in ["~reboot", "!reboot"]:
-        if event.source in self.config.authorizedUsers:
+        if event.source in self.config.authorizedUsers and event.params == self.config.password:
             self.quit("My primary function is failure.")
             os.execl(sys.executable, *([sys.executable]+sys.argv))
         else:
-            print self.config.authorizedUsers
             self.send_message(event.respond, "YOU'RE NOT THE BOSS OF ME!")
+
+    #dA info fetcher
+    #words = "".split() #event.message.split()
+
+    #for x in matches:
+    #    try:
+    #        j=requests.get(
+    #            'http://backend.deviantart.com/oembed',
+    #            params=dict(
+    #                url=x
+    #            )
+    #        ).json()[u'data']
+    #        self.send_message(
+    #            event.respond,
+    #            u'{title} | {views:,} | {rating:.0%} | {time}'.format(
+    #                title  = j['title'],
+    #                views  = j['viewCount'],
+    #                rating = j['rating']/5,
+    #                time   = datetime.timedelta(seconds=j[u'duration'])
+    #            ).encode('utf-8','replace')
+    #        )
+    #    except:
+    #        pass
