@@ -174,7 +174,8 @@ if event.command in ['PRIVMSG']:
             gimg="Usage: ~gimg <terms> Used to search google images with the given terms",
             rs="Usage: ~rs <terms> Used to search for results on reddit, it's simply a google search with the restriction site:reddit.com",
             emote="Usage: ~emote <emote> Used to show an emote in the browser, relies on BPM. Example: ~emote vseyeroll",
-			imply="Usage: ~imply <text> Used to imply things."
+            imply="Usage: ~imply <text> Used to imply things.",
+            dns="Usage: ~dns <domain> Used to check which IPs are associated with a DNS listing"
             )
         if len(event.params) <= 0:
             self.send_message(
