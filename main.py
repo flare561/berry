@@ -18,6 +18,7 @@ class Config:
     def __init__(self, fileName):
         config = ConfigParser.ConfigParser()
         config.read(fileName)
+        self.fileName = fileName
         self.debug = config.getboolean("Default", "debug")
         self.nick = config.get("Default", "nick")
         self.server = config.get("Default", "server")
@@ -26,6 +27,14 @@ class Config:
         self.wolframKey = config.get("Default", "wolframKey")
         self.authorizedUsers = config.get("Default", "authorizedUsers").split(',')
         self.password = config.get("Default", "password")
+        self.autoemote = config.getboolean("Default", "autoemote")
+
+    def setEmote(self, enabled):
+        configFile = ConfigParser.RawConfigParser()
+        configFile.read(self.fileName)
+        configFile.set("Default", "autoemote", enabled)
+        with open(self.fileName, "wb") as configFileLocation:
+            configFile.write(configFileLocation)
 
 
 if __name__ == "__main__":
