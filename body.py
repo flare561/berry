@@ -405,8 +405,8 @@ if event.command in ['PRIVMSG']:
             event.params = event.message
         if event.params.startswith('[](/'):
             event.params = event.params[4:]
-        if event.params.endswith(')'):
-            event.params = event.params[:-1]
+        if ')' in event.params:
+            event.params = event.params.split(')')[0]
         event.params = event.params.split()[0]
         parameters = "emote="
         parts = event.params.split('-')
