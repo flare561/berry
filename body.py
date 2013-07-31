@@ -401,7 +401,18 @@ if event.command in ['PRIVMSG']:
 
     #Emotes!
     if event.command.lower() in ["~emote", "!emote"]:
-        self.send_message(event.respond, 'http://mlas1.com/emotes.html?emote={}'.format(event.params))
+        if event.params.startswith('[](/'):
+            event.params = event.params[4:]
+        if event.params.endswith(')'):
+            event.params = event.params[:-1]
+        event.params = event.params.split()[0]
+        parameters = "emote="
+        parts = event.params.split('-')
+        parameters += parts[0]
+        if len(parts) > 1:
+            parameters += "&flag=" + parts[1]
+
+        self.send_message(event.respond, 'http://mlas1.com/emotes.html?{}'.format(parameters))
 
     #Imply
     if event.command.lower() in ["~imply", "!imply"]:
