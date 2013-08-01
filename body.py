@@ -44,11 +44,12 @@ if event.command in ['PRIVMSG']:
 
             self.send_message(
                 event.respond,
-                (u'{title} | {views:,} | {time}'.format(
+                (u'{title} | {views:,}{rating} | {time}'.format(
                     title  = j['title'],
                     views  = j['viewCount'],
+                    rating = ratingString,
                     time   = datetime.timedelta(seconds=j[u'duration']),
-                ) + ratingString).encode('utf-8','replace')
+                )).encode('utf-8','replace')
             )
         except:
             pass
@@ -74,12 +75,13 @@ if event.command in ['PRIVMSG']:
 
             self.send_message(
                 event.respond,
-                (u'https://youtu.be/{id} > {title} | {views:,} | {time}'.format(
+                (u'https://youtu.be/{id} > {title} | {views:,}{rating} | {time}'.format(
                     id     = j['id'],
                     title  = j['title'],
                     views  = j['viewCount'],
+                    rating = ratingString,
                     time   = datetime.timedelta(seconds=j[u'duration'])
-                ) + ratingString).encode('utf-8','replace')
+                )).encode('utf-8','replace')
             )
         except:
             print "ERROR\n",traceback.print_tb(sys.exc_info()[2]),"\nERROREND"

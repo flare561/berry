@@ -19,20 +19,75 @@ class Config:
         config = ConfigParser.ConfigParser()
         config.read(fileName)
         self.fileName = fileName
-        self.debug = config.getboolean("Default", "debug")
-        self.nick = config.get("Default", "nick")
-        self.server = config.get("Default", "server")
-        self.channel = config.get("Default", "channel")
-        self.imgurKey = config.get("Default", "imgurKey")
-        self.wolframKey = config.get("Default", "wolframKey")
-        self.authorizedUsers = config.get("Default", "authorizedUsers").split(',')
-        self.password = config.get("Default", "password")
-        self.autoemote = config.getboolean("Default", "autoemote")
+        #if not config.has_section('DEFAULT'):
+        #    config.add_section('DEFAULT')
+
+
+        modified = False
+        if config.has_option('DEFAULT', 'debug'):
+            self.debug = config.getboolean("DEFAULT", "debug")
+        else: 
+            self.debug=False
+            config.set('DEFAULT', 'debug', self.debug)
+            modified = True
+        if config.has_option('DEFAULT', 'nick'):
+            self.nick = config.get("DEFAULT", "nick")
+        else: 
+            self.nick = 'BP'
+            config.set('DEFAULT', 'nick', self.nick)
+            modified = True
+        if config.has_option('DEFAULT', 'server'):
+            self.server = config.get("DEFAULT", "server")
+        else: 
+            self.server = 'irc.mlas1.com'
+            config.set('DEFAULT', 'server', self.server)
+            modified = True
+        if config.has_option('DEFAULT', 'channel'):
+            self.channel = config.get("DEFAULT", "channel")
+        else: 
+            self.channel = '#mlas1'
+            config.set('DEFAULT', 'channel', self.channel)
+            modified = True
+        if config.has_option('DEFAULT', 'imgurKey'):
+            self.imgurKey = config.get("DEFAULT", "imgurKey")
+        else: 
+            self.imgurKey = ''
+            config.set('DEFAULT', 'imgurKey', self.imgurKey)
+            modified = True
+        if config.has_option('DEFAULT', 'wolframKey'):
+            self.wolframKey = config.get("DEFAULT", "wolframKey")
+        else: 
+            self.wolframKey = ''
+            config.set('DEFAULT', 'wolframKey', self.wolframKey)
+            modified = True
+        if config.has_option('DEFAULT', 'authorizedUsers'):
+            self.authorizedUsers = config.get("DEFAULT", "authorizedUsers").split(',')
+        else: 
+            self.authorizedUsers = ['']
+            config.set('DEFAULT', 'authorizedUsers', self.authorizedUsers)
+            modified = True
+        if config.has_option('DEFAULT', 'password'):
+            self.password = config.get("DEFAULT", "password")
+        else: 
+            self.password = ''
+            config.set('DEFAULT', 'password', self.password)
+            modified = True
+        if config.has_option('DEFAULT', 'autoemote'):
+            self.autoemote = config.getboolean("DEFAULT", "autoemote")
+        else: 
+            self.autoemote = True
+            config.set('DEFAULT', 'autoemote', self.autoemote)
+            modified = True
+
+        if modified:
+            with open(self.fileName, "wb") as configFileLocation:
+                config.write(configFileLocation)
+
 
     def setEmote(self, enabled):
         configFile = ConfigParser.RawConfigParser()
         configFile.read(self.fileName)
-        configFile.set("Default", "autoemote", enabled)
+        configFile.set("DEFAULT", "autoemote", enabled)
         with open(self.fileName, "wb") as configFileLocation:
             configFile.write(configFileLocation)
 
