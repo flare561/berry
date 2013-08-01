@@ -423,7 +423,7 @@ if event.command in ['PRIVMSG']:
         parts = event.params.split('-')
         parameters += parts[0]
         if len(parts) > 1:
-            parameters += "&flag=" + parts[1]
+            parameters += "&flags=" + ','.join(parts[1:])
 
         self.send_message(event.respond, 'http://mlas1.com/emotes.html?{}'.format(parameters))
 
