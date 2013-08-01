@@ -36,14 +36,19 @@ if event.command in ['PRIVMSG']:
                     alt="jsonc"
                 )
             ).json()[u'data']
+            ratingString = ""
+            try:
+                ratingString = ' | {rating:.0%}'.format(rating = j['rating']/5)
+            except:
+                pass
+
             self.send_message(
                 event.respond,
-                u'{title} | {views:,} | {rating:.0%} | {time}'.format(
+                (u'{title} | {views:,} | {time}'.format(
                     title  = j['title'],
                     views  = j['viewCount'],
-                    rating = j['rating']/5,
-                    time   = datetime.timedelta(seconds=j[u'duration'])
-                ).encode('utf-8','replace')
+                    time   = datetime.timedelta(seconds=j[u'duration']),
+                ) + ratingString).encode('utf-8','replace')
             )
         except:
             pass
@@ -60,15 +65,21 @@ if event.command in ['PRIVMSG']:
                     alt= "jsonc"
                 )
             ).json()[u'data'][u'items'][0]
+
+            ratingString = ""
+            try:
+                ratingString = ' | {rating:.0%}'.format(rating = j['rating']/5)
+            except:
+                pass
+
             self.send_message(
                 event.respond,
-                u'https://youtu.be/{id} > {title} | {views:,} | {rating:.0%} | {time}'.format(
+                (u'https://youtu.be/{id} > {title} | {views:,} | {time}'.format(
                     id     = j['id'],
                     title  = j['title'],
                     views  = j['viewCount'],
-                    rating = j['rating']/5,
                     time   = datetime.timedelta(seconds=j[u'duration'])
-                ).encode('utf-8','replace')
+                ) + ratingString).encode('utf-8','replace')
             )
         except:
             print "ERROR\n",traceback.print_tb(sys.exc_info()[2]),"\nERROREND"
