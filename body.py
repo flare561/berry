@@ -24,65 +24,40 @@ if event.command in ['PRIVMSG']:
     ytmatch=re.compile(
         "https?:\/\/(?:[0-9A-Z-]+\.)?(?:youtu\.be\/|youtube\.com\S*[^\w\-\s"
         "])([\w\-]{11})(?=[^\w\-]|$)(?![?=&+%\w]*(?:['\"][^<>]*>|<\/a>))[?="
-        "&+%\w-]*",
-        flags=re.I)
+        "&+%\w-]*",flags=re.I)
     matches=ytmatch.findall(event.message)
     for x in matches:
         try:
             j=requests.get(
                 'https://gdata.youtube.com/feeds/api/videos/'+x,
-                params=dict(
-                    v=2,
-                    alt="jsonc"
-                )
-            ).json()[u'data']
-            ratingString = ""
-            try:
-                ratingString = ' | {rating:.0%}'.format(rating = j['rating']/5)
-            except:
-                pass
-
-            self.send_message(
-                event.respond,
-                (u'{title} | {views:,}{rating} | {time}'.format(
-                    title  = j['title'],
-                    views  = j['viewCount'],
-                    rating = ratingString,
-                    time   = datetime.timedelta(seconds=j[u'duration']),
-                )).encode('utf-8','replace')
-            )
+                params=dict(v=2,alt="jsonc")).json()[u'data']
+            out=[]
+            if j.has_key('title'):out.append(j['title'])
+            if j.has_key('viewCount'):out.append(u'{:,}'.format(j['viewCount']))
+            if j.has_key('rating'):out.append(u'{:.0%}'.format(j['rating']/5))
+            if j.has_key('duration'):out.append(str(datetime.timedelta(seconds=j[u'duration'])))
+            out=u' | '.join(out)
+            self.send_message(event.respond,out.encode('utf-8','replace'))
         except:
-            pass
+            print "ERROR\n",traceback.print_tb(sys.exc_info()[2]),"\nERROREND"
+
 
     #Youtube search
     if event.command.lower() in ['~yt','!yt']:
         try:
             j=requests.get(
                 'https://gdata.youtube.com/feeds/api/videos',
-                params=dict(
-                    {'max-results':1},
-                    q  = event.params,
-                    v  = 2,
-                    alt= "jsonc"
-                )
-            ).json()[u'data'][u'items'][0]
-
-            ratingString = ""
-            try:
-                ratingString = ' | {rating:.0%}'.format(rating = j['rating']/5)
-            except:
-                pass
-
-            self.send_message(
-                event.respond,
-                (u'https://youtu.be/{id} > {title} | {views:,}{rating} | {time}'.format(
-                    id     = j['id'],
-                    title  = j['title'],
-                    views  = j['viewCount'],
-                    rating = ratingString,
-                    time   = datetime.timedelta(seconds=j[u'duration'])
-                )).encode('utf-8','replace')
-            )
+                params=dict({'max-results':1},q=event.params,
+                    v=2,alt="jsonc")).json()[u'data'][u'items'][0]
+            out=[]
+            if j.has_key('id'):out.append('https://youtu.be/'+j['id'])
+            if j.has_key('title'):out.append(j['title'])
+            if j.has_key('viewCount'):out.append(u'{:,}'.format(j['viewCount']))
+            if j.has_key('rating'):out.append(u'{:.0%}'.format(j['rating']/5))
+            if j.has_key('duration'):out.append(str(datetime.timedelta(seconds=j[u'duration'])))
+            out[1:]=[u' | '.join(out[1:])]
+            out=' > '.join(out)
+            self.send_message(event.respond,out.encode('utf-8','replace'))
         except:
             print "ERROR\n",traceback.print_tb(sys.exc_info()[2]),"\nERROREND"
             self.send_message(event.respond,"No results")
@@ -484,6 +459,7 @@ if event.command in ['PRIVMSG']:
                 event.respond,
                 "Could not find the specified film, please try again."
             )
+            raise
 
 
     #dA info fetcher
