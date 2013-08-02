@@ -189,7 +189,8 @@ if event.command in ['PRIVMSG']:
             rs="Usage: ~rs <terms> Used to search for results on reddit, it's simply a google search with the restriction site:reddit.com",
             emote="Usage: ~emote <emote> Used to show an emote in the browser, relies on BPM. Example: ~emote vseyeroll",
             imply="Usage: ~imply <text> Used to imply things.",
-            dns="Usage: ~dns <domain> Used to check which IPs are associated with a DNS listing"
+            dns="Usage: ~dns <domain> Used to check which IPs are associated with a DNS listing",
+            imdb="Usage: ~imdb <film> Used to search IMDB for the listing for a film."
             )
         if len(event.params) <= 0:
             self.send_message(
@@ -455,6 +456,35 @@ if event.command in ['PRIVMSG']:
             os.execl(sys.executable, *([sys.executable]+sys.argv))
         else:
             self.send_message(event.respond, "YOU'RE NOT THE BOSS OF ME!")
+
+
+    #IMDB Search
+    if event.command.lower() in ['~imdb','!imdb']:
+        try:
+            j=requests.get(
+                'http://mymovieapi.com/',
+                params=dict(
+                    title=event.params,
+                    type='json'
+                )
+            ).json()[0]
+            out = []
+            if j.has_key('title'): out.append(j['title'])
+            if j.has_key('genres'): out.append(', '.join(j['genres'][:3]))
+            if j.has_key('actors'): out.append(', '.join(j['actors'][:3]))
+            if j.has_key('rating'): out.append(str(j['rating']))
+            if j.has_key('year'): out.append(str(j['year']))
+            if j.has_key('imdb_url'): out.append(j['imdb_url'])
+            self.send_message(
+                event.respond,
+                (' | '.join(out)).encode('utf-8','replace')
+            )
+        except:
+            self.send_message(
+                event.respond,
+                "Could not find the specified film, please try again."
+            )
+
 
     #dA info fetcher
     #words = "".split() #event.message.split()
