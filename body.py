@@ -116,12 +116,12 @@ if event.command in ['PRIVMSG']:
             j=requests.get("http://e621.net/post/index.json",
                 params=dict(
                     limit="100",
-                    tags=event.params
+                    tags=event.params + " rating:e my_little_pony"
                 )).json()
             if (len(j) > 0):
                 self.send_message(
                     event.respond,
-                    u'http://e621.net/post/show/{} rating:e my_little_pony'.format(
+                    u'http://e621.net/post/show/{}'.format(
                         random.choice(j)[u'id']
                     ).encode('utf-8','replace'))
             else:
