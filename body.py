@@ -1,6 +1,7 @@
-import HTMLParser,re,urllib,json,random,requests,datetime,socket,os,sys;from ircutils import format
+import HTMLParser,re,urllib,json,random,requests,datetime,socket,os,sys,HTMLParser;from ircutils import format
 import xml.etree.ElementTree as ET
- 
+import lxml.html
+
 #Invite Responder
 if event.command=="INVITE":
     self.join_channel(event.params[0])
@@ -9,8 +10,15 @@ if event.command=="INVITE":
 if event.command in ['PRIVMSG']:
     #Initalise the event
     event.command=event.message.split(' ')[0]
-    try:   event.params=event.message.split(' ',1)[1]
-    except:event.params=''
+
+    if (event.command[:1] == '<' and event.command[-1:] == '>'):
+        try: event.command = event.message.split(' ', 2)[1]
+        except: event.command = ''
+        try: event.params=event.message.split(' ',2)[2]
+        except: event.params = ''
+    else:
+        try:   event.params=event.message.split(' ',1)[1]
+        except:event.params=''
      
     #Select Roller
     if event.command in ['~select', '!select'] and len(event.params)>0:
@@ -188,7 +196,8 @@ if event.command in ['PRIVMSG']:
             imply="Usage: ~imply <text> Used to imply things.",
             dns="Usage: ~dns <domain> Used to check which IPs are associated with a DNS listing",
             imdb="Usage: ~imdb <film> Used to search IMDB for the listing for a film.",
-            implying="Usage: ~implying <implications> turns text green and adds >Implying"
+            implying="Usage: ~implying <implications> turns text green and adds >Implying",
+            clop="Usage: ~clop <optional extra tags> Searches e621 for a random image with the tags rating:e and my_little_pony"
             )
         if len(event.params) <= 0:
             self.send_message(
@@ -473,6 +482,23 @@ if event.command in ['PRIVMSG']:
             if j.has_key('rating'): out.append(str(j['rating']))
             if j.has_key('year'): out.append(str(j['year']))
             if j.has_key('imdb_url'): out.append(j['imdb_url'])
+
+            try:
+                title = j['title']
+                tpb = requests.get("http://thepiratebay.sx/search/{}/0/7/0".format(title)).text
+                tpbHTML = lxml.html.fromstring(tpb)
+                tpbHTML.make_links_absolute("http://thepiratebay.sx")
+                links = tpbHTML.iterlinks()
+                tpbLink = '';
+                while tpbLink == '':
+                    currentLink = next(links)[2]
+                    if currentLink.startswith("http://thepiratebay.sx/torrent/"):
+                        tpbLink = currentLink
+                out.append(tpbLink[:tpbLink.rfind('/')+1])
+            except:
+                pass
+
+
             self.send_message(
                 event.respond,
                 (' | '.join(out)).encode('utf-8','replace')
