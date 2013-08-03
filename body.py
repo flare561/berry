@@ -165,7 +165,8 @@ if event.command in ['PRIVMSG']:
             emote="Usage: ~emote <emote> Used to show an emote in the browser, relies on BPM. Example: ~emote vseyeroll",
             imply="Usage: ~imply <text> Used to imply things.",
             dns="Usage: ~dns <domain> Used to check which IPs are associated with a DNS listing",
-            imdb="Usage: ~imdb <film> Used to search IMDB for the listing for a film."
+            imdb="Usage: ~imdb <film> Used to search IMDB for the listing for a film.",
+            implying="Usage: ~implying <implications> turns text green and adds >Implying"
             )
         if len(event.params) <= 0:
             self.send_message(
@@ -461,6 +462,9 @@ if event.command in ['PRIVMSG']:
             )
             raise
 
+    #Implying
+    if event.command.lower() in ["~implying", "!implying"]:
+        self.send_message(event.respond, format.color(">Implying " + event.params, format.GREEN))
 
     #dA info fetcher
     #words = "".split() #event.message.split()
