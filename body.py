@@ -109,6 +109,28 @@ if event.command in ['PRIVMSG']:
             self.send_message(event.respond, "An error occurred while fetching your post.")
             raise
 
+
+    #Random e621 clop pic
+    if event.command.lower() in ["~clop", "!clop"]:
+        try:
+            j=requests.get("http://e621.net/post/index.json",
+                params=dict(
+                    limit="100",
+                    tags=event.params
+                )).json()
+            if (len(j) > 0):
+                self.send_message(
+                    event.respond,
+                    u'http://e621.net/post/show/{} rating:e my_little_pony'.format(
+                        random.choice(j)[u'id']
+                    ).encode('utf-8','replace'))
+            else:
+                self.send_message(event.respond, "No Results")
+        except:
+            self.send_message(event.respond, "An error occurred while fetching your post.")
+            raise
+
+
     #new guy
     if event.command.lower() in ["~newguy", "!newguy", "~oldguy", "!oldguy"]:
         self.send_message(event.respond, 
