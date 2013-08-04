@@ -14,12 +14,6 @@ class q(bot.SimpleBot):
       print "ERROR",str(sys.exc_info())
       print traceback.print_tb(sys.exc_info()[2])
 
-  def on_join(self,event):
-      if (self.firstJoin):
-          for channel in self.config.channels[1:]:
-              self.join_channel(channel)
-      self.firstJoin = False
-
 class Config:
     def __init__(self, fileName):
         config = ConfigParser.ConfigParser()
@@ -47,9 +41,9 @@ class Config:
             config.set('DEFAULT', 'server', self.server)
             modified = True
         if config.has_option('DEFAULT', 'channels'):
-            self.channels = config.get("DEFAULT", "channels").split(',')
+            self.channels = config.get("DEFAULT", "channels")
         else: 
-            self.channels = ['#mlas1']
+            self.channels = '#mlas1'
             config.set('DEFAULT', 'channels', ','.join(self.channels))
             modified = True
         if config.has_option('DEFAULT', 'imgurKey'):
@@ -98,7 +92,6 @@ class Config:
 
 if __name__ == "__main__":
   config = Config("config.ini")
-  s=q(config.nick);s.connect(config.server, channel=config.channels[0])
-  s.firstJoin = True
+  s=q(config.nick);s.connect(config.server, channel=config.channels)
   s.config = config
   s.start()
