@@ -14,13 +14,17 @@ class q(bot.SimpleBot):
       print "ERROR",str(sys.exc_info())
       print traceback.print_tb(sys.exc_info()[2])
 
+  def on_join(self,event):
+      if (self.firstJoin):
+          for channel in self.config.channels[1:]:
+              self.join_channel(channel)
+      self.firstJoin = False
+
 class Config:
     def __init__(self, fileName):
         config = ConfigParser.ConfigParser()
         config.read(fileName)
         self.fileName = fileName
-        #if not config.has_section('DEFAULT'):
-        #    config.add_section('DEFAULT')
 
 
         modified = False
@@ -42,11 +46,11 @@ class Config:
             self.server = 'irc.mlas1.com'
             config.set('DEFAULT', 'server', self.server)
             modified = True
-        if config.has_option('DEFAULT', 'channel'):
-            self.channel = config.get("DEFAULT", "channel")
+        if config.has_option('DEFAULT', 'channels'):
+            self.channels = config.get("DEFAULT", "channels").split(',')
         else: 
-            self.channel = '#mlas1'
-            config.set('DEFAULT', 'channel', self.channel)
+            self.channels = ['#mlas1']
+            config.set('DEFAULT', 'channels', self.channels)
             modified = True
         if config.has_option('DEFAULT', 'imgurKey'):
             self.imgurKey = config.get("DEFAULT", "imgurKey")
@@ -94,6 +98,7 @@ class Config:
 
 if __name__ == "__main__":
   config = Config("config.ini")
-  s=q(config.nick);s.connect(config.server, channel=config.channel)
+  s=q(config.nick);s.connect(config.server, channel=config.channels[0])
+  s.firstJoin = True
   s.config = config
   s.start()
