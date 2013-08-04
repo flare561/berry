@@ -50,7 +50,7 @@ class Config:
             self.channels = config.get("DEFAULT", "channels").split(',')
         else: 
             self.channels = ['#mlas1']
-            config.set('DEFAULT', 'channels', self.channels)
+            config.set('DEFAULT', 'channels', ','.join(self.channels))
             modified = True
         if config.has_option('DEFAULT', 'imgurKey'):
             self.imgurKey = config.get("DEFAULT", "imgurKey")
@@ -68,7 +68,7 @@ class Config:
             self.authorizedUsers = config.get("DEFAULT", "authorizedUsers").split(',')
         else: 
             self.authorizedUsers = ['']
-            config.set('DEFAULT', 'authorizedUsers', self.authorizedUsers)
+            config.set('DEFAULT', 'authorizedUsers', ",".join(self.authorizedUsers))
             modified = True
         if config.has_option('DEFAULT', 'password'):
             self.password = config.get("DEFAULT", "password")
