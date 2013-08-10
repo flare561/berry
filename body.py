@@ -8,7 +8,7 @@ if event.command=="INVITE":
  
 #AAAAAAAA
 if event.command in ['PRIVMSG']:
-    #Initalise the event
+    #Initialize the event
     event.command=event.message.split(' ')[0]
 
     if (event.command[:1] == '<' and event.command[-1:] == '>'):
@@ -443,7 +443,7 @@ if event.command in ['PRIVMSG']:
 
 
     #Subreddit links!
-    srmatch=re.compile('(?<!reddit.com)(/r/\w+\+?(?:\w+\+?)*)', re.I)
+    srmatch=re.compile('(?<!reddit.com)(/r/\w+(?:\+\w+)*)', re.I)
     srmatches = srmatch.findall(event.message)
     srlinks = []
     for x in srmatches:
