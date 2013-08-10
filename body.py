@@ -91,12 +91,12 @@ if event.command in ['PRIVMSG']:
     #testing command, part channel
     if event.command.lower() in ["~part", "!part"]:
         if self.config.debug:
-            self.part_channel("#MLAS1", "I'm taking my ball and going home.")
+            self.part_channel("#comeinside", "I'm taking my ball and going home.")
 
     #testing command, join channel
     if event.command.lower() in ["~join", "!join"]:
         if self.config.debug:
-            self.join_channel("#MLAS1")
+            self.join_channel("#comeinside")
 
     #Random e621
     if event.command.lower() in ["~rande621", "!rande621"]:
@@ -357,6 +357,7 @@ if event.command in ['PRIVMSG']:
         else:
             airdate=datetime.datetime.now(LocalTZ()) + timedelta((12 - datetime.datetime.now(LocalTZ()).weekday()) % 7)
             wait = datetime.datetime(year=airdate.year, month=airdate.month, day=airdate.day, hour=15, minute=30, tzinfo=UTC()) - datetime.datetime.now(LocalTZ())
+            
         self.send_message(
             event.respond,
             '{} Days, {} Hours, {} Minutes remaining until the next episode'.format(
@@ -440,6 +441,15 @@ if event.command in ['PRIVMSG']:
         self.config.setEmote(config.autoemote) 
         self.send_message(event.respond, "Setting auto emote to " + str(config.autoemote))
 
+
+    #Subreddit links!
+    srmatch=re.compile('(?<!reddit.com)(/r/\w+\+?(?:\w+\+?)*)', re.I)
+    srmatches = srmatch.findall(event.message)
+    srlinks = []
+    for x in srmatches:
+        srlinks.append("http://reddit.com{}".format(x))
+    if len(srlinks) > 0:
+        self.send_message(event.respond, ' '.join(srlinks))
 
     #Imply
     if event.command.lower() in ["~imply", "!imply"]:
