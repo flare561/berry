@@ -46,6 +46,7 @@ if event.command in ['PRIVMSG']:
             if j.has_key('duration'):out.append(str(datetime.timedelta(seconds=j[u'duration'])))
             out=u' | '.join(out)
             self.send_message(event.respond,out.encode('utf-8','replace'))
+            print x
         except:
             print "ERROR\n",traceback.print_tb(sys.exc_info()[2]),"\nERROREND"
 
@@ -421,21 +422,18 @@ if event.command in ['PRIVMSG']:
         )
 
     #Emotes!
-    if event.command.lower() in ["~emote", "!emote"] or (config.autoemote and event.message.startswith('[](/')):
-        if event.message.startswith('[](/'):
-            event.params = event.message
-        if event.params.startswith('[](/'):
-            event.params = event.params[4:]
-        if ')' in event.params:
-            event.params = event.params.split(')')[0]
+    if event.command.lower() in ["~emote", "!emote"]:
         event.params = event.params.split()[0]
-        parameters = "emote="
-        parts = event.params.split('-')
-        parameters += parts[0]
-        if len(parts) > 1:
-            parameters += "&flags=" + ','.join(parts[1:])
+        self.send_message(event.respond, 'http://comeinside.us/emotes.html?emote={}'.format(event.params.replace('!', '_excl_').replace(':', '_colon_')))
 
-        self.send_message(event.respond, 'http://mlas1.com/emotes.html?{}'.format(parameters))
+    if config.autoemote:
+        exp = re.compile('\[\]\(/([a-zA-Z0-9-!:]*)(?: ".*")?\)')
+        matches = exp.findall(event.message)
+        response = ""
+        for x in matches:
+            response += 'http://comeinside.us/emotes.html?emote={} '.format(x.replace('!', '_excl_').replace(':', '_colon_'))
+        self.send_message(event.respond, response.rstrip())
+
 
     if event.command.lower() in ["~autoemote", "!autoemote"]:
         config.autoemote = not config.autoemote
