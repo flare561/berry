@@ -532,10 +532,11 @@ if event.command in ['PRIVMSG']:
             consumer.addEndpoint(endpoint)
             response = consumer.embed(x).getData()
             out=[]
-            if response.has_key(u'title'): out.append(response[u'title'])
-            if response.has_key(u'author_name'): out.append(response[u'author_name'])
-            if response.has_key(u'rating'): out.append("Rating: {}".format(response[u'rating']))
-            if response.has_key(u'url'): out.append(response[u'url'])
+            if response.has_key(u'title'): out.append("Title: {}".format(response[u'title']))
+            if response.has_key(u'author_name'): out.append("Artist: {}".format(response[u'author_name']))
+            if response.has_key(u'rating'): 
+                out.append("Rating: {}".format(response[u'rating']))
+                if response.has_key(u'url'): out.append("Direct Url: {}".format(response[u'url']))
             self.send_message(
                 event.respond,
                 " | ".join(out).encode('utf-8','replace')
