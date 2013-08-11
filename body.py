@@ -21,11 +21,11 @@ if event.command in ['PRIVMSG']:
         except:event.params=''
      
     #Select Roller
-    if event.command in ['~select', '!select'] and len(event.params)>0:
+    if event.command in [x+'select' for x in self.config.prefixes] and len(event.params)>0:
         self.send_message(event.respond,'Select: {}'.format(random.choice(event.params.split(' '))))
  
     #Flip
-    if event.command in ['~flip','!flip']:
+    if event.command in [x+'flip' for x in self.config.prefixes]:
         self.send_message(event.respond,'Flip: {}'.format(random.choice(['Heads','Tails'])))
          
     #Youtube info fetcher
@@ -52,7 +52,7 @@ if event.command in ['PRIVMSG']:
 
 
     #Youtube search
-    if event.command.lower() in ['~yt','!yt']:
+    if event.command.lower() in [x+'yt' for x in self.config.prefixes]:
         try:
             j=requests.get(
                 'https://gdata.youtube.com/feeds/api/videos',
@@ -72,7 +72,7 @@ if event.command in ['PRIVMSG']:
             self.send_message(event.respond,"No results")
     
     #Google Search
-    if event.command.lower() in ['~g','!g']:
+    if event.command.lower() in [x+'g' for x in self.config.prefixes]:
         j=requests.get(
             'https://ajax.googleapis.com/ajax/services/search/web',
             params=dict(
@@ -89,17 +89,17 @@ if event.command in ['PRIVMSG']:
         )
 
     #testing command, part channel
-    if event.command.lower() in ["~part", "!part"]:
+    if event.command.lower() in [x+'part' for x in self.config.prefixes]:
         if self.config.debug:
             self.part_channel("#comeinside", "I'm taking my ball and going home.")
 
     #testing command, join channel
-    if event.command.lower() in ["~join", "!join"]:
+    if event.command.lower() in [x+'join' for x in self.config.prefixes]:
         if self.config.debug:
             self.join_channel("#comeinside")
 
     #Random e621
-    if event.command.lower() in ["~rande621", "!rande621"]:
+    if event.command.lower() in [x+'rande621' for x in self.config.prefixes]:
         try:
             j=requests.get("http://e621.net/post/index.json",
                 params=dict(
@@ -120,7 +120,7 @@ if event.command in ['PRIVMSG']:
 
 
     #Random e621 clop pic
-    if event.command.lower() in ["~clop", "!clop"]:
+    if event.command.lower() in [x+'clop' for x in self.config.prefixes]:
         try:
             j=requests.get("http://e621.net/post/index.json",
                 params=dict(
@@ -141,14 +141,14 @@ if event.command in ['PRIVMSG']:
 
 
     #new guy
-    if event.command.lower() in ["~newguy", "!newguy", "~oldguy", "!oldguy"]:
+    if event.command.lower() in [x+'newguy' for x in self.config.prefixes] or event.command.lower() in [x+'oldguy' for x in self.config.prefixes]:
         self.send_message(event.respond, 
-            u'{}, please enjoy the following image albums http://newguy.mlas1.org http://imgur.com/a/F2XQv http://imgur.com/a/0O33r http://imgur.com/a/wJmdV http://imgur.com/a/wVDx6 http://imgur.com/a/ueAHb http://imgur.com/a/h2xJa http://imgur.com/a/hEuEd'.format(
+            u'{}, please enjoy the following image albums http://imgur.com/a/F2XQv http://imgur.com/a/wJmdV http://imgur.com/a/wVDx6 http://imgur.com/a/ueAHb http://imgur.com/a/h2xJa http://imgur.com/a/hEuEd'.format(
                 event.params
             ).encode('utf-8', 'replace'))
 
     #Random imgur posts
-    if event.command.lower() in ["~randjur", "!randjur"]:
+    if event.command.lower() in [x+'randjur' for x in self.config.prefixes]:
         count = 1
         if len(event.params) > 0:
             try:
@@ -168,11 +168,11 @@ if event.command in ['PRIVMSG']:
             u'http://imgur.com/{}'.format(ids).encode('utf-8', 'replace'))
 
     #feels
-    if event.command.lower() in ["~feels", "!feels"]:
+    if event.command.lower() in [x+'feels' for x in self.config.prefixes]:
         self.send_message(event.respond, 'http://imgur.com/a/PJIsu/layout/blog')
 
     #help command
-    if event.command.lower() in ["~help", "!help"]:
+    if event.command.lower() in [x+'help' for x in self.config.prefixes]:
         commands=dict(
             select="Usage: ~select <args> Used to select a random word from a given list",
             flip="Usage: ~flip Used to flip a coin, responds with heads or tails",
@@ -219,7 +219,7 @@ if event.command in ['PRIVMSG']:
             )
 
     #Wolfram Alpha
-    if event.command.lower() in ["~wolf", "!wolf"]:
+    if event.command.lower() in [x+'wolf' for x in self.config.prefixes]:
         try:
             s=requests.get("http://api.wolframalpha.com/v2/query", 
                 params=dict(
@@ -253,7 +253,7 @@ if event.command in ['PRIVMSG']:
             raise
 
     #Test
-    if event.command.lower() in ["~test", "!test"]:
+    if event.command.lower() in [x+'test' for x in self.config.prefixes]:
         possibleAnswers=[
             "Cake, and grief counseling, will be available at the conclusion of the test.",
             "Remember, the Aperture Science Bring Your Daughter to Work Day is the perfect time to have her tested.",
@@ -268,14 +268,14 @@ if event.command in ['PRIVMSG']:
             )
 
     #Google Results
-    if event.command.lower() in ["~gr", "!gr"]:
+    if event.command.lower() in [x+'gr' for x in self.config.prefixes]:
         self.send_message(
             event.respond,
             "http://google.com/#q={}".format(urllib.quote(event.params, ''))
             )
 
     #Dice roll
-    if event.command.lower() in ["~roll", "!roll"]:
+    if event.command.lower() in [x+'roll' for x in self.config.prefixes]:
         strippedparams=''.join(event.params.split())
         args=strippedparams.split('d')
 
@@ -309,7 +309,7 @@ if event.command in ['PRIVMSG']:
             )
 
     #Urban Dictionary search
-    if event.command.lower() in ["~ud", "!ud"]:
+    if event.command.lower() in [x+'ud' for x in self.config.prefixes]:
         try:
             j=requests.get("http://api.urbandictionary.com/v0/define",
                 params=dict(
@@ -327,7 +327,7 @@ if event.command in ['PRIVMSG']:
             raise
 
     #Time until next pony episode
-    if event.command.lower() in ["~pony", "!pony"]:
+    if event.command.lower() in [x+'pony' for x in self.config.prefixes]:
         class LocalTZ(datetime.tzinfo):
             _unixEpochOrdinal = datetime.datetime.utcfromtimestamp(0).toordinal()
 
@@ -368,7 +368,7 @@ if event.command in ['PRIVMSG']:
             )
 
     #isup.me check if website is up
-    if event.command.lower() in ["~isup", "!isup"]:
+    if event.command.lower() in [x+'isup' for x in self.config.prefixes]:
         try:
             s=requests.get("http://isup.me/{}".format(
                 event.params
@@ -389,7 +389,7 @@ if event.command in ['PRIVMSG']:
             raise
 
     #Google Image Search
-    if event.command.lower() in ['~gimg','!gimg']:
+    if event.command.lower() in [x+'gimg' for x in self.config.prefixes]:
         j=requests.get(
             'https://ajax.googleapis.com/ajax/services/search/images',
             params=dict(
@@ -406,7 +406,7 @@ if event.command in ['PRIVMSG']:
         )
 
     #Reddit Search
-    if event.command.lower() in ['~rs','!rs']:
+    if event.command.lower() in [x+'rs' for x in self.config.prefixes]:
         j=requests.get(
             'https://ajax.googleapis.com/ajax/services/search/web',
             params=dict(
@@ -423,7 +423,7 @@ if event.command in ['PRIVMSG']:
         )
 
     #Emotes!
-    if event.command.lower() in ["~emote", "!emote"]:
+    if event.command.lower() in [x+'emote' for x in self.config.prefixes]:
         event.params = event.params.split()[0]
         self.send_message(event.respond, 'http://comeinside.us/emotes.html?emote={}'.format(event.params.replace('!', '_excl_').replace(':', '_colon_')))
 
@@ -436,27 +436,27 @@ if event.command in ['PRIVMSG']:
         self.send_message(event.respond, response.rstrip())
 
 
-    if event.command.lower() in ["~autoemote", "!autoemote"]:
+    if event.command.lower() in [x+'autoemote' for x in self.config.prefixes]:
         config.autoemote = not config.autoemote
         self.config.setEmote(config.autoemote) 
         self.send_message(event.respond, "Setting auto emote to " + str(config.autoemote))
 
 
     #Subreddit links!
-    srmatch=re.compile('(?<!reddit.com)(/r/\w+(?:\+\w+)*)', re.I)
+    srmatch=re.compile('(?<!reddit.com)/r/(\w+(?:\+\w+)*)', re.I)
     srmatches = srmatch.findall(event.message)
     srlinks = []
     for x in srmatches:
-        srlinks.append("http://reddit.com{}".format(x))
+        srlinks.append(x)
     if len(srlinks) > 0:
-        self.send_message(event.respond, ' '.join(srlinks))
+        self.send_message(event.respond, "http://reddit.com/r/{}".format('+'.join(srlinks)))
 
     #Imply
-    if event.command.lower() in ["~imply", "!imply"]:
+    if event.command.lower() in [x+'imply' for x in self.config.prefixes]:
         self.send_message(event.respond, format.color(">" + event.params, format.GREEN))
 
     #DNS
-    if event.command.lower() in ["~dns", "!dns"]:
+    if event.command.lower() in [x+'dns' for x in self.config.prefixes]:
         try:
             records = socket.getaddrinfo(event.params, 80)
             addresses = set([x[4][0] for x in records])
@@ -465,7 +465,7 @@ if event.command in ['PRIVMSG']:
             self.send_message(event.respond, "You must give a valid host name to look up")
 
     #Reboot
-    if event.command.lower() in ["~reboot", "!reboot"]:
+    if event.command.lower() in [x+'reboot' for x in self.config.prefixes]:
         if event.source in self.config.authorizedUsers and event.params == self.config.password:
             self.quit("My primary function is failure.")
             os.execl(sys.executable, *([sys.executable]+sys.argv))
@@ -474,7 +474,7 @@ if event.command in ['PRIVMSG']:
 
 
     #IMDB Search
-    if event.command.lower() in ['~imdb','!imdb']:
+    if event.command.lower() in [x+'imdb' for x in self.config.prefixes]:
         try:
             j=requests.get(
                 'http://mymovieapi.com/',
@@ -519,7 +519,7 @@ if event.command in ['PRIVMSG']:
             raise
 
     #Implying
-    if event.command.lower() in ["~implying", "!implying"]:
+    if event.command.lower() in [x+'implying' for x in self.config.prefixes]:
         self.send_message(event.respond, format.color(">Implying " + event.params, format.GREEN))
 
     #dA info fetcher

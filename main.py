@@ -44,7 +44,7 @@ class Config:
             self.channels = config.get("DEFAULT", "channels")
         else: 
             self.channels = '#mlas1'
-            config.set('DEFAULT', 'channels', ','.join(self.channels))
+            config.set('DEFAULT', 'channels', self.channels)
             modified = True
         if config.has_option('DEFAULT', 'imgurKey'):
             self.imgurKey = config.get("DEFAULT", "imgurKey")
@@ -75,6 +75,12 @@ class Config:
         else: 
             self.autoemote = True
             config.set('DEFAULT', 'autoemote', self.autoemote)
+            modified = True
+        if config.has_option('DEFAULT', 'prefixes'):
+            self.prefixes = config.get("DEFAULT", "prefixes").split(',')
+        else: 
+            self.prefixes = ['~', '!']
+            config.set('DEFAULT', 'prefixes', ",".join(self.prefixes))
             modified = True
 
         if modified:
