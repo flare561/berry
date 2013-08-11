@@ -1,4 +1,4 @@
-import HTMLParser,re,urllib,json,random,requests,datetime,socket,os,sys,HTMLParser;from ircutils import format
+import HTMLParser,re,urllib,json,random,requests,datetime,socket,os,sys,HTMLParser,oembed,urllib2;from ircutils import format
 import xml.etree.ElementTree as ET
 import lxml.html
 
@@ -523,24 +523,24 @@ if event.command in ['PRIVMSG']:
         self.send_message(event.respond, format.color(">Implying " + event.params, format.GREEN))
 
     #dA info fetcher
-    #words = "".split() #event.message.split()
-
-    #for x in matches:
-    #    try:
-    #        j=requests.get(
-    #            'http://backend.deviantart.com/oembed',
-    #            params=dict(
-    #                url=x
-    #            )
-    #        ).json()[u'data']
-    #        self.send_message(
-    #            event.respond,
-    #            u'{title} | {views:,} | {rating:.0%} | {time}'.format(
-    #                title  = j['title'],
-    #                views  = j['viewCount'],
-    #                rating = j['rating']/5,
-    #                time   = datetime.timedelta(seconds=j[u'duration'])
-    #            ).encode('utf-8','replace')
-    #        )
-    #    except:
-    #        pass
+    damatch=re.compile('((?:(?:https?|ftp|file)://|www\.|ftp\.)(?:\([-A-Z0-9+&@#/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#/%=~_|$?!:,.]*\)|[A-Z0-9+&@#/%=~_|$]))', re.I)
+    damatches = damatch.findall(event.message)
+    for x in damatches:
+        try:
+            consumer = oembed.OEmbedConsumer()
+            endpoint = oembed.OEmbedEndpoint('http://backend.deviantart.com/oembed', ['http://*.deviantart.com/art/*', 'http://fav.me/*', 'http://sta.sh/*', 'http://*.deviantart.com/*#/d*'])
+            consumer.addEndpoint(endpoint)
+            response = consumer.embed(x).getData()
+            out=[]
+            if response.has_key(u'title'): out.append(response[u'title'])
+            if response.has_key(u'author_name'): out.append(response[u'author_name'])
+            if response.has_key(u'rating'): out.append("Rating: {}".format(response[u'rating']))
+            if response.has_key(u'url'): out.append(response[u'url'])
+            self.send_message(
+                event.respond,
+                " | ".join(out).encode('utf-8','replace')
+                )
+        except oembed.OEmbedNoEndpoint:
+            pass
+        except urllib2.HTTPError:
+            pass
