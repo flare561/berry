@@ -9,6 +9,8 @@ lxml http://lxml.de/installation.html
 
 requests http://docs.python-requests.org/en/latest/
 
+oembed https://github.com/abarmat/python-oembed
+
 and
 
 IRCUtils http://dev.guardedcode.com/projects/ircutils/
