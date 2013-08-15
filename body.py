@@ -443,7 +443,7 @@ if event.command in ['PRIVMSG']:
 
 
     #Subreddit links!
-    srmatch=re.compile('(?<!reddit.com)/r/(\w+(?:\+\w+)*)', re.I)
+    srmatch=re.compile('(?<!reddit.com)/r/(\w+(?:\+\w+)*(?:/\S+)*)', re.I)
     srmatches = srmatch.findall(event.message)
     srlinks = []
     for x in srmatches:
