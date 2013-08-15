@@ -443,13 +443,17 @@ if event.command in ['PRIVMSG']:
 
 
     #Subreddit links!
-    srmatch=re.compile('(?<!reddit.com)/(?:r|u)/(\w+(?:\+\w+)*(?:/\S+)*)', re.I)
+    srmatch=re.compile('(?<!reddit.com)/(r|u)/(\w+(?:\+\w+)*(?:/\S+)*)', re.I)
     srmatches = srmatch.findall(event.message)
-    srlinks = []
-    for x in srmatches:
-        srlinks.append(x)
-    if len(srlinks) > 0:
-        self.send_message(event.respond, "http://reddit.com/r/{}".format('+'.join(srlinks)))
+    submatches=[s[1] for s in srmatches if s[0] == 'r']
+    usermatches=[s[1] for s in srmatches if s[0] == 'u']
+    links = []
+    if len(submatches) > 0:
+        links.append("http://reddit.com/r/{}".format('+'.join(submatches)))
+    if len(usermatches) > 0:
+        links.append("http://reddit.com/u/{}".format('+'.join(usermatches)))
+    if len(links) > 0:
+        self.send_message(event.respond, ' '.join(links))
 
     #Imply
     if event.command.lower() in [x+'imply' for x in self.config.prefixes]:
