@@ -12,6 +12,7 @@ if event.command in ['PRIVMSG']:
     event.command=event.message.split(' ')[0]
 
     if (event.command[:1] == '<' and event.command[-1:] == '>'):
+    #if (event.command[-1:] == ':' and event.source == 'Sweetie'):
         try: event.command = event.message.split(' ', 2)[1]
         except: event.command = ''
         try: event.params=event.message.split(' ',2)[2]
@@ -432,7 +433,7 @@ if event.command in ['PRIVMSG']:
         matches = exp.findall(event.message)
         response = ""
         for x in matches:
-            response += 'http://comeinside.us/emotes.html?emote={} '.format(x.replace('!', '_excl_').replace(':', '_colon_'))
+            response += 'http://comeinside.us/emote/{}/'.format(x.replace('!', '_excl_').replace(':', '_colon_'))
         self.send_message(event.respond, response.rstrip())
 
 
