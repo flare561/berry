@@ -1,4 +1,4 @@
-import HTMLParser,re,urllib,json,random,requests,datetime,socket,os,sys,HTMLParser,oembed,urllib2;from ircutils import format
+import HTMLParser,re,urllib,json,random,requests,datetime,socket,os,sys,HTMLParser,oembed,urllib2,threading;from ircutils import format
 import xml.etree.ElementTree as ET
 import lxml.html
 
@@ -163,10 +163,52 @@ if event.command in ['PRIVMSG']:
                 )).json()[u'data']
         if count > 10:
             count = 10
-        ids = ','.join([x[u'id'] for x in random.sample(j,count)])
+        images = ','.join([x[u'id'] for x in random.sample(j,count)])
+        album=requests.post('https://api.imgur.com/3/album/', 
+                headers=dict(
+                    Authorization="Client-ID " + self.config.imgurKey), 
+                params=dict(
+                    ids=images
+                )).json()[u'data'][u'id']
         self.send_message(
             event.respond,
-            u'http://imgur.com/{}'.format(ids).encode('utf-8', 'replace'))
+            u'http://imgur.com//a/{}'.format(album).encode('utf-8', 'replace'))
+
+    #True random imgur posts
+    if event.command.lower() in [x+'truerandjur' for x in self.config.prefixes]:
+        count = 1
+        if len(event.params) > 0:
+            try:
+                count = int(event.params)
+            except:
+                self.send_message(event.respond, "Could not parse parameter")
+                raise
+        if count > 10:
+            count = 10
+        #this is gross, why do you let me do this python?
+        def findImages(irc, count, respond, clientID):
+            import random, requests
+            images=[]
+            foundImages = 0
+            while foundImages < count:
+                randID = ""
+                for x in range(0, 5): 
+                    randID += random.choice("1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM")
+                j=requests.get("https://api.imgur.com/3/image/" + randID, headers=dict(Authorization="Client-ID " + clientID)).json()
+                if j[u'status'] == 200:
+                    foundImages += 1
+                    images.append(j[u'data'][u'id'])
+            album=requests.post('https://api.imgur.com/3/album/', 
+                    headers=dict(
+                        Authorization="Client-ID " + clientID), 
+                    params=dict(
+                        ids=','.join(images)
+                    )).json()[u'data'][u'id']
+            irc.send_message(
+                respond,
+                u'http://imgur.com/a/{}'.format(album).encode('utf-8', 'replace'))
+        randjurThread = threading.Thread(target=findImages, kwargs=dict(irc=self, count=count, respond=event.respond, clientID=self.config.imgurKey))
+        randjurThread.start()
 
     #feels
     if event.command.lower() in [x+'feels' for x in self.config.prefixes]:
@@ -182,7 +224,7 @@ if event.command in ['PRIVMSG']:
             rande621="Usage: ~rande621 <tags> Used to search e621.net for a random picture with the given tags",
             newguy="Usage: ~newguy <nick> If you don't know what this does ask an oldguy to teach you",
             oldguy="Usage: ~oldguy <nick> Reminds us why we came here",
-            randjur="Usage: ~randjur <number> Used to post random imgur pictures, <number> defines the number of results with a max of 10",
+            randjur="Usage: ~randjur <number> Used to post random imgur pictures, from the gallery, <number> defines the number of results with a max of 10",
             feels="Usage: ~feels Just in case",
             help="Usage: ~help <command> The fuck do you think it does?",
             wolf="Usage: ~wolf <query> Searches wolfram alpha for your query",
@@ -199,7 +241,8 @@ if event.command in ['PRIVMSG']:
             dns="Usage: ~dns <domain> Used to check which IPs are associated with a DNS listing",
             imdb="Usage: ~imdb <film> Used to search IMDB for the listing for a film.",
             implying="Usage: ~implying <implications> turns text green and adds >Implying",
-            clop="Usage: ~clop <optional extra tags> Searches e621 for a random image with the tags rating:e and my_little_pony"
+            clop="Usage: ~clop <optional extra tags> Searches e621 for a random image with the tags rating:e and my_little_pony",
+            truerandjur="Usage: ~truerandjur <number> Used to post random imgur pictures, from randomly generated IDs, takes a little while to find images so be patient, <number> defines the number of results with a max of 10"
             )
         if len(event.params) <= 0:
             self.send_message(
