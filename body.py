@@ -362,7 +362,7 @@ if event.command in ['PRIVMSG']:
             if (len(j) > 0):
                 self.send_message(
                     event.respond,
-                    j[0][u'definition'].encode('UTF-8', 'replace')
+                    j[0][u'definition'].replace('\r', '').replace('\n', ' ').encode('UTF-8', 'replace')
                     )
             else:
                 self.send_message(event.respond, "No Results")
