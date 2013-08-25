@@ -172,7 +172,7 @@ if event.command in ['PRIVMSG']:
                 )).json()[u'data'][u'id']
         self.send_message(
             event.respond,
-            u'http://imgur.com//a/{}'.format(album).encode('utf-8', 'replace'))
+            u'http://imgur.com/a/{}'.format(album).encode('utf-8', 'replace'))
 
     #True random imgur posts
     if event.command.lower() in [x+'truerandjur' for x in self.config.prefixes]:
@@ -469,14 +469,14 @@ if event.command in ['PRIVMSG']:
     #Emotes!
     if event.command.lower() in [x+'emote' for x in self.config.prefixes]:
         event.params = event.params.split()[0]
-        self.send_message(event.respond, 'http://comeinside.us/emotes.html?emote={}'.format(event.params.replace('!', '_excl_').replace(':', '_colon_')))
+        self.send_message(event.respond, 'http://comeinside.us/emote/{}/'.format(event.params.replace('!', '_excl_').replace(':', '_colon_')))
 
     if config.autoemote:
         exp = re.compile('\[\]\(/([a-zA-Z0-9-!:]*)(?: ".*")?\)')
         matches = exp.findall(event.message)
         response = ""
         for x in matches:
-            response += 'http://comeinside.us/emote/{}/'.format(x.replace('!', '_excl_').replace(':', '_colon_'))
+            response += 'http://comeinside.us/emote/{}/ '.format(x.replace('!', '_excl_').replace(':', '_colon_'))
         self.send_message(event.respond, response.rstrip())
 
 
