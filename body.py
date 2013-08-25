@@ -235,7 +235,7 @@ if event.command in ['PRIVMSG']:
             pony="Usage: ~pony Used to show the time remaining until the next episode of MLP airs",
             isup="Usage: ~isup <site> used to check if a given website is up using isup.me",
             gimg="Usage: ~gimg <terms> Used to search google images with the given terms",
-            rs="Usage: ~rs <terms> Used to search for results on reddit, it's simply a google search with the restriction site:reddit.com",
+            rs="Usage: ~rs <terms> Used to search for results on reddit, can narrow down to sub or user with /u/<user> or /r/<subreddit>",
             emote="Usage: ~emote <emote> Used to show an emote in the browser, relies on BPM. Example: ~emote vseyeroll",
             imply="Usage: ~imply <text> Used to imply things.",
             dns="Usage: ~dns <domain> Used to check which IPs are associated with a DNS listing",
@@ -298,6 +298,8 @@ if event.command in ['PRIVMSG']:
 
     #Test
     if event.command.lower() in [x+'test' for x in self.config.prefixes]:
+        print 'test event fired'
+        print event.respond
         possibleAnswers=[
             "Cake, and grief counseling, will be available at the conclusion of the test.",
             "Remember, the Aperture Science Bring Your Daughter to Work Day is the perfect time to have her tested.",
@@ -451,20 +453,41 @@ if event.command in ['PRIVMSG']:
 
     #Reddit Search
     if event.command.lower() in [x+'rs' for x in self.config.prefixes]:
+        query=event.params
+        #allow searching by /r/subreddit
+        srmatch=re.compile('/(r|u)/(\w+(?:\+\w+)*(?:/\S+)*)', re.I)
+        srmatches = srmatch.findall(event.params)
+        submatches=[s[1] for s in srmatches if s[0] == 'r']
+        usermatches=[s[1] for s in srmatches if s[0] == 'u']
+        terms = []
+        if len(submatches) > 0:
+            terms.append("subreddit:{}".format(submatches[0]))
+        if len(usermatches) > 0:
+            terms.append("author:{}".format(usermatches[0]))
+        if len(terms) > 0:
+            query=srmatch.sub("", query)
+            query=query.rstrip().lstrip()
+            terms.append(query)
         j=requests.get(
-            'https://ajax.googleapis.com/ajax/services/search/web',
+            'http://www.reddit.com/search.json',
             params=dict(
-                v="1.0",
-                q=event.params + " site:reddit.com"
+                limit="1",
+                q=' '.join(terms)
             )
-        ).json()[u'responseData'][u'results'][0]
-        self.send_message(
-            event.respond,
-            u'{}: {}'.format(
-                HTMLParser.HTMLParser().unescape(j[u'titleNoFormatting']),
-                j[u'unescapedUrl']
-            ).encode('utf-8','replace')
-        )
+        ).json()[u'data'][u'children']
+        if len(j) > 0:
+            self.send_message(
+                event.respond,
+                u'http://reddit.com{} - {}'.format(
+                    j[0][u'data'][u'permalink'],
+                    HTMLParser.HTMLParser().unescape(j[0][u'data'][u'title'])
+                ).encode('utf-8','replace')
+            )
+        else:
+            self.send_message(
+                event.respond,
+                'No results.'
+                )
 
     #Emotes!
     if event.command.lower() in [x+'emote' for x in self.config.prefixes]:
@@ -487,17 +510,18 @@ if event.command in ['PRIVMSG']:
 
 
     #Subreddit links!
-    srmatch=re.compile('(?<!reddit.com)/(r|u)/(\w+(?:\+\w+)*(?:/\S+)*)', re.I)
-    srmatches = srmatch.findall(event.message)
-    submatches=[s[1] for s in srmatches if s[0] == 'r']
-    usermatches=[s[1] for s in srmatches if s[0] == 'u']
-    links = []
-    if len(submatches) > 0:
-        links.append("http://reddit.com/r/{}".format('+'.join(submatches)))
-    if len(usermatches) > 0:
-        links.append("http://reddit.com/u/{}".format('+'.join(usermatches)))
-    if len(links) > 0:
-        self.send_message(event.respond, ' '.join(links))
+    if not event.command.lower() in [x+'rs' for x in self.config.prefixes]:
+        srmatch=re.compile('(?<!reddit.com)/(r|u)/(\w+(?:\+\w+)*(?:/\S+)*)', re.I)
+        srmatches = srmatch.findall(event.message)
+        submatches=[s[1] for s in srmatches if s[0] == 'r']
+        usermatches=[s[1] for s in srmatches if s[0] == 'u']
+        links = []
+        if len(submatches) > 0:
+            links.append("http://reddit.com/r/{}".format('+'.join(submatches)))
+        if len(usermatches) > 0:
+            links.append("http://reddit.com/u/{}".format('+'.join(usermatches)))
+        if len(links) > 0:
+            self.send_message(event.respond, ' '.join(links))
 
     #Imply
     if event.command.lower() in [x+'imply' for x in self.config.prefixes]:
