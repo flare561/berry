@@ -298,8 +298,6 @@ if event.command in ['PRIVMSG']:
 
     #Test
     if event.command.lower() in [x+'test' for x in self.config.prefixes]:
-        print 'test event fired'
-        print event.respond
         possibleAnswers=[
             "Cake, and grief counseling, will be available at the conclusion of the test.",
             "Remember, the Aperture Science Bring Your Daughter to Work Day is the perfect time to have her tested.",
@@ -593,6 +591,20 @@ if event.command in ['PRIVMSG']:
     #Implying
     if event.command.lower() in [x+'implying' for x in self.config.prefixes]:
         self.send_message(event.respond, format.color(">Implying " + event.params, format.GREEN))
+
+    #listusers for those steam guys.
+    if event.command.lower() in ['~lu']:
+        if event.target==self.nickname:
+            text='Current Users:\n{}'.format('\n'.join(self.channels[event.target].user_list))
+            try:
+                file=open(self.config.userlistfolder + event.target + '.txt', 'w')
+                file.write(text)
+                file.close()
+                self.send_message(event.respond, 'http://comeinside.us/userlist/{}.txt'.format(event.target))
+            except:
+                self.send_message(event.respond, "Error writing to file.")
+        else:
+            self.send_message(event.respond, "Cannot list users a pm.")
 
     #dA info fetcher
     damatch=re.compile('((?:(?:https?|ftp|file)://|www\.|ftp\.)(?:\([-A-Z0-9+&@#/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#/%=~_|$?!:,.]*\)|[A-Z0-9+&@#/%=~_|$]))', re.I)

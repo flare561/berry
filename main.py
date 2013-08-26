@@ -82,6 +82,12 @@ class Config:
             self.prefixes = ['~', '!']
             config.set('DEFAULT', 'prefixes', ",".join(self.prefixes))
             modified = True
+        if config.has_option('DEFAULT', 'userlistfolder'):
+            self.userlistfolder = config.get("DEFAULT", "userlistfolder")
+        else: 
+            self.userlistfolder = '/var/www/userlists/'
+            config.set('DEFAULT', 'userlistfolder', self.userlistfolder)
+            modified = True
 
         if modified:
             with open(self.fileName, "wb") as configFileLocation:
