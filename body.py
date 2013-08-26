@@ -1,4 +1,4 @@
-import HTMLParser,re,urllib,json,random,requests,datetime,socket,os,sys,HTMLParser,oembed,urllib2,threading;from ircutils import format
+import HTMLParser,re,urllib,json,random,requests,datetime,socket,os,sys,HTMLParser,oembed,urllib2,urllib,threading;from ircutils import format
 import xml.etree.ElementTree as ET
 import lxml.html
 
@@ -596,13 +596,13 @@ if event.command in ['PRIVMSG']:
     if event.command.lower() in ['~lu']:
         if event.target!=self.nickname:
             text='Current Users:\n{}'.format('\n'.join(self.channels[event.target].user_list))
-            try:
-                file=open(self.config.userlistfolder + event.target + '.txt', 'w')
-                file.write(text)
-                file.close()
-                self.send_message(event.respond, 'http://comeinside.us/userlist/{}.txt'.format(event.target))
-            except:
-                self.send_message(event.respond, "Error writing to file.")
+            #try:
+            file=open(self.config.userlistfolder + event.target + '.txt', 'w')
+            file.write(text)
+            file.close()
+            self.send_message(event.respond, 'http://comeinside.us/userlists/{}.txt'.format(urllib.quote_plus(event.target)))
+            #except:
+            #    self.send_message(event.respond, "Error writing to file.")
         else:
             self.send_message(event.respond, "Cannot list users a pm.")
 
