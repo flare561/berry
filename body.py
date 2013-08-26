@@ -594,7 +594,7 @@ if event.command in ['PRIVMSG']:
 
     #listusers for those steam guys.
     if event.command.lower() in ['~lu']:
-        if event.target==self.nickname:
+        if event.target!=self.nickname:
             text='Current Users:\n{}'.format('\n'.join(self.channels[event.target].user_list))
             try:
                 file=open(self.config.userlistfolder + event.target + '.txt', 'w')
