@@ -490,14 +490,14 @@ if event.command in ['PRIVMSG']:
     #Emotes!
     if event.command.lower() in [x+'emote' for x in self.config.prefixes]:
         event.params = event.params.split()[0]
-        self.send_message(event.respond, 'http://comeinside.us/emote/{}/'.format(event.params.replace('!', '_excl_').replace(':', '_colon_')))
+        self.send_message(event.respond, 'http:///comeinside.org/emote/{}/'.format(event.params.replace('!', '_excl_').replace(':', '_colon_')))
 
     if config.autoemote:
         exp = re.compile('\[\]\(/([a-zA-Z0-9-!:]*)(?: ".*")?\)')
         matches = exp.findall(event.message)
         response = ""
         for x in matches:
-            response += 'http://comeinside.us/emote/{}/ '.format(x.replace('!', '_excl_').replace(':', '_colon_'))
+            response += 'http://comeinside.org/emote/{}/ '.format(x.replace('!', '_excl_').replace(':', '_colon_'))
         self.send_message(event.respond, response.rstrip())
 
 
@@ -600,7 +600,7 @@ if event.command in ['PRIVMSG']:
             file=open(self.config.userlistfolder + event.target + '.txt', 'w')
             file.write(text)
             file.close()
-            self.send_message(event.respond, 'http://comeinside.us/userlists/{}.txt'.format(urllib.quote_plus(event.target)))
+            self.send_message(event.respond, 'http://comeinside.org/userlists/{}.txt'.format(urllib.quote_plus(event.target)))
             #except:
             #    self.send_message(event.respond, "Error writing to file.")
         else:
