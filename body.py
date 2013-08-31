@@ -528,7 +528,7 @@ if event.command in ['PRIVMSG']:
     #DNS
     if event.command.lower() in [x+'dns' for x in self.config.prefixes]:
         try:
-            records = socket.getaddrinfo(event.params, 80)
+            records = socket.getaddrinfo(event.params.split(' ')[0], 80)
             addresses = set([x[4][0] for x in records])
             self.send_message(event.respond, " ".join(addresses))
         except:
@@ -591,20 +591,6 @@ if event.command in ['PRIVMSG']:
     #Implying
     if event.command.lower() in [x+'implying' for x in self.config.prefixes]:
         self.send_message(event.respond, format.color(">Implying " + event.params, format.GREEN))
-
-    #listusers for those steam guys.
-    if event.command.lower() in ['~lu']:
-        if event.target!=self.nickname:
-            text='Current Users:\n{}'.format('\n'.join(self.channels[event.target].user_list))
-            #try:
-            file=open(self.config.userlistfolder + event.target + '.txt', 'w')
-            file.write(text)
-            file.close()
-            self.send_message(event.respond, 'http://comeinside.org/userlists/{}.txt'.format(urllib.quote_plus(event.target)))
-            #except:
-            #    self.send_message(event.respond, "Error writing to file.")
-        else:
-            self.send_message(event.respond, "Cannot list users a pm.")
 
     #dA info fetcher
     damatch=re.compile('((?:(?:https?|ftp|file)://|www\.|ftp\.)(?:\([-A-Z0-9+&@#/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#/%=~_|$?!:,.]*\)|[A-Z0-9+&@#/%=~_|$]))', re.I)
