@@ -142,7 +142,7 @@ if event.command in ['PRIVMSG']:
 
 
     #new guy
-    if event.command.lower() in self._prefix('newguy') or event.command.lower() in self._prefix('oldguy'):
+    if event.command.lower() in self._prefix('newguy','oldguy'):
         self.send_message(event.respond, 
             u'{}, please enjoy the following image albums http://imgur.com/a/F2XQv http://imgur.com/a/wJmdV http://imgur.com/a/wVDx6 http://imgur.com/a/ueAHb http://imgur.com/a/h2xJa http://imgur.com/a/hEuEd'.format(
                 event.params
