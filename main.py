@@ -13,6 +13,12 @@ class q(bot.SimpleBot):
     except:
       print "ERROR",str(sys.exc_info())
       print traceback.print_tb(sys.exc_info()[2])
+  def _prefix(self,*i):
+    output=[]
+    for x in i:
+      output.extend([z+x for z in self.config.prefixes])
+    return output
+
 
 class Config:
     def __init__(self, fileName):
