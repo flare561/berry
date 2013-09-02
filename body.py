@@ -12,7 +12,7 @@ if event.command in ['PRIVMSG']:
     event.command=event.message.split(' ')[0]
 
     if (event.command[:1] == '<' and event.command[-1:] == '>'):
-    #if (event.command[-1:] == ':' and event.source == 'Sweetie'):
+    #if (event.command[-1:] == ':' and event.source == 'S'):
         try: event.command = event.message.split(' ', 2)[1]
         except: event.command = ''
         try: event.params=event.message.split(' ',2)[2]
