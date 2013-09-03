@@ -493,10 +493,13 @@ if event.command in ['PRIVMSG']:
         self.send_message(event.respond, 'http:///comeinside.org/emote/{}/'.format(event.params.replace('!', '_excl_').replace(':', '_colon_')))
 
     if config.autoemote:
-        exp = re.compile('\[\]\(/([a-zA-Z0-9-!:]*)(?: ".*")?\)')
+        exp = re.compile('(?:\[\]\(/([a-zA-Z0-9-!:]*)(?: ".*")?\))|(?:\\\\([a-zA-Z0-9-!:]*)(?: ".*")?)')
         matches = exp.findall(event.message)
+        emotes = []
+        emotes.extend([e[1] for e in matches if e[1] != ''])
+        emotes.extend([e[0] for e in matches if e[0] != ''])
         response = ""
-        for x in matches:
+        for x in emotes:
             response += 'http://comeinside.org/emote/{}/ '.format(x.replace('!', '_excl_').replace(':', '_colon_'))
         self.send_message(event.respond, response.rstrip())
 
