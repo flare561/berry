@@ -30,8 +30,13 @@ if event.command in ['PRIVMSG']:
     #Initialize the event
     event.command=event.message.split(' ')[0]
 
-    if (event.command[:1] == '<' and event.command[-1:] == '>'):
-    #if (event.command[-1:] == ':' and event.source == 'S'):
+    steamNick = False
+    if (self.config.raribot):
+        steamNick = (event.command[-1:] == ':' and event.source == 'S')
+    else:
+        steamNick = (event.command[:1] == '<' and event.command[-1:] == '>')
+
+    if steamNick:
         try: event.command = event.message.split(' ', 2)[1]
         except: event.command = ''
         try: event.params=event.message.split(' ',2)[2]
@@ -484,7 +489,7 @@ if event.command in ['PRIVMSG']:
         if len(terms) > 0:
             query=srmatch.sub("", query)
             query=query.rstrip().lstrip()
-            terms.append(query)
+        terms.append(query)
         j=requests.get(
             'http://www.reddit.com/search.json',
             params=dict(
@@ -507,11 +512,11 @@ if event.command in ['PRIVMSG']:
                 )
 
     #Emotes!
-    if event.command.lower() in self._prefix('emote'):
+    if event.command.lower() in self._prefix('emote') and not self.config.raribot:
         event.params = event.params.split()[0]
         self.send_message(event.respond, 'http:///comeinside.org/emote/{}/'.format(event.params.replace('!', '_excl_').replace(':', '_colon_')))
 
-    if config.autoemote:
+    if config.autoemote and not self.config.raribot:
         exp = re.compile('(?:\[\]\(/([a-zA-Z0-9-!:]*)(?: ".*")?\))|(?:\\\\\\\\([a-zA-Z0-9-!:]*)(?: ".*")?)')
         matches = exp.findall(event.message)
         emotes = []
@@ -523,7 +528,7 @@ if event.command in ['PRIVMSG']:
         self.send_message(event.respond, response.rstrip())
 
 
-    if event.command.lower() in self._prefix('autoemote'):
+    if event.command.lower() in self._prefix('autoemote') and not self.config.raribot:
         config.autoemote = not config.autoemote
         self.config.setEmote(config.autoemote) 
         self.send_message(event.respond, "Setting auto emote to " + str(config.autoemote))
