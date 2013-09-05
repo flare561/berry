@@ -89,6 +89,13 @@ class Config:
             config.set('DEFAULT', 'prefixes', ",".join(self.prefixes))
             modified = True
 
+        if config.has_option('DEFAULT', 'raribot'):
+            self.raribot = config.getboolean("DEFAULT", "raribot")
+        else: 
+            self.raribot=False
+            config.set('DEFAULT', 'raribot', self.debug)
+            modified = True
+
         if modified:
             with open(self.fileName, "wb") as configFileLocation:
                 config.write(configFileLocation)
