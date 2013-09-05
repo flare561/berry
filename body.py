@@ -13,7 +13,7 @@ if event.command in ['PRIVMSG']:
 
     steamNick = False
     if (self.config.raribot):
-        steamNick = (event.command[-1:] == ':' and event.source == 'flare')
+        steamNick = (event.command[-1:] == ':' and event.source == 'S')
     else:
         steamNick = (event.command[:1] == '<' and event.command[-1:] == '>')
 
