@@ -6,7 +6,6 @@ import lxml.html
 #admin controls n' shit son
 self.adminhosts=[
     'Canterlot.castle'.lower(), #pwny
-    'no-ohj.8gg.ip89lc.IP', #speedy
     'The.All.Mighty.Andy'.lower(),#andy
 ]
 
@@ -18,7 +17,7 @@ if event.host and (self.adminhosts and event.host.lower() in self.adminhosts) an
     if event.message.split(' ',1)[0]=="~unbanhost":
         if self.bannedhosts:self.bannedhosts.discard(event.message.split(' ',1)[1].lower())
         else:pass
-if self.bannedhosts and event.host and event.host.lower() in self.bannedhosts: return
+if self.bannedhosts and event.host and event.host.lower() in self.bannedhosts: event.command="NULL"
 
 
 #Invite Responder
