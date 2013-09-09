@@ -1,0 +1,24 @@
+[DEFAULT]
+debug=False
+
+;the bot's nickname
+nick=Berry
+
+;server it will connect to
+server=irc.example.com
+
+;channels it will idle on after joining
+channels=#somechannel
+
+;key for imgur and wolfram apis
+;imgurKey=<yourkey>
+;wolframKey=<yourkey>
+
+;will it automatically link to emotes?
+autoemote=True
+
+;command prefixes
+prefixes=~,!
+
+;hosts of bot admins
+adminhosts=your.host.example.net
