@@ -517,7 +517,7 @@ if event.command in ['PRIVMSG']:
         self.send_message(event.respond, response.rstrip())
 
     if event.command.lower() in self._prefix('es') and not self.config.raribot:
-        self.send_message(event.respond, 'http://comeinside.org/emote/#{} '.format(event.params))
+        self.send_message(event.respond, 'http://comeinside.org/emote/#{} '.format(urllib.quote(event.params)))
 
     #Subreddit links!
     if not event.command.lower() in self._prefix('rs'):
