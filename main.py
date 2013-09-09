@@ -70,13 +70,6 @@ class Config:
             config.set('DEFAULT', 'wolframKey', self.wolframKey)
             modified = True
 
-        if config.has_option('DEFAULT', 'autoemote'):
-            self.autoemote = config.getboolean("DEFAULT", "autoemote")
-        else: 
-            self.autoemote = True
-            config.set('DEFAULT', 'autoemote', self.autoemote)
-            modified = True
-
         if config.has_option('DEFAULT', 'prefixes'):
             self.prefixes = config.get("DEFAULT", "prefixes").split(',')
         else: 
@@ -110,13 +103,6 @@ class Config:
             with open(self.fileName, "wb") as configFileLocation:
                 config.write(configFileLocation)
 
-
-    def setEmote(self, enabled):
-        configFile = ConfigParser.RawConfigParser()
-        configFile.read(self.fileName)
-        configFile.set("DEFAULT", "autoemote", enabled)
-        with open(self.fileName, "wb") as configFileLocation:
-            configFile.write(configFileLocation)
 
     def setBannedHosts(self, bannedhosts):
         configFile = ConfigParser.RawConfigParser()

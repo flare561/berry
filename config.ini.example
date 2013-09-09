@@ -14,8 +14,6 @@ channels=#somechannel
 ;imgurKey=<yourkey>
 ;wolframKey=<yourkey>
 
-;will it automatically link to emotes?
-autoemote=True
 
 ;command prefixes
 prefixes=~,!

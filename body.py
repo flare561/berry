@@ -253,7 +253,6 @@ if event.command in ['PRIVMSG']:
             isup="Usage: ~isup <site> used to check if a given website is up using isup.me",
             gimg="Usage: ~gimg <terms> Used to search google images with the given terms",
             rs="Usage: ~rs <terms> Used to search for results on reddit, can narrow down to sub or user with /u/<user> or /r/<subreddit>",
-            emote="Usage: ~emote <emote> Used to show an emote in the browser, relies on BPM. Example: ~emote vseyeroll",
             imply="Usage: ~imply <text> Used to imply things.",
             dns="Usage: ~dns <domain> Used to check which IPs are associated with a DNS listing",
             imdb="Usage: ~imdb <film> Used to search IMDB for the listing for a film.",
@@ -505,11 +504,7 @@ if event.command in ['PRIVMSG']:
                 )
 
     #Emotes!
-    if event.command.lower() in self._prefix('emote') and not self.config.raribot:
-        event.params = event.params.split()[0]
-        self.send_message(event.respond, 'http:///comeinside.org/emote/{}/'.format(event.params.replace('!', '_excl_').replace(':', '_colon_')))
-
-    if config.autoemote and not self.config.raribot:
+    if not self.config.raribot:
         exp = re.compile('(?:\[\]\(/([a-zA-Z0-9-!:]*)(?: ".*")?\))|(?:\\\\\\\\([a-zA-Z0-9-!:]*)(?: ".*")?)')
         matches = exp.findall(event.message)
         emotes = []
@@ -520,11 +515,6 @@ if event.command in ['PRIVMSG']:
             response += 'http://comeinside.org/emote/{}/ '.format(x.replace('!', '_excl_').replace(':', '_colon_'))
         self.send_message(event.respond, response.rstrip())
 
-
-    if event.command.lower() in self._prefix('autoemote') and not self.config.raribot:
-        config.autoemote = not config.autoemote
-        self.config.setEmote(config.autoemote) 
-        self.send_message(event.respond, "Setting auto emote to " + str(config.autoemote))
 
 
     #Subreddit links!
