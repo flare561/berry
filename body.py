@@ -258,7 +258,8 @@ if event.command in ['PRIVMSG']:
             imdb="Usage: ~imdb <film> Used to search IMDB for the listing for a film.",
             implying="Usage: ~implying <implications> turns text green and adds >Implying",
             clop="Usage: ~clop <optional extra tags> Searches e621 for a random image with the tags rating:e and my_little_pony",
-            truerandjur="Usage: ~truerandjur <number> Used to post random imgur pictures, from randomly generated IDs, takes a little while to find images so be patient, <number> defines the number of results with a max of 10"
+            truerandjur="Usage: ~truerandjur <number> Used to post random imgur pictures, from randomly generated IDs, takes a little while to find images so be patient, <number> defines the number of results with a max of 10",
+            es="Usage: ~es <query> searches for emotes on the PMV. Can be any valid search for BPM. Example: ~es sr:comeinside +pp"
             )
         if len(event.params) <= 0:
             self.send_message(
@@ -515,7 +516,8 @@ if event.command in ['PRIVMSG']:
             response += 'http://comeinside.org/emote/{}/ '.format(x.replace('!', '_excl_').replace(':', '_colon_'))
         self.send_message(event.respond, response.rstrip())
 
-
+    if event.command.lower() in self._prefix('es') and not self.config.raribot:
+        self.send_message(event.respond, 'http://comeinside.org/emote/#{} '.format(event.params))
 
     #Subreddit links!
     if not event.command.lower() in self._prefix('rs'):
