@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 import lxml.html
 
 self.bannedhosts=self.config.getBannedHosts()
-if event.host and (event.host.lower() in [s.lower() for s in self.config.adminhosts]) and event.message:
+if event.host and (event.host.lower() in [s.lower() for s in self.config.adminhosts]) and hasattr(event, 'message'):
     if event.message.split(' ',1)[0] in self._prefix("banhost"):
         if self.bannedhosts:self.bannedhosts.append(event.message.split(' ',1)[1].lower())
         else:self.bannedhosts=set([event.message.split(' ',1)[1].lower()])
@@ -521,15 +521,18 @@ if event.command in ['PRIVMSG']:
 
     #Subreddit links!
     if not event.command.lower() in self._prefix('rs'):
-        srmatch=re.compile('(?<!reddit.com)/(r|u)/(\w+(?:\+\w+)*(?:/\S+)*)', re.I)
+        srmatch=re.compile('(?<!\S)/(r|u)/(\w+(?:\+\w+)*(?:/\S+)*)', re.I)
         srmatches = srmatch.findall(event.message)
-        submatches=[s[1] for s in srmatches if s[0] == 'r']
+        subrootmatches=[s[1] for s in srmatches if s[0] == 'r' and not '/' in s[1]]
+        suburlmatches=[s[1] for s in srmatches if s[0] == 'r' and '/' in s[1]]
         usermatches=[s[1] for s in srmatches if s[0] == 'u']
         links = []
-        if len(submatches) > 0:
-            links.append("http://reddit.com/r/{}".format('+'.join(submatches)))
-        if len(usermatches) > 0:
-            links.append("http://reddit.com/u/{}".format('+'.join(usermatches)))
+        if len(subrootmatches) > 0:
+            links.append("http://reddit.com/r/{}".format('+'.join(subrootmatches)))
+        for link in suburlmatches:
+            links.append("http://reddit.com/r/{}".format(link))
+        for link in usermatches:
+            links.append("http://reddit.com/u/{}".format(link))
         if len(links) > 0:
             self.send_message(event.respond, ' '.join(links))
 
