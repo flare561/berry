@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 import lxml.html
 
 self.bannedhosts=self.config.getBannedHosts()
-if event.host and (event.host.lower() in [s.lower() for s in self.config.adminhosts]) and hasattr(event, 'message'):
+if hasattr(event, 'host') and (event.host is not None) and (event.host.lower() in [s.lower() for s in self.config.adminhosts]) and hasattr(event, 'message'):
     if event.message.split(' ',1)[0] in self._prefix("banhost"):
         if self.bannedhosts:self.bannedhosts.append(event.message.split(' ',1)[1].lower())
         else:self.bannedhosts=set([event.message.split(' ',1)[1].lower()])
@@ -11,7 +11,7 @@ if event.host and (event.host.lower() in [s.lower() for s in self.config.adminho
         if self.bannedhosts:self.bannedhosts.remove(event.message.split(' ',1)[1].lower())
         else:pass
     self.config.setBannedHosts(self.bannedhosts)
-if self.bannedhosts and event.host and event.host.lower() in self.bannedhosts: event.command="NULL"
+if hasattr(self, 'bannedhosts') and hasattr(event, 'host') and (event.host is not None) and event.host.lower() in self.bannedhosts: event.command="NULL"
 
 
 #Invite Responder
@@ -64,7 +64,6 @@ if event.command in ['PRIVMSG']:
             if j.has_key('duration'):out.append(str(datetime.timedelta(seconds=j[u'duration'])))
             out=u' | '.join(out)
             self.send_message(event.respond,out.encode('utf-8','replace'))
-            print x
         except:
             print "ERROR\n",traceback.print_tb(sys.exc_info()[2]),"\nERROREND"
 
@@ -91,20 +90,24 @@ if event.command in ['PRIVMSG']:
     
     #Google Search
     if event.command.lower() in self._prefix('g'):
-        j=requests.get(
-            'https://ajax.googleapis.com/ajax/services/search/web',
-            params=dict(
-                v="1.0",
-                q=event.params
+        try:
+            j=requests.get(
+                'https://ajax.googleapis.com/ajax/services/search/web',
+                params=dict(
+                    v="1.0",
+                    q=event.params
+                )
+            ).json()[u'responseData'][u'results'][0]
+            self.send_message(
+                event.respond,
+                u'{}: {}'.format(
+                    HTMLParser.HTMLParser().unescape(j[u'titleNoFormatting']),
+                    j[u'unescapedUrl']
+                ).encode('utf-8','replace')
             )
-        ).json()[u'responseData'][u'results'][0]
-        self.send_message(
-            event.respond,
-            u'{}: {}'.format(
-                HTMLParser.HTMLParser().unescape(j[u'titleNoFormatting']),
-                j[u'unescapedUrl']
-            ).encode('utf-8','replace')
-        )
+        except:
+            print "ERROR\n",traceback.print_tb(sys.exc_info()[2]),"\nERROREND"
+            self.send_message(event.respond,"No results")
 
     #testing command, part channel
     if event.command.lower() in self._prefix('part'):
@@ -451,20 +454,24 @@ if event.command in ['PRIVMSG']:
 
     #Google Image Search
     if event.command.lower() in self._prefix('gimg'):
-        j=requests.get(
-            'https://ajax.googleapis.com/ajax/services/search/images',
-            params=dict(
-                v="1.0",
-                q=event.params
+        try:
+            j=requests.get(
+                'https://ajax.googleapis.com/ajax/services/search/images',
+                params=dict(
+                    v="1.0",
+                    q=event.params
+                )
+            ).json()[u'responseData'][u'results'][0]
+            self.send_message(
+                event.respond,
+                u'{}: {}'.format(
+                    HTMLParser.HTMLParser().unescape(j[u'titleNoFormatting']),
+                    j[u'unescapedUrl']
+                ).encode('utf-8','replace')
             )
-        ).json()[u'responseData'][u'results'][0]
-        self.send_message(
-            event.respond,
-            u'{}: {}'.format(
-                HTMLParser.HTMLParser().unescape(j[u'titleNoFormatting']),
-                j[u'unescapedUrl']
-            ).encode('utf-8','replace')
-        )
+        except:
+            print "ERROR\n",traceback.print_tb(sys.exc_info()[2]),"\nERROREND"
+            self.send_message(event.respond, "No results.")
 
     #Reddit Search
     if event.command.lower() in self._prefix('rs'):
