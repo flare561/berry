@@ -25,19 +25,22 @@ if event.command in ['PRIVMSG']:
 
     steamNick = False
     if (self.config.raribot):
-        steamNick = (event.command[-1:] == ':' and event.source == 'S')
+        if (event.command[-1:] == ':' and event.source == 'S'):
+            try: event.command = event.message.split(' ', 2)[1]
+            except: event.command = ''
+            try: event.params=event.message.split(' ',2)[2]
+            except: event.params = ''
+        else:
+            try:   event.params=event.message.split(' ',1)[1]
+            except:event.params=''
     else:
-        steamNick = (event.command[:1] == '<' and event.command[-1:] == '>')
-
-    if steamNick:
-        try: event.command = event.message.split(' ', 2)[1]
-        except: event.command = ''
-        try: event.params=event.message.split(' ',2)[2]
-        except: event.params = ''
-    else:
+        x=re.compile('^<.*> ')
+        if len(x.findall(event.message)) > 0:
+            event.message = x.sub('', event.message)
+            event.command = event.message.split(' ')[0]
         try:   event.params=event.message.split(' ',1)[1]
         except:event.params=''
-     
+
     #Select Roller
     if event.command in self._prefix('select') and len(event.params)>0:
         self.send_message(event.respond,'Select: {}'.format(random.choice(event.params.split(' '))))
