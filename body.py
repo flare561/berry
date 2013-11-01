@@ -210,16 +210,12 @@ if event.command in ['PRIVMSG']:
             count = 10
         #this is gross, why do you let me do this python?
         def findImages(irc, count, respond, clientID):
-            import random, requests
+            import random, requests, string
             images=[]
-            foundImages = 0
-            while foundImages < count:
-                randID = ""
-                for x in range(0, 5): 
-                    randID += random.choice("1234567890qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM")
+            while len(images) < count:
+                randID = ''.join(random.choice(string.ascii_letters+string.digits) for x in range(0,5))
                 j=requests.get("https://api.imgur.com/3/image/" + randID, headers=dict(Authorization="Client-ID " + clientID)).json()
                 if j[u'status'] == 200:
-                    foundImages += 1
                     images.append(j[u'data'][u'id'])
             album=requests.post('https://api.imgur.com/3/album/', 
                     headers=dict(
