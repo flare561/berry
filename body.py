@@ -519,7 +519,7 @@ if event.command in ['PRIVMSG']:
         emotes.extend([e[0] for e in matches if e[0] != ''])
         response = ""
         for x in emotes:
-            response += 'http://comeinside.org/emote/{}/ '.format(x.replace('!', '_excl_').replace(':', '_colon_'))
+            response += 'http://comeinside.org/emote/{}/ '.format(urllib.quote(x))
         self.send_message(event.respond, response.rstrip())
 
     if event.command.lower() in self._prefix('es') and not self.config.raribot:
