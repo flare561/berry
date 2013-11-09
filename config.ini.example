@@ -2,21 +2,26 @@
 debug=False
 
 ;the bot's nickname
-nick=Berry
+nick = Berry
 
 ;server it will connect to
-server=irc.example.com
+server = irc.example.com
 
 ;channels it will idle on after joining
-channels=#somechannel
+channels = #somechannel,#anotherchannel
 
 ;key for imgur and wolfram apis
-;imgurKey=<yourkey>
-;wolframKey=<yourkey>
-
-
-;command prefixes
-prefixes=~,!
+;imgurKey = <yourkey>
+;wolframKey = <yourkey>
 
 ;hosts of bot admins
-adminhosts=your.host.example.net
+adminhosts = your.host.example.net,my.host.example.net
+
+;command prefixes
+prefixes = ~,!
+
+;switch between mlas1 and CI operating modes
+raribot = <True|False>
+
+;list of hosts banned from bot
+bannedhosts = your.host.example.net,my.host.example.net
