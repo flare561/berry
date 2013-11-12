@@ -34,12 +34,44 @@ if event.command in ['PRIVMSG']:
             try:   event.params=event.message.split(' ',1)[1]
             except:event.params=''
     else:
-        x=re.compile('^<.*> ')
-        if len(x.findall(event.message)) > 0:
+        x=re.compile('^<(.*) ?> ')
+        matches=x.findall(event.message)
+        if len(matches) > 0:
+            event.source = matches[0]
             event.message = x.sub('', event.message)
             event.command = event.message.split(' ')[0]
         try:   event.params=event.message.split(' ',1)[1]
         except:event.params=''
+
+    #substitution
+    substmatch=re.compile('(?:\s|^)s/([^/]+)/([^/]+)/')
+    substmatches=substmatch.findall(event.message)
+    if len(substmatches) > 0:
+        try:
+            usernamematch = re.findall('^[a-zA-Z0-9_\-\\\[\]\{}\^`\|]+', event.message)
+            if len(usernamematch) > 0 and not event.message[:2].lower() == 's/':
+                username = usernamematch[0]
+                newmessage = self.lastmessage[username].replace(substmatches[0][0], substmatches[0][1])
+                if newmessage != self.lastmessage[username]:
+                    self.send_message(event.respond, '{} thinks {} meant to say: "{}"'.format(event.source, username, newmessage))
+                else:
+                    self.send_message(event.respond, "Couldn't find anything to replace")
+            else:
+                username = event.source
+                newmessage = self.lastmessage[username].replace(substmatches[0][0], substmatches[0][1])
+                if newmessage != self.lastmessage[username]:
+                    self.send_message(event.respond, '{} meant to say: "{}"'.format(event.source, newmessage))
+                else:
+                    self.send_message(event.respond, "Couldn't find anything to replace")
+
+        except:
+            self.send_message(event.respond, "Couldn't find anything to replace")
+            raise
+
+    #required for substitution
+    if not hasattr(self, 'lastmessage'):
+        self.lastmessage = requests.structures.CaseInsensitiveDict()
+    self.lastmessage[event.source]=event.message
 
     #Select Roller
     if event.command in self._prefix('select') and len(event.params)>0:
