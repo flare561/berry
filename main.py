@@ -98,6 +98,12 @@ class Config:
             config.set('DEFAULT', 'bannedhosts', ",".join(self.bannedhosts))
             modified = True
 
+        if config.has_option('DEFAULT', 'traktKey'):
+            self.traktKey = config.get("DEFAULT", "traktKey")
+        else: 
+            self.traktKey = ''
+            config.set('DEFAULT', 'traktKey', self.traktKey)
+            modified = True
 
         if modified:
             with open(self.fileName, "wb") as configFileLocation:

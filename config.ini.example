@@ -25,3 +25,6 @@ raribot = <True|False>
 
 ;list of hosts banned from bot
 bannedhosts = your.host.example.net,my.host.example.net
+
+;API key for trakt
+;traktKey=<yourkey>
