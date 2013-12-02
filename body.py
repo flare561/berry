@@ -334,10 +334,20 @@ if event.command in ['PRIVMSG']:
             d=x.xpath('//pod[@primary="true"]/subpod/plaintext')
 
             results=[o.text.replace('\n', '').encode('utf-8', 'replace') for o in d]
-            results.append("http://www.wolframalpha.com/input/?i={}".format(urllib.quote(event.params, '')))
+
+            if len(results) < 1:
+                responseStr = "No results available, try the query page:"
+            else:
+                responseStr = '; '.join(results)
+
+            if len(responseStr) > 384:
+                responseStr = responseStr[:384] + "..."
+
+            responseStr += " http://www.wolframalpha.com/input/?i={}".format(urllib.quote(event.params, ''))
+
             self.send_message(
                 event.respond,
-                ' ; '.join(results)
+                responseStr
             )
         except:
             self.send_message(
