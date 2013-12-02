@@ -1,5 +1,5 @@
 import HTMLParser,re,urllib,json,random,requests,datetime,socket,os,sys,HTMLParser,oembed,urllib2,urllib,threading;from ircutils import format
-import xml.etree.ElementTree as ET
+import lxml.etree as etree
 import lxml.html
 
 self.bannedhosts=self.config.getBannedHosts()
@@ -329,23 +329,15 @@ if event.command in ['PRIVMSG']:
                     appid=self.config.wolframKey
                     )
                 ).text
-            results =[]
-            root = ET.fromstring(s.encode('utf-8', errors='replace'))
-            for child in root.findall('pod'):
-                if child.attrib.has_key("primary"):
-                    if child.attrib["primary"] == 'true':
-                        results.append(child.find('subpod').find('plaintext').text.replace('\n', ' '))
 
-            if len(results) < 1:
-                responseStr = "No results available, try the query page:"
-            else:
-                responseStr = '; '.join(results).encode('utf-8', errors='replace')
-            if len(responseStr) > 384:
-                responseStr = responseStr[:384] + "..."
-            responseStr += " http://www.wolframalpha.com/input/?i={}".format(urllib.quote(event.params, ''))
+            x=etree.fromstring(s.encode('UTF-8', 'replace'))
+            d=x.xpath('//pod[@primary="true"]/subpod/plaintext')
+
+            results=[o.text.replace('\n', '').encode('utf-8', 'replace') for o in d]
+            results.append("http://www.wolframalpha.com/input/?i={}".format(urllib.quote(event.params, '')))
             self.send_message(
                 event.respond,
-                responseStr
+                ' ; '.join(results)
             )
         except:
             self.send_message(
