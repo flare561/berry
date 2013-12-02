@@ -316,6 +316,10 @@ if event.command in ['PRIVMSG']:
                 response
             )
 
+    if event.command.lower() in self._prefix('weather'):
+        event.command = self.config.prefixes[0] + 'wolf'
+        event.params = 'weather ' + event.params
+
     #Wolfram Alpha
     if event.command.lower() in self._prefix('wolf'):
         try:
