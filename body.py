@@ -15,7 +15,7 @@ if hasattr(self, 'bannedhosts') and hasattr(event, 'host') and (event.host is no
 
 
 #Invite Responder
-if event.command=="INVITE":
+if event.command == "INVITE":
     self.join_channel(event.params[0])
  
 #AAAAAAAA
@@ -24,8 +24,8 @@ if event.command in ['PRIVMSG']:
     event.command=event.message.split(' ')[0]
 
     steamNick = False
-    if (self.config.raribot):
-        if (event.command[-1:] == ':' and event.source == 'S'):
+    if self.config.raribot:
+        if event.command[-1:] == ':' and event.source == 'S':
             try: event.command = event.message.split(' ', 2)[1]
             except: event.command = ''
             try: event.params=event.message.split(' ',2)[2]
@@ -44,7 +44,7 @@ if event.command in ['PRIVMSG']:
         except:event.params=''
 
     #substitution
-    substmatch=re.compile('(?:\s|^)s/([^/]+)/([^/]+)/')
+    substmatch=re.compile('(?:\s|^)s/([^/]+)/([^/]+)/?')
     substmatches=substmatch.findall(event.message)
     if len(substmatches) > 0:
         try:
@@ -454,7 +454,7 @@ if event.command in ['PRIVMSG']:
             wait=datetime.datetime(year=2013, month=11, day=23, hour=15, minute=30, tzinfo=UTC()) - datetime.datetime.now(LocalTZ())
         else:
             airdate=datetime.datetime.now(LocalTZ()) + timedelta((12 - datetime.datetime.now(LocalTZ()).weekday()) % 7)
-            wait = datetime.datetime(year=airdate.year, month=airdate.month, day=airdate.day, hour=15, minute=30, tzinfo=UTC()) - datetime.datetime.now(LocalTZ())
+            wait = datetime.datetime(year=airdate.year, month=airdate.month, day=airdate.day, hour=14, minute=30, tzinfo=UTC()) - datetime.datetime.now(LocalTZ())
             
         self.send_message(
             event.respond,
@@ -762,7 +762,7 @@ if event.command in ['PRIVMSG']:
             tpbHTML = lxml.html.fromstring(tpb)
             tpbHTML.make_links_absolute("http://thepiratebay.sx")
             links = tpbHTML.iterlinks()
-            tpbLink = '';
+            tpbLink = ''
             while tpbLink == '':
                 currentLink = next(links)[2]
                 if currentLink.startswith("http://thepiratebay.sx/torrent/"):
@@ -770,6 +770,27 @@ if event.command in ['PRIVMSG']:
             self.send_message(event.respond, tpbLink[:tpbLink.rfind('/')+1])
         except:
             self.send_message(event.respond, "No results, or TPB is down")
+
+    #Bullshit ensues, MAL is now an alias for a google search.
+    if event.command.lower() in self._prefix('mal'):
+        try:
+            j=requests.get(
+                'https://ajax.googleapis.com/ajax/services/search/web',
+                params=dict(
+                    v="1.0",
+                    q=event.params + " site:myanimelist.net"
+                )
+            ).json()[u'responseData'][u'results'][0]
+            self.send_message(
+                event.respond,
+                u'{}: {}'.format(
+                    HTMLParser.HTMLParser().unescape(j[u'titleNoFormatting']),
+                    j[u'unescapedUrl']
+                ).encode('utf-8','replace')
+            )
+        except:
+            print "ERROR\n",traceback.print_tb(sys.exc_info()[2]),"\nERROREND"
+            self.send_message(event.respond,"No results")
 
     #Implying
     if event.command.lower() in self._prefix('implying'):
