@@ -810,7 +810,7 @@ if event.command in ['PRIVMSG']:
     for x in damatches:
         try:
             consumer = oembed.OEmbedConsumer()
-            endpoint = oembed.OEmbedEndpoint('http://backend.deviantart.com/oembed', ['http://*.deviantart.com/art/*', 'http://fav.me/*', 'http://sta.sh/*', 'http://*.deviantart.com/*#/d*'])
+            endpoint = oembed.OEmbedEndpoint('http://backend.deviantart.com/oembed', ['http://fav.me/*', 'http://sta.sh/*', 'http://*.deviantart.com/*#/d*'])
             consumer.addEndpoint(endpoint)
             response = consumer.embed(x).getData()
             out=[]
