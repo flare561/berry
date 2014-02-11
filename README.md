@@ -11,6 +11,8 @@ requests http://docs.python-requests.org/en/latest/
 
 oembed https://github.com/abarmat/python-oembed
 
+wikipedia https://github.com/goldsmith/Wikipedia
+
 and
 
 IRCUtils http://dev.guardedcode.com/projects/ircutils/

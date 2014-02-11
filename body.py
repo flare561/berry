@@ -1,6 +1,7 @@
 import HTMLParser,re,urllib,json,random,requests,datetime,socket,os,sys,HTMLParser,oembed,urllib2,urllib,threading;from ircutils import format
 import lxml.etree as etree
 import lxml.html
+import wikipedia as wiki
 
 self.bannedhosts=self.config.getBannedHosts()
 if hasattr(event, 'host') and (event.host is not None) and (event.host.lower() in [s.lower() for s in self.config.adminhosts]) and hasattr(event, 'message'):
@@ -23,25 +24,17 @@ if event.command in ['PRIVMSG']:
     #Initialize the event
     event.command=event.message.split(' ')[0]
 
-    steamNick = False
-    if self.config.raribot:
-        if event.command[-1:] == ':' and event.source == 'S':
-            try: event.command = event.message.split(' ', 2)[1]
+    if self.config.raribot and event.source == 'S':
+            try: temp = event.message.split(': ', 2)[1]
+            except: temp = '';
+            try: event.command = temp.split(' ', 2)[0]
             except: event.command = ''
-            try: event.params=event.message.split(' ',2)[2]
+            try: event.params=temp.split(' ',1)[1]
             except: event.params = ''
-        else:
-            try:   event.params=event.message.split(' ',1)[1]
-            except:event.params=''
     else:
-        x=re.compile('^<(.*) ?> ')
-        matches=x.findall(event.message)
-        if len(matches) > 0:
-            event.source = matches[0]
-            event.message = x.sub('', event.message)
-            event.command = event.message.split(' ')[0]
         try:   event.params=event.message.split(' ',1)[1]
         except:event.params=''
+
 
     #substitution
     substmatch=re.compile('(?:\s|^)s/([^/]+)/([^/]+)/?')
@@ -49,20 +42,29 @@ if event.command in ['PRIVMSG']:
     if len(substmatches) > 0:
         try:
             usernamematch = re.findall('^[a-zA-Z0-9_\-\\\[\]\{}\^`\|]+', event.message)
-            if len(usernamematch) > 0 and not event.message[:2].lower() == 's/':
-                username = usernamematch[0]
-                newmessage = self.lastmessage[username].replace(substmatches[0][0], substmatches[0][1])
-                if newmessage != self.lastmessage[username]:
-                    self.send_message(event.respond, '{} thinks {} meant to say: "{}"'.format(event.source, username, newmessage))
+            if len(re.findall('m+ *e+ *o+ *w+', substmatches[0][1], re.IGNORECASE)) < 1:
+                if len(usernamematch) > 0 and not event.message[:2].lower() == 's/':
+                    username = usernamematch[0]
+                    newmessage = self.lastmessage[username].replace(substmatches[0][0], substmatches[0][1])
+                    if newmessage != self.lastmessage[username]:
+                        if not len(re.findall('m+ *e+ *o+ *w+', newmessage, re.IGNORECASE)) > 0:
+                            self.send_message(event.respond, '{} thinks {} meant to say: "{}"'.format(event.source, username, newmessage))
+                        else:
+                            self.send_message(event.respond, "Stop it.")
+                    else:
+                        self.send_message(event.respond, "Couldn't find anything to replace")
                 else:
-                    self.send_message(event.respond, "Couldn't find anything to replace")
+                    username = event.source
+                    newmessage = self.lastmessage[username].replace(substmatches[0][0], substmatches[0][1])
+                    if newmessage != self.lastmessage[username]:
+                        if not len(re.findall('m+ *e+ *o+ *w+', newmessage, re.IGNORECASE)) > 0:
+                            self.send_message(event.respond, '{} meant to say: "{}"'.format(event.source, newmessage))
+                        else:
+                            self.send_message(event.respond, "Stop it.")
+                    else:
+                        self.send_message(event.respond, "Couldn't find anything to replace")
             else:
-                username = event.source
-                newmessage = self.lastmessage[username].replace(substmatches[0][0], substmatches[0][1])
-                if newmessage != self.lastmessage[username]:
-                    self.send_message(event.respond, '{} meant to say: "{}"'.format(event.source, newmessage))
-                else:
-                    self.send_message(event.respond, "Couldn't find anything to replace")
+                self.send_message(event.respond, "Stop it")
 
         except:
             self.send_message(event.respond, "Couldn't find anything to replace")
@@ -460,7 +462,7 @@ if event.command in ['PRIVMSG']:
             wait=datetime.datetime(year=2013, month=11, day=23, hour=15, minute=30, tzinfo=UTC()) - datetime.datetime.now(LocalTZ())
         else:
             airdate=datetime.datetime.now(LocalTZ()) + timedelta((12 - datetime.datetime.now(LocalTZ()).weekday()) % 7)
-            wait = datetime.datetime(year=airdate.year, month=airdate.month, day=airdate.day, hour=14, minute=30, tzinfo=UTC()) - datetime.datetime.now(LocalTZ())
+            wait = datetime.datetime(year=airdate.year, month=airdate.month, day=airdate.day, hour=15, minute=30, tzinfo=UTC()) - datetime.datetime.now(LocalTZ())
             
         self.send_message(
             event.respond,
@@ -764,14 +766,14 @@ if event.command in ['PRIVMSG']:
     #IMDB Search
     if event.command.lower() in self._prefix('tpb'):
         try:
-            tpb = requests.get("http://thepiratebay.sx/search/{}/0/7/0".format(event.params)).text
+            tpb = requests.get("http://thepiratebay.se/search/{}/0/7/0".format(event.params)).text
             tpbHTML = lxml.html.fromstring(tpb)
-            tpbHTML.make_links_absolute("http://thepiratebay.sx")
+            tpbHTML.make_links_absolute("http://thepiratebay.se")
             links = tpbHTML.iterlinks()
             tpbLink = ''
             while tpbLink == '':
                 currentLink = next(links)[2]
-                if currentLink.startswith("http://thepiratebay.sx/torrent/"):
+                if currentLink.startswith("http://thepiratebay.se/torrent/"):
                     tpbLink = currentLink
             self.send_message(event.respond, tpbLink[:tpbLink.rfind('/')+1])
         except:
@@ -825,3 +827,18 @@ if event.command in ['PRIVMSG']:
             pass
         except urllib2.HTTPError:
             pass
+
+    if event.command.lower() in self._prefix('wiki'):
+        try:
+            responseStr = wiki.page(event.params).summary.replace('\n', ' ')
+            if len(responseStr) > 384:
+                responseStr = responseStr[:384] + "..."
+            self.send_message(event.respond, responseStr.encode('utf-8','replace'))
+        except wiki.exceptions.DisambiguationError as e:
+            responseStr = str(e).replace('\n', ', ')
+            if len(responseStr) > 384:
+                responseStr = responseStr[:384] + "..."
+            self.send_message(event.respond, responseStr)
+        except:
+            self.send_message(event.respond, "No results")
+            raise
