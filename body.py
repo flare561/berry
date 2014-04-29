@@ -201,7 +201,7 @@ if event.command in ['PRIVMSG']:
     #new guy
     if event.command.lower() in self._prefix('newguy','oldguy'):
         self.send_message(event.respond, 
-            u'{}, please enjoy the following image albums http://imgur.com/a/NFrRo http://imgur.com/a/F2XQv http://imgur.com/a/wJmdV http://imgur.com/a/wVDx6 http://imgur.com/a/ueAHb http://imgur.com/a/h2xJa http://imgur.com/a/hEuEd http://imgur.com/a/EaBpy'.format(
+            u'{}, please enjoy the following image albums http://imgur.com/a/9lbjH http://imgur.com/a/Dep0q http://imgur.com/a/87Q4d http://imgur.com/a/fyPU1'.format(
                 event.params
             ).encode('utf-8', 'replace'))
 
