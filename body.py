@@ -81,7 +81,7 @@ if event.command in ['PRIVMSG']:
  
     #Flip
     if event.command in self._prefix('flip'):
-        self.send_message(event.respond,'Flip: {}'.format(random.choice(['Heads','Tails'])))
+        self.send_message(event.respond,'Flip: {}'.format(['Heads','Tails'][random.getrandbits(1)]))
          
     #Youtube info fetcher
     ytmatch=re.compile(
