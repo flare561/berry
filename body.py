@@ -97,7 +97,7 @@ if not event.source == self.nickname:
                 t=requests.get(
                     'https://google.com/search',
                     params=dict(
-                        q='x'
+                        q=event.params
                     )
                 ).text
                 h=lxml.html.fromstring(t)
