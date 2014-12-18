@@ -97,10 +97,10 @@ if not event.source == self.nickname:
                 t=requests.get(
                     'https://google.com/search',
                     params=dict(
-                        q=event.params
+                        q='x'
                     )
                 ).text
-                h=html.fromstring(t)
+                h=lxml.html.fromstring(t)
                 elm=h.xpath("//h3[@class='r']/a")[0]
                 title=elm.text_content()
                 link = urlparse.parse_qs(urlparse.urlparse(elm.get('href')).query)['q'][0]
@@ -112,6 +112,7 @@ if not event.source == self.nickname:
                     ).encode('utf-8','replace')
                 )
             except:
+                print "ERROR",str(sys.exc_info())
                 print "ERROR\n",traceback.print_tb(sys.exc_info()[2]),"\nERROREND"
                 self.send_message(event.respond,"No results")
     
@@ -760,7 +761,7 @@ if not event.source == self.nickname:
                         q=event.params + " site:myanimelist.net"
                     )
                 ).text
-                h=html.fromstring(t)
+                h=lxml.html.fromstring(t)
                 elm=h.xpath("//h3[@class='r']/a")[0]
                 title=elm.text_content()
                 link = urlparse.parse_qs(urlparse.urlparse(elm.get('href')).query)['q'][0]
