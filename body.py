@@ -101,7 +101,7 @@ if not event.source == self.nickname:
                     )
                 ).text
                 h=lxml.html.fromstring(t)
-                elm=h.xpath("//h3[@class='r']/a")[0]
+                elm=h.xpath("//h3[@class='r']/a[contains(@href, '/url?')]")[0]
                 title=elm.text_content()
                 link = urlparse.parse_qs(urlparse.urlparse(elm.get('href')).query)['q'][0]
                 self.send_message(
@@ -762,7 +762,7 @@ if not event.source == self.nickname:
                     )
                 ).text
                 h=lxml.html.fromstring(t)
-                elm=h.xpath("//h3[@class='r']/a")[0]
+                elm=h.xpath("//h3[@class='r']/a[contains(@href, '/url?')]")[0]
                 title=elm.text_content()
                 link = urlparse.parse_qs(urlparse.urlparse(elm.get('href')).query)['q'][0]
                 self.send_message(
