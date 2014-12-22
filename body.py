@@ -739,7 +739,7 @@ if not event.source == self.nickname:
         #IMDB Search
         if event.command.lower() in self._prefix('tpb'):
             try:
-                tpb = requests.get("https://oldpiratebay.org/search.php?q={}&Torrent_sort=seeders.desc".format(s), verify=False).text
+                tpb = requests.get("https://oldpiratebay.org/search.php?q={}&Torrent_sort=seeders.desc".format(event.params), verify=False).text
                 tpbHTML = lxml.html.fromstring(tpb)
                 tpbHTML.make_links_absolute("http://oldpiratebay.org")
                 links = tpbHTML.iterlinks()
