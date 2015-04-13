@@ -57,36 +57,77 @@ if not event.source == self.nickname:
         matches=ytmatch.findall(event.message)
         for x in matches:
             try:
-                j=requests.get(
-                    'https://gdata.youtube.com/feeds/api/videos/'+x,
-                    params=dict(v=2,alt="jsonc")).json()[u'data']
-                out=[]
-                if j.has_key('title'):out.append(j['title'])
-                if j.has_key('viewCount'):out.append(u'{:,}'.format(j['viewCount']))
-                if j.has_key('rating'):out.append(u'{:.0%}'.format(j['rating']/5))
-                if j.has_key('duration'):out.append(str(datetime.timedelta(seconds=j[u'duration'])))
-                out=u' | '.join(out)
-                self.send_message(event.respond,out.encode('utf-8','replace'))
+                t=requests.get(
+                    'https://www.googleapis.com/youtube/v3/videos',
+                    params=dict(
+                        part='statistics,contentDetails,snippet', 
+                        fields='items/snippet/title,items/snippet/channelTitle,items/contentDetails/duration,items/statistics/viewCount,items/statistics/likeCount,items/statistics/dislikeCount', 
+                        maxResults='1', 
+                        key=self.config.googlekey, 
+                        id=x
+                        )
+                    ).json()['items'][0]
+
+                title = t['snippet']['title']
+                uploader = t['snippet']['channelTitle']
+                viewcount = t['statistics']['viewCount']
+
+                likes = float(t['statistics']['likeCount'])
+                dislikes = float(t['statistics']['dislikeCount'])
+
+
+                rating = str( int((likes / (likes+dislikes)) * 100)) + '%'
+
+                durationregex = re.compile('PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?', re.I)
+                matches = durationregex.findall(t['contentDetails']['duration'])[0]
+                hours = int(matches[0]) if matches[0] != '' else 0
+                minutes = int(matches[1]) if matches[1] != '' else 0
+                seconds = int(matches[2]) if matches[2] != '' else 0
+                duration=str(datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds))
+
+                self.send_message(event.respond, '{} | {} | {} | {} | {}'.format(title, uploader, viewcount, rating, duration).encode('utf-8', 'replace'))
+
             except:
                 print "ERROR\n",traceback.print_tb(sys.exc_info()[2]),"\nERROREND"
-    
-    
+
         #Youtube search
         if event.command.lower() in self._prefix('yt'):
             try:
                 j=requests.get(
-                    'https://gdata.youtube.com/feeds/api/videos',
-                    params=dict({'max-results':1},q=event.params,
-                        v=2,alt="jsonc")).json()[u'data'][u'items'][0]
-                out=[]
-                if j.has_key('id'):out.append('https://youtu.be/'+j['id'])
-                if j.has_key('title'):out.append(j['title'])
-                if j.has_key('viewCount'):out.append(u'{:,}'.format(j['viewCount']))
-                if j.has_key('rating'):out.append(u'{:.0%}'.format(j['rating']/5))
-                if j.has_key('duration'):out.append(str(datetime.timedelta(seconds=j[u'duration'])))
-                out[1:]=[u' | '.join(out[1:])]
-                out=' > '.join(out)
-                self.send_message(event.respond,out.encode('utf-8','replace'))
+                    'https://www.googleapis.com/youtube/v3/search',
+                    params=dict(part='snippet', fields='items/id', safeSearch='none', maxResults='1', key=self.config.googlekey, q=event.params)).json()
+                vidid = j['items'][0]['id']['videoId']
+
+                t=requests.get(
+                    'https://www.googleapis.com/youtube/v3/videos',
+                    params=dict(
+                        part='statistics,contentDetails,snippet', 
+                        fields='items/snippet/title,items/snippet/channelTitle,items/contentDetails/duration,items/statistics/viewCount,items/statistics/likeCount,items/statistics/dislikeCount', 
+                        maxResults='1', 
+                        key=self.config.googlekey, 
+                        id=vidid
+                        )
+                    ).json()['items'][0]
+
+                title = t['snippet']['title']
+                uploader = t['snippet']['channelTitle']
+                viewcount = t['statistics']['viewCount']
+
+                likes = float(t['statistics']['likeCount'])
+                dislikes = float(t['statistics']['dislikeCount'])
+
+
+                rating = str( int((likes / (likes+dislikes)) * 100)) + '%'
+
+                durationregex = re.compile('PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?', re.I)
+                matches = durationregex.findall(t['contentDetails']['duration'])[0]
+                hours = int(matches[0]) if matches[0] != '' else 0
+                minutes = int(matches[1]) if matches[1] != '' else 0
+                seconds = int(matches[2]) if matches[2] != '' else 0
+                duration=str(datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds))
+
+                self.send_message(event.respond, 'https://youtu.be/{} > {} | {} | {} | {} | {}'.format(vidid, title, uploader, viewcount, rating, duration).encode('utf-8', 'replace'))
+
             except:
                 print "ERROR\n",traceback.print_tb(sys.exc_info()[2]),"\nERROREND"
                 self.send_message(event.respond,"No results")
@@ -94,21 +135,15 @@ if not event.source == self.nickname:
         #Google Search
         if event.command.lower() in self._prefix('g'):
             try:
-                t=requests.get(
-                    'https://google.com/search',
-                    params=dict(
-                        q=event.params
-                    )
-                ).text
-                h=lxml.html.fromstring(t)
-                elm=h.xpath("//h3[@class='r']/a[contains(@href, '/url?')]")[0]
-                title=elm.text_content()
-                link = urlparse.parse_qs(urlparse.urlparse(elm.get('href')).query)['q'][0]
+                t = requests.get(
+                    'https://www.googleapis.com/customsearch/v1',
+                    params=dict(q=event.params, cx=self.config.googleengine, key=self.config.googlekey, safe='off')
+                    ).json()['items'][0]
                 self.send_message(
                     event.respond,
                     u'{}: {}'.format(
-                        title,
-                        link
+                        t['title'],
+                        t['link']
                     ).encode('utf-8','replace')
                 )
             except:
@@ -557,6 +592,24 @@ if not event.source == self.nickname:
                 links.append("http://reddit.com/u/{}".format(link))
             if len(links) > 0:
                 self.send_message(event.respond, ' '.join(links))
+
+    #Subreddit links!
+        if not event.command.lower() in self._prefix('vs'):
+            srmatch=re.compile('(?<!\S)/(v|user)/(\w+(?:\+\w+)*(?:/\S+)*)', re.I)
+            srmatches = srmatch.findall(event.message)
+            subrootmatches=[s[1] for s in srmatches if s[0] == 'v' and not '/' in s[1]]
+            suburlmatches=[s[1] for s in srmatches if s[0] == 'v' and '/' in s[1]]
+            usermatches=[s[1] for s in srmatches if s[0] == 'user']
+            links = []
+            if len(subrootmatches) > 0:
+                links.append("https://voat.co/v/{}".format('+'.join(subrootmatches)))
+            for link in suburlmatches:
+                links.append("https://voat.co/v/{}".format(link))
+            for link in usermatches:
+                links.append("https://voat.co/user/{}".format(link))
+            if len(links) > 0:
+                self.send_message(event.respond, ' '.join(links))
+
     
         #Imply
         if event.command.lower() in self._prefix('imply'):
@@ -755,23 +808,20 @@ if not event.source == self.nickname:
         if event.command.lower() in self._prefix('mal'):
             try:
                 t=requests.get(
-                    'https://google.com/search',
-                    params=dict(
-                        q=event.params + " site:myanimelist.net"
-                    )
-                ).text
-                h=lxml.html.fromstring(t)
-                elm=h.xpath("//h3[@class='r']/a[contains(@href, '/url?')]")[0]
-                title=elm.text_content()
-                link = urlparse.parse_qs(urlparse.urlparse(elm.get('href')).query)['q'][0]
+                        'https://www.googleapis.com/customsearch/v1',
+                        params=dict(
+                            q=event.params, cx=self.config.googleengine, key=self.config.googlekey, safe='off', siteSearch='myanimelist.net'
+                        )
+                    ).json()['items'][0]
                 self.send_message(
                     event.respond,
                     u'{}: {}'.format(
-                        title,
-                        link
+                        t['title'],
+                        t['link']
                     ).encode('utf-8','replace')
                 )
             except:
+                print "ERROR",str(sys.exc_info())
                 print "ERROR\n",traceback.print_tb(sys.exc_info()[2]),"\nERROREND"
                 self.send_message(event.respond,"No results")
     

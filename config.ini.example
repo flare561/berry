@@ -28,3 +28,9 @@ bannedhosts = your.host.example.net,my.host.example.net
 
 ;API key for trakt
 ;traktKey=<yourkey>
+
+;API key for google/youtube
+;googlekey=<yourkey>
+
+;search engine id for google search api
+googleengine=<yourengine>

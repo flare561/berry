@@ -104,6 +104,20 @@ class Config:
             config.set('DEFAULT', 'traktKey', self.traktKey)
             modified = True
 
+        if config.has_option('DEFAULT', 'googlekey'):
+            self.googlekey = config.get("DEFAULT", "googlekey")
+        else: 
+            self.googlekey = ''
+            config.set('DEFAULT', 'googlekey', self.googlekey)
+            modified = True
+
+        if config.has_option('DEFAULT', 'googleengine'):
+            self.googleengine = config.get("DEFAULT", "googleengine")
+        else: 
+            self.googleengine = '015980026967623760357:olr5wqcaob8'
+            config.set('DEFAULT', 'googleengine', self.googleengine)
+            modified = True
+
         if modified:
             with open(self.fileName, "wb") as configFileLocation:
                 config.write(configFileLocation)
