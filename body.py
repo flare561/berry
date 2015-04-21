@@ -85,7 +85,7 @@ if not event.source == self.nickname:
                 seconds = int(matches[2]) if matches[2] != '' else 0
                 duration=str(datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds))
 
-                self.send_message(event.respond, '{} | {} | {} | {} | {}'.format(title, uploader, viewcount, rating, duration).encode('utf-8', 'replace'))
+                self.send_message(event.respond, u'{} | {} | {} | {} | {}'.format(title, uploader, viewcount, rating, duration).encode('utf-8', 'replace'))
 
             except:
                 print "ERROR\n",traceback.print_tb(sys.exc_info()[2]),"\nERROREND"
@@ -126,7 +126,7 @@ if not event.source == self.nickname:
                 seconds = int(matches[2]) if matches[2] != '' else 0
                 duration=str(datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds))
 
-                self.send_message(event.respond, 'https://youtu.be/{} > {} | {} | {} | {} | {}'.format(vidid, title, uploader, viewcount, rating, duration).encode('utf-8', 'replace'))
+                self.send_message(event.respond, u'https://youtu.be/{} > {} | {} | {} | {} | {}'.format(vidid, title, uploader, viewcount, rating, duration).encode('utf-8', 'replace'))
 
             except:
                 print "ERROR\n",traceback.print_tb(sys.exc_info()[2]),"\nERROREND"
