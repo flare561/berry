@@ -76,7 +76,10 @@ if not event.source == self.nickname:
                 dislikes = float(t['statistics']['dislikeCount'])
 
 
-                rating = str( int((likes / (likes+dislikes)) * 100)) + '%'
+                if (dislikes > 0):
+                    rating = str( int((likes / (likes+dislikes)) * 100)) + '%'
+                else:
+                    rating = "100%"
 
                 durationregex = re.compile('PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?', re.I)
                 matches = durationregex.findall(t['contentDetails']['duration'])[0]
@@ -117,7 +120,10 @@ if not event.source == self.nickname:
                 dislikes = float(t['statistics']['dislikeCount'])
 
 
-                rating = str( int((likes / (likes+dislikes)) * 100)) + '%'
+                if (dislikes > 0):
+                    rating = str( int((likes / (likes+dislikes)) * 100)) + '%'
+                else:
+                    rating = "100%"
 
                 durationregex = re.compile('PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?', re.I)
                 matches = durationregex.findall(t['contentDetails']['duration'])[0]
