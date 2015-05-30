@@ -9,12 +9,12 @@ lxml http://lxml.de/installation.html
 
 requests http://docs.python-requests.org/en/latest/
 
-oembed https://github.com/abarmat/python-oembed
+python-oembed https://github.com/abarmat/python-oembed
 
 wikipedia https://github.com/goldsmith/Wikipedia
 
 and
 
-IRCUtils http://dev.guardedcode.com/projects/ircutils/
+IRCUtils https://pypi.python.org/pypi/ircutils
 
 As well as Python 2.7
