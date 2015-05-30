@@ -1,143 +1,68 @@
-import ConfigParser,sys;import traceback;from ircutils import bot
+import sys;import traceback;import json;from ircutils import bot
 from datetime import tzinfo,timedelta
-import time,datetime
+import time,datetime,os,commands
 
 
-class q(bot.SimpleBot):
+class berry(bot.SimpleBot):
   def on_any(self,event):
     try:
       event.paramstr=' '.join(event.params)
       event.respond = event.target if event.target != self.nickname else event.source
-      execfile("body.py")
+
+      if not event.source == self.nickname:
+        if event.command == "INVITE":
+          self.join_channel(event.params[0])
+        if event.command in ['PRIVMSG']:
+          #Reload config and commands.
+          if os.stat('config.json').st_mtime > self.lastloadconf:
+            self.config = loadconf('config.json')
+          if os.stat('commands.py').st_mtime > self.lastloadcommands:
+            reload(commands)
+
+          event.command=event.message.split(' ')[0]
+          try:   event.params=event.message.split(' ',1)[1]
+          except:event.params=''
+          cmd = commands.commands(self.send_message, self.config)
+          for regex in [getattr(cmd,x) for x in dir(cmd) if x.startswith('regex_') and callable(getattr(cmd, x))]:
+            regex(event)
+          if event.command[0] in self.config['prefixes'].split() and hasattr(cmd, 'command_%s' % event.command[1:].lower()):
+            comm = getattr(cmd, 'command_%s' % event.command[1:].lower())
+            comm(event)
+
     except:
       print "ERROR",str(sys.exc_info())
       print traceback.print_tb(sys.exc_info()[2])
-  def _prefix(self,*i):
-    output=[]
-    for x in i:
-      output.extend([z+x for z in self.config.prefixes])
-    return output
+
+def loadconf(filename):
+  if os.path.isfile(filename):
+    with open(filename, 'r') as conffile:
+      return json.load(conffile)
+  else:
+    defaultConf={
+      'debug': False,
+      'nick': 'Berry',
+      'server': '127.0.0.1',
+      'channels': '#bottest',
+      'imgurKey': '',
+      'wolframKey': '',
+      'prefixes': '~ . !',
+      'traktKey': '',
+      'googleKey': '',
+      'googleengine': '015980026967623760357:olr5wqcaob8'
+    }
+    with open(filename, 'w') as conffile:
+      json.dump(defaultConf,conffile, sort_keys=True, indent=4, separators=(',',': '))
+      return defaultConf
 
 
-class Config:
-    def __init__(self, fileName):
-        config = ConfigParser.ConfigParser()
-        config.read(fileName)
-        self.fileName = fileName
-
-
-        modified = False
-        if config.has_option('DEFAULT', 'debug'):
-            self.debug = config.getboolean("DEFAULT", "debug")
-        else: 
-            self.debug=False
-            config.set('DEFAULT', 'debug', self.debug)
-            modified = True
-
-        if config.has_option('DEFAULT', 'nick'):
-            self.nick = config.get("DEFAULT", "nick")
-        else: 
-            self.nick = 'BP'
-            config.set('DEFAULT', 'nick', self.nick)
-            modified = True
-
-        if config.has_option('DEFAULT', 'server'):
-            self.server = config.get("DEFAULT", "server")
-        else: 
-            self.server = 'irc.mlas1.com'
-            config.set('DEFAULT', 'server', self.server)
-            modified = True
-
-        if config.has_option('DEFAULT', 'channels'):
-            self.channels = config.get("DEFAULT", "channels")
-        else: 
-            self.channels = '#mlas1'
-            config.set('DEFAULT', 'channels', self.channels)
-            modified = True
-
-        if config.has_option('DEFAULT', 'imgurKey'):
-            self.imgurKey = config.get("DEFAULT", "imgurKey")
-        else: 
-            self.imgurKey = ''
-            config.set('DEFAULT', 'imgurKey', self.imgurKey)
-            modified = True
-
-        if config.has_option('DEFAULT', 'wolframKey'):
-            self.wolframKey = config.get("DEFAULT", "wolframKey")
-        else: 
-            self.wolframKey = ''
-            config.set('DEFAULT', 'wolframKey', self.wolframKey)
-            modified = True
-
-        if config.has_option('DEFAULT', 'prefixes'):
-            self.prefixes = config.get("DEFAULT", "prefixes").split(',')
-        else: 
-            self.prefixes = ['~', '!']
-            config.set('DEFAULT', 'prefixes', ",".join(self.prefixes))
-            modified = True
-
-        if config.has_option('DEFAULT', 'adminhosts'):
-            self.adminhosts = config.get("DEFAULT", "adminhosts").split(',')
-        else: 
-            self.adminhosts = ['Whatever.it.is.Pinkie.Pie.does']
-            config.set('DEFAULT', 'adminhosts', ",".join(self.adminhosts))
-            modified = True
-
-        if config.has_option('DEFAULT', 'raribot'):
-            self.raribot = config.getboolean("DEFAULT", "raribot")
-        else: 
-            self.raribot=False
-            config.set('DEFAULT', 'raribot', self.debug)
-            modified = True
-
-        if config.has_option('DEFAULT', 'bannedhosts'):
-            self.bannedhosts = config.get("DEFAULT", "bannedhosts").split(',')
-        else: 
-            self.bannedhosts = []
-            config.set('DEFAULT', 'bannedhosts', ",".join(self.bannedhosts))
-            modified = True
-
-        if config.has_option('DEFAULT', 'traktKey'):
-            self.traktKey = config.get("DEFAULT", "traktKey")
-        else: 
-            self.traktKey = ''
-            config.set('DEFAULT', 'traktKey', self.traktKey)
-            modified = True
-
-        if config.has_option('DEFAULT', 'googlekey'):
-            self.googlekey = config.get("DEFAULT", "googlekey")
-        else: 
-            self.googlekey = ''
-            config.set('DEFAULT', 'googlekey', self.googlekey)
-            modified = True
-
-        if config.has_option('DEFAULT', 'googleengine'):
-            self.googleengine = config.get("DEFAULT", "googleengine")
-        else: 
-            self.googleengine = '015980026967623760357:olr5wqcaob8'
-            config.set('DEFAULT', 'googleengine', self.googleengine)
-            modified = True
-
-        if modified:
-            with open(self.fileName, "wb") as configFileLocation:
-                config.write(configFileLocation)
-
-
-    def setBannedHosts(self, bannedhosts):
-        configFile = ConfigParser.RawConfigParser()
-        configFile.read(self.fileName)
-        configFile.set("DEFAULT", "bannedhosts", ','.join(bannedhosts))
-        with open(self.fileName, "wb") as configFileLocation:
-            configFile.write(configFileLocation)
-
-    def getBannedHosts(self):
-        configFile = ConfigParser.RawConfigParser()
-        configFile.read(self.fileName)
-        return configFile.get('DEFAULT', 'bannedhosts').split(',')
 
 
 if __name__ == "__main__":
-  config = Config("config.ini")
-  s=q(config.nick);s.connect(config.server, channel=config.channels)
+  config = loadconf("config.json")
+  s=berry(config['nick'].encode('ascii', 'replace'))
+  s.connect(config['server'].encode('ascii', 'replace'), channel=config['channels'].encode('ascii', 'replace'), use_ssl=False)
   s.config = config
+  s.lastloadconf = os.stat('config.json').st_mtime
+  s.lastloadcommands = os.stat('commands.py').st_mtime
+  print 'starting'
   s.start()

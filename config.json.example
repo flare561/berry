@@ -1,0 +1,12 @@
+{
+    "channels": "#bottest",
+    "debug": false,
+    "googleKey": "",
+    "googleengine": "015980026967623760357:olr5wqcaob8",
+    "imgurKey": "",
+    "nick": "testBot",
+    "prefixes": "~ . !",
+    "server": "localhost",
+    "traktKey": "",
+    "wolframKey": ""
+}
