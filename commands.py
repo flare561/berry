@@ -7,12 +7,12 @@ from time import strftime
 from datetime import tzinfo,timedelta
 import time,datetime,os,commands,functools
 
-def register(tag):
+def register(tag, value):
     def wrapped(fn):
         @functools.wraps(fn)
         def wrapped_f(*args, **kwargs):
             return fn(*args, **kwargs)
-        wrapped_f.tag = tag
+        setattr(wrapped_f, tag, value)
         return wrapped_f
     return wrapped
 
@@ -127,7 +127,7 @@ class commands:
             self.send_message(event.respond,"No results")
             raise
 
-    @register('nsfw')
+    @register('nsfw', True)
     def command_rande621(self,event):
         '''Usage: ~rande621 <tags> Used to search e621.net for a random picture with the given tags'''
         try:
@@ -148,7 +148,7 @@ class commands:
             self.send_message(event.respond, "An error occurred while fetching your post.")
             raise
 
-    @register('nsfw')
+    @register('nsfw', True)
     def command_clop(self, event):
         '''Usage: ~clop <optional extra tags> Searches e621 for a random image with the tags rating:e and my_little_pony'''
         event.params +=  ' rating:e my_little_pony'
@@ -215,8 +215,8 @@ class commands:
 
     def command_help(self, event):
         '''Usage: ~help <command> The fuck do you think it does?'''
-        documented_commands = {x[8:]: getattr(self, x).__doc__ for x in dir(self) if callable(getattr(self,x)) and x.startswith('command_') and getattr(self,x).__doc__ != None 
-            and ((event.respond not in self.config['sfwchans'].split(',')) or (not hasattr(getattr(self,x), 'tag')) or (getattr(self,x).tag != 'nsfw'))}
+        documented_commands = { x[8:]: getattr(self, x).__doc__ for x in dir(self) if callable(getattr(self,x)) and x.startswith('command_') and getattr(self,x).__doc__ != None 
+            and ( ( event.respond not in self.config['sfwchans'].split(',') ) or ( not hasattr( getattr(self,x), 'nsfw' ) ) ) }
 
         if len(event.params) < 1:
             self.send_message(event.respond, "Currently supported commands: %s" % ', '.join(documented_commands.keys()))

@@ -27,7 +27,7 @@ class berry(bot.SimpleBot):
             regex(event)
           if event.command[0] in self.config['prefixes'].split() and hasattr(cmd, 'command_%s' % event.command[1:].lower()):
             comm = getattr(cmd, 'command_%s' % event.command[1:].lower())
-            if (event.respond not in self.config['sfwchans'].split(',')) or (not hasattr(comm, 'tag')) or (comm.tag != 'nsfw'):
+            if not ( event.respond in self.config['sfwchans'].split(',') and hasattr(comm, 'nsfw') ):
               comm(event)
 
     except:
