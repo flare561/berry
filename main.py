@@ -27,7 +27,8 @@ class berry(bot.SimpleBot):
             regex(event)
           if event.command[0] in self.config['prefixes'].split() and hasattr(cmd, 'command_%s' % event.command[1:].lower()):
             comm = getattr(cmd, 'command_%s' % event.command[1:].lower())
-            comm(event)
+            if (event.respond not in self.config['sfwchans'].split(',')) or (not hasattr(comm, 'tag')) or (comm.tag != 'nsfw'):
+              comm(event)
 
     except:
       print "ERROR",str(sys.exc_info())
@@ -48,7 +49,8 @@ def loadconf(filename):
       'prefixes': '~ . !',
       'traktKey': '',
       'googleKey': '',
-      'googleengine': '015980026967623760357:olr5wqcaob8'
+      'googleengine': '015980026967623760357:olr5wqcaob8',
+      'sfwchans': '#channel1,#channel2'
     }
     with open(filename, 'w') as conffile:
       json.dump(defaultConf,conffile, sort_keys=True, indent=4, separators=(',',': '))

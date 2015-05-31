@@ -1,5 +1,5 @@
 {
-    "channels": "#bottest",
+    "channels": "#bottest,#bottestsfw,#bottestsfw2",
     "debug": false,
     "googleKey": "",
     "googleengine": "015980026967623760357:olr5wqcaob8",
@@ -8,5 +8,6 @@
     "prefixes": "~ . !",
     "server": "localhost",
     "traktKey": "",
-    "wolframKey": ""
+    "wolframKey": "",
+    "sfwchans": "#bottestsfw,#bottestsfw2"
 }
