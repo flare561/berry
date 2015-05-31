@@ -454,160 +454,38 @@ class commands:
         except:
             self.send_message(event.respond, "You must give a valid host name to look up")
 
-    def command_movie(self, event):
-        '''Usage: ~movie <film> Used to search trakt for the listing for a film'''
+    def command_trakt(self, event):
+        '''Usage: ~trakt <query> Searches trakt for movies, and tv shows'''
         try:
-            j=requests.get(
-                'http://api.trakt.tv/search/movies.json/{}/{}'.format(self.config['traktKey'], event.params), 
-                headers={"User-Agent": 'Berry Punch IRC Bot'}
-            ).json()[0]
-    
-    
-            movieid = ''
-            if j.has_key('imdb_id') and j['imdb_id'] != '': 
-                movieid = j['imdb_id']
-            else: 
-                if j.has_key('tvdb_id'): 
-                    movieid = j['tvdb_id']
-            if movieid == '':
-                raise Exception('No results')
-    
-            j=requests.get(
-                'http://api.trakt.tv/movie/summary.json/{}/{}'.format(self.config['traktKey'], movieid),
-                headers={"User-Agent": 'Berry Punch IRC Bot'}
-            ).json()
-    
-            out = []
+            sess = requests.Session()
+            sess.headers.update({'Content-Type':'application/json', 'trakt-api-version':2, 'trakt-api-key':self.config['traktKey']})
+            resp=sess.get('https://api-v2launch.trakt.tv/search', params={'query': event.params,'type':'movie,show'}).json()[0]
+            if resp.has_key('show'):
+                apiurl = 'https://api-v2launch.trakt.tv/shows/%s?extended=full' % resp['show']['ids']['slug']
+                url = 'https://trakt.tv/shows/%s' % resp['show']['ids']['slug']
+            elif resp.has_key('movie'):
+                apiurl = 'https://api-v2launch.trakt.tv/movies/%s?extended=full' % resp['movie']['ids']['slug']
+                url = 'https://trakt.tv/movies/%s' % resp['movie']['ids']['slug']
+            else:
+                self.send_message(event.respond, "No results")
+                return
+            j=sess.get(apiurl).json()
+            out=[]
             if j.has_key('title'): out.append(j['title'])
             if j.has_key('genres'): out.append(', '.join(j['genres'][:3]))
-            if j.has_key('people'):
-               if j['people'].has_key('actors'):
-                  out.append(', '.join([s['name'] for s in j['people']['actors'][:3]]))
             if j.has_key('overview'): out.append(j['overview'][:100] + '...')
-            if j.has_key('ratings'):
-               if j['ratings'].has_key('percentage'): 
-                   out.append(str(j['ratings']['percentage']) + '%')
+            if j.has_key('rating'):
+                out.append(str(j['rating']))
             if j.has_key('year'): out.append(str(j['year']))
-            if j.has_key('url'): out.append(j['url'])
-    
+            out.append(url)
     
             self.send_message(
                 event.respond,
                 (' | '.join(out)).encode('utf-8','replace')
             )
-        except:
-            self.send_message(
-                event.respond,
-                "Could not find the specified film, please try again."
-            )
-            raise
 
-    def command_tv(self, event):
-        '''Usage: ~tv <show> Used to search trakt for the listing for a tv show'''
-        try:
-            j=requests.get(
-                'http://api.trakt.tv/search/shows.json/{}/{}'.format(self.config['traktKey'], event.params), 
-                headers={"User-Agent": 'Berry Punch IRC Bot'}
-            ).json()[0]
-    
-    
-            showid = ''
-            if j.has_key('imdb_id') and j['imdb_id'] != '': 
-                showid = j['imdb_id']
-            else: 
-                if j.has_key('tvdb_id'): 
-                    showid = j['tvdb_id']
-            if showid == '':
-                raise Exception('No results')
-    
-            j=requests.get(
-                'http://api.trakt.tv/show/summary.json/{}/{}'.format(self.config['traktKey'], showid),
-                headers={"User-Agent": 'Berry Punch IRC Bot'}
-            ).json()
-    
-            out = []
-            if j.has_key('title'): out.append(j['title'])
-            if j.has_key('genres'): out.append(', '.join(j['genres'][:3]))
-            if j.has_key('people'):
-               if j['people'].has_key('actors'):
-                  out.append(', '.join([s['name'] for s in j['people']['actors'][:3]]))
-            if j.has_key('overview'): out.append(j['overview'][:100] + '...')
-            if j.has_key('ratings'):
-               if j['ratings'].has_key('percentage'): 
-                   out.append(str(j['ratings']['percentage']) + '%')
-            if j.has_key('year'): out.append(str(j['year']))
-            if j.has_key('url'): out.append(j['url'])
-    
-    
-            self.send_message(
-                event.respond,
-                (' | '.join(out)).encode('utf-8','replace')
-            )
         except:
-            self.send_message(
-                event.respond,
-                "Could not find the specified film, please try again."
-            )
-            raise
-
-    def command_episode(self, event):
-        '''Usage: ~episode <film> Used to search trakt for the listing for an episode'''
-        try:
-            j=requests.get(
-                'http://api.trakt.tv/search/episodes.json/{}/{}'.format(self.config['traktKey'], event.params), 
-                headers={"User-Agent": 'Berry Punch IRC Bot'}
-            ).json()[0]
-    
-    
-            showid = ''
-            if j.has_key('show'):
-                if j['show'].has_key('imdb_id') and j['show']['imdb_id'] != '': 
-                    showid = j['show']['imdb_id']
-                else: 
-                    if j['show'].has_key('tvdb_id'): 
-                        showid = j['show']['tvdb_id']
-            if showid == '':
-                raise Exception('No results')
-    
-            season = ''
-            episode = ''
-            if j.has_key('episode'):
-                if j['episode'].has_key('season'): 
-                    season = j['episode']['season']
-                if j['episode'].has_key('episode'): 
-                    episode = j['episode']['episode']
-            if season == '' or episode == '':
-                raise Exception('No results')
-    
-            j=requests.get(
-                'http://api.trakt.tv/show/episode/summary.json/{}/{}/{}/{}'.format(self.config['traktKey'], showid, season, episode),
-                headers={"User-Agent": 'Berry Punch IRC Bot'}
-            ).json()
-    
-            out = []
-            if j.has_key('show'):
-                if j['show'].has_key('title'): out.append(j['show']['title'])
-                if j['show'].has_key('genres'): out.append(', '.join(j['show']['genres'][:3]))
-            if j.has_key('episode'):
-                if j['episode'].has_key('title'): out.append(j['episode']['title'])
-                if j['episode'].has_key('season'): out.append("Season " + str(j['episode']['season']))
-                if j['episode'].has_key('number'): out.append("Episode " + str(j['episode']['number']))
-                if j['episode'].has_key('overview'): out.append(j['episode']['overview'][:100] + '...')
-                if j['episode'].has_key('ratings'):
-                   if j['episode']['ratings'].has_key('percentage'): 
-                       out.append(str(j['episode']['ratings']['percentage']) + '%')
-                if j['episode'].has_key('url'): out.append(j['episode']['url'])
-    
-    
-            self.send_message(
-                event.respond,
-                (' | '.join(out)).encode('utf-8','replace')
-            )
-        except:
-            self.send_message(
-                event.respond,
-                "Could not find the specified episode, please try again."
-            )
+            self.send_message(event.respond, "No results")
             raise
 
     def command_tpb(self, event):
