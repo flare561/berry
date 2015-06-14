@@ -591,7 +591,7 @@ class commands:
 
     def command_derpi(self,event):
         '''Usage: ~derpi <query> Searches derpibooru for a query, tags are comma separated.'''
-        results = requests.get("https://derpiboo.ru/search.json", dict(q=event.params)).json()['search']
+        results = requests.get("https://derpiboo.ru/search.json", params=dict(q=event.params)).json()['search']
         if len(results) > 0:
             choice=random.choice(results)
             idNum=choice['id_number']
