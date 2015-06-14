@@ -414,13 +414,15 @@ class commands:
                 query=srmatch.sub("", query)
                 query=query.rstrip().lstrip()
             terms.append(query)
+            headers=dict()
+            headers['User-Agent']="Berry Punch IRC Bot"
             j=requests.get(
                 'http://www.reddit.com/search.json',
                 params=dict(
                     limit="1",
                     q=' '.join(terms)
                 ),
-                headers={"User-Agent": 'Berry Punch IRC Bot'}
+                headers=headers
             ).json()[u'data'][u'children']
             if len(j) > 0:
                 self.send_message(
@@ -472,8 +474,12 @@ class commands:
         '''Usage: ~trakt <query> Searches trakt for movies, and tv shows'''
         try:
             sess = requests.Session()
-            sess.headers.update({'Content-Type':'application/json', 'trakt-api-version':2, 'trakt-api-key':self.config['traktKey']})
-            resp=sess.get('https://api-v2launch.trakt.tv/search', params={'query': event.params,'type':'movie,show'}).json()[0]
+            headers = dict()
+            headers['Content-Type']='application/json'
+            headers['trakt-api-version']=2
+            headers['trakt-api-key']=self.config['traktKey']
+            sess.headers.update(headers)
+            resp=sess.get('https://api-v2launch.trakt.tv/search', params=dict(query=event.params,type='movie,show')).json()[0]
             if resp.has_key('show'):
                 apiurl = 'https://api-v2launch.trakt.tv/shows/%s?extended=full' % resp['show']['ids']['slug']
                 url = 'https://trakt.tv/shows/%s' % resp['show']['ids']['slug']
@@ -585,7 +591,7 @@ class commands:
 
     def command_derpi(self,event):
         '''Usage: ~derpi <query> Searches derpibooru for a query, tags are comma separated.'''
-        results = requests.get("https://derpiboo.ru/search.json", {'q': event.params}).json()['search']
+        results = requests.get("https://derpiboo.ru/search.json", dict(q=event.params).json()['search']
         if len(results) > 0:
             choice=random.choice(results)
             idNum=choice['id_number']
