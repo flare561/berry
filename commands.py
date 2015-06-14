@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import HTMLParser,re,json,random,requests,datetime,socket,os,sys,oembed,urllib2,urllib,threading,urlparse,sys,traceback;
 from ircutils import format
 import lxml.etree as etree
@@ -578,3 +579,16 @@ class commands:
 
     def command_feels(self,event):
         self.send_message(event.respond, 'http://imgur.com/a/PJIsu/layout/blog')
+
+    def command_lenny(self,event):
+        self.send_message(event.respond, u'( ͡° ͜ʖ ͡°)'.encode('utf-8', 'replace'))
+
+    def command_derpi(self,event):
+        '''Usage: ~derpi <query> Searches derpibooru for a query, tags are comma separated.'''
+        results = requests.get("https://derpiboo.ru/search.json", {'q': event.params}).json()['search']
+        if len(results) > 0:
+            choice=random.choice(results)
+            idNum=choice['id_number']
+            self.send_message(event.respond, 'https://derpiboo.ru/%s'%idNum)
+        else:
+            self.send_message(event.respond, 'No results')
