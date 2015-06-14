@@ -39,19 +39,19 @@ def loadconf(filename):
     with open(filename, 'r') as conffile:
       return json.load(conffile)
   else:
-    defaultConf={
-      'debug': False,
-      'nick': 'Berry',
-      'server': '127.0.0.1',
-      'channels': '#bottest',
-      'imgurKey': '',
-      'wolframKey': '',
-      'prefixes': '~ . !',
-      'traktKey': '',
-      'googleKey': '',
-      'googleengine': '015980026967623760357:olr5wqcaob8',
-      'sfwchans': '#channel1,#channel2'
-    }
+    defaultConf=dict(
+      debug= False,
+      nick= 'Berry',
+      server= '127.0.0.1',
+      channels= '#bottest',
+      imgurKey= '',
+      wolframKey= '',
+      prefixes= '~ . !',
+      traktKey= '',
+      googleKey= '',
+      googleengine= '015980026967623760357:olr5wqcaob8',
+      sfwchans='#channel1,#channel2'
+    )
     with open(filename, 'w') as conffile:
       json.dump(defaultConf,conffile, sort_keys=True, indent=4, separators=(',',': '))
       return defaultConf
