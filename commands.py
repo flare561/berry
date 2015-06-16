@@ -591,7 +591,14 @@ class commands:
 
     def command_derpi(self,event):
         '''Usage: ~derpi <query> Searches derpibooru for a query, tags are comma separated.'''
-        results = requests.get("https://derpiboo.ru/search.json", params=dict(q=event.params)).json()['search']
+        sess=requests.Session()
+        page=lxml.html.fromstring(sess.get('https://derpiboo.ru/filters', verify=False).text)
+        authenticitytoken=page.xpath('//meta[@name="csrf-token"]')[0].attrib['content']
+        body=dict()
+        body['authenticity_token']=authenticitytoken
+        body['_method']='patch'
+        sess.post('https://derpiboo.ru/filters/select?id=6758f0d16361640e71480000', verify=False, data=body, headers=dict(Referer='https://derpiboo.ru/filters'))
+        results=sess.get('https://derpiboo.ru/search.json', verify=False, data=dict(q=event.params)).json()['search']
         if len(results) > 0:
             choice=random.choice(results)
             idNum=choice['id_number']
