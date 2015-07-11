@@ -22,7 +22,7 @@ class berry(bot.SimpleBot):
           event.command=event.message.split(' ')[0]
           try:   event.params=event.message.split(' ',1)[1]
           except:event.params=''
-          cmd = commands.commands(self.send_message, self.config)
+          cmd = commands.commands(self.send_message, self.send_action, self.config)
           for regex in [getattr(cmd,x) for x in dir(cmd) if x.startswith('regex_') and callable(getattr(cmd, x))]:
             regex(event)
           if event.command[0] in self.config['prefixes'].split() and hasattr(cmd, 'command_%s' % event.command[1:].lower()):
@@ -50,7 +50,8 @@ def loadconf(filename):
       traktKey= '',
       googleKey= '',
       googleengine= '015980026967623760357:olr5wqcaob8',
-      sfwchans='#channel1,#channel2'
+      sfwchans='#channel1,#channel2',
+      yiffs=['2furry4me']
     )
     with open(filename, 'w') as conffile:
       json.dump(defaultConf,conffile, sort_keys=True, indent=4, separators=(',',': '))

@@ -9,5 +9,9 @@
     "server": "localhost",
     "traktKey": "",
     "wolframKey": "",
-    "sfwchans": "#bottestsfw,#bottestsfw2"
+    "sfwchans": "#bottestsfw,#bottestsfw2",
+    "yiffs": [
+        "2furry4me", 
+        "no seriously, so furry"
+        ]
 }

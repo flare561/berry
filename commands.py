@@ -18,9 +18,10 @@ def register(tag, value):
     return wrapped
 
 class commands:
-    def __init__(self, send_message, config):
+    def __init__(self, send_message, send_action, config):
         self.send_message = send_message
         self.config = config
+        self.send_action = send_action
 
     def regex_yt(self, event):
         ytmatch=re.compile(
@@ -417,7 +418,7 @@ class commands:
             headers=dict()
             headers['User-Agent']="Berry Punch IRC Bot"
             j=requests.get(
-                'http://www.reddit.com/search.json',
+                'https://www.reddit.com/search.json',
                 params=dict(
                     limit="1",
                     q=' '.join(terms)
@@ -427,7 +428,7 @@ class commands:
             if len(j) > 0:
                 self.send_message(
                     event.respond,
-                    u'http://reddit.com{} - {}'.format(
+                    u'https://reddit.com{} - {}'.format(
                         j[0][u'data'][u'permalink'],
                         HTMLParser.HTMLParser().unescape(j[0][u'data'][u'title'])
                     ).encode('utf-8','replace')
@@ -453,11 +454,11 @@ class commands:
             usermatches=[s[1] for s in srmatches if s[0] == 'u']
             links = []
             if len(subrootmatches) > 0:
-                links.append("http://reddit.com/r/{}".format('+'.join(subrootmatches)))
+                links.append("https://reddit.com/r/{}".format('+'.join(subrootmatches)))
             for link in suburlmatches:
-                links.append("http://reddit.com/r/{}".format(link))
+                links.append("https://reddit.com/r/{}".format(link))
             for link in usermatches:
-                links.append("http://reddit.com/u/{}".format(link))
+                links.append("https://reddit.com/u/{}".format(link))
             if len(links) > 0:
                 self.send_message(event.respond, ' '.join(links))
     
@@ -605,3 +606,24 @@ class commands:
             self.send_message(event.respond, 'https://derpiboo.ru/%s'%idNum)
         else:
             self.send_message(event.respond, 'No results')
+
+    def command_pony(self,event):
+        '''Usage: ~pony Gives time until next episode of mlp'''
+        now=datetime.datetime.utcnow()
+        if now < datetime.datetime(2015,7,11,15,30):
+            days_ahead=5-now.weekday()
+            if days_ahead < 0 or (days_ahead == 0 and now.time() > datetime.time(15,30)):
+                days_ahead += 7
+            next_episode = datetime.datetime.combine(now.date() + datetime.timedelta(days_ahead), datetime.time(15,30))
+            time_remaining = (next_episode - now).seconds
+            hours,remainder = divmod(time_remaining, 3600)
+            minutes,seconds = divmod(remainder, 60)
+            self.send_message(event.respond, "Time until next episode: {} hours {} minutes {} seconds".format(hours, minutes, seconds))
+        else:
+            self.send_message(event.respond, "The show is on hiatus until later this year.")
+
+    @register('nsfw', True)
+    def command_furry(self,event):
+        '''Usage: ~furry <nick> yiffs them'''
+        yiff=random.choice(self.config['yiffs'])
+        self.send_action(event.respond, (yiff.replace('$target', event.params).replace('$user', 'pwny').replace('$nick', self.config['nick'])).encode('utf-8', 'replace'))
