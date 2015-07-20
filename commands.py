@@ -626,4 +626,4 @@ class commands:
     def command_furry(self,event):
         '''Usage: ~furry <nick> yiffs them'''
         yiff=random.choice(self.config['yiffs'])
-        self.send_action(event.respond, (yiff.replace('$target', event.params).replace('$user', 'pwny').replace('$nick', self.config['nick'])).encode('utf-8', 'replace'))
+        self.send_action(event.respond, (yiff.replace('$target', event.params).replace('$user', 'pwny').replace('$nick', self.config['nick']).replace('$channel', event.respond)).encode('utf-8', 'replace'))
