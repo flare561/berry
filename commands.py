@@ -598,7 +598,7 @@ class commands:
         body=dict()
         body['authenticity_token']=authenticitytoken
         body['_method']='patch'
-        sess.post('https://derpiboo.ru/filters/select?id=6758f0d16361640e71480000', data=body, headers=dict(Referer='https://derpiboo.ru/filters'))
+        sess.post('https://derpiboo.ru/filters/select?id=56027', data=body, headers=dict(Referer='https://derpiboo.ru/filters'))
         results=sess.get('https://derpiboo.ru/search.json', data=dict(q=event.params)).json()['search']
         if len(results) > 0:
             choice=random.choice(results)
