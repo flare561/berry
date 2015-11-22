@@ -610,7 +610,7 @@ class commands:
     def command_pony(self,event):
         '''Usage: ~pony Gives time until next episode of mlp'''
         now=datetime.datetime.utcnow()
-        if now < datetime.datetime(2015,7,11,15,30):
+        if True: #now < datetime.datetime(2015,7,11,15,30):
             days_ahead=5-now.weekday()
             if days_ahead < 0 or (days_ahead == 0 and now.time() > datetime.time(15,30)):
                 days_ahead += 7
@@ -618,7 +618,7 @@ class commands:
             time_remaining = (next_episode - now).seconds
             hours,remainder = divmod(time_remaining, 3600)
             minutes,seconds = divmod(remainder, 60)
-            self.send_message(event.respond, "Time until next episode: {} hours {} minutes {} seconds".format(hours, minutes, seconds))
+            self.send_message(event.respond, "Time until next episode: {} days {} hours {} minutes {} seconds".format((next_episode-now).days, hours, minutes, seconds))
         else:
             self.send_message(event.respond, "The show is on hiatus until later this year.")
 
