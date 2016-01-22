@@ -385,22 +385,19 @@ class commands:
     def command_gimg(self,event):
         '''Usage: ~gimg <terms> Used to search google images with the given terms'''
         try:
-            j=requests.get(
-                'https://ajax.googleapis.com/ajax/services/search/images',
-                params=dict(
-                    v="1.0",
-                    q=event.params
-                )
-            ).json()[u'responseData'][u'results'][0]
+            t = requests.get(
+                'https://www.googleapis.com/customsearch/v1',
+                params=dict(q=event.params, cx=self.config['googleengine'], key=self.config['googleKey'], safe='off')
+                ).json()['items'][0]
             self.send_message(
                 event.respond,
                 u'{}: {}'.format(
-                    HTMLParser.HTMLParser().unescape(j[u'titleNoFormatting']),
-                    j[u'unescapedUrl']
+                    t['title'],
+                    t['link']
                 ).encode('utf-8','replace')
             )
         except:
-            self.send_message(event.respond, "No results.")
+            self.send_message(event.respond,"No results")
             raise
 
     def command_rs(self,event):
