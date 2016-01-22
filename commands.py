@@ -46,14 +46,17 @@ class commands:
                 uploader = t['snippet']['channelTitle']
                 viewcount = t['statistics']['viewCount']
     
-                likes = float(t['statistics']['likeCount'])
-                dislikes = float(t['statistics']['dislikeCount'])
-    
-    
-                if (dislikes > 0):
-                    rating = str( int((likes / (likes+dislikes)) * 100)) + '%'
+                if t['statistics'].has_key('likeCount') and t['statistics'].has_key('dislikeCount'):
+                    likes = float(t['statistics']['likeCount'])
+                    dislikes = float(t['statistics']['dislikeCount'])
+
+
+                    if (dislikes > 0):
+                        rating = str( int((likes / (likes+dislikes)) * 100)) + '%'
+                    else:
+                        rating = "100%"
                 else:
-                    rating = "100%"
+                    rating = 'unrated'
     
                 durationregex = re.compile('PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?', re.I)
                 matches = durationregex.findall(t['contentDetails']['duration'])[0]
@@ -89,14 +92,17 @@ class commands:
             uploader = t['snippet']['channelTitle']
             viewcount = t['statistics']['viewCount']
 
-            likes = float(t['statistics']['likeCount'])
-            dislikes = float(t['statistics']['dislikeCount'])
+            if t['statistics'].has_key('likeCount') and t['statistics'].has_key('dislikeCount'):
+                    likes = float(t['statistics']['likeCount'])
+                    dislikes = float(t['statistics']['dislikeCount'])
 
 
-            if (dislikes > 0):
-                rating = str( int((likes / (likes+dislikes)) * 100)) + '%'
-            else:
-                rating = "100%"
+                    if (dislikes > 0):
+                        rating = str( int((likes / (likes+dislikes)) * 100)) + '%'
+                    else:
+                        rating = "100%"
+                else:
+                    rating = 'unrated'
 
             durationregex = re.compile('PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?', re.I)
             matches = durationregex.findall(t['contentDetails']['duration'])[0]
