@@ -101,8 +101,8 @@ class commands:
                         rating = str( int((likes / (likes+dislikes)) * 100)) + '%'
                     else:
                         rating = "100%"
-                else:
-                    rating = 'unrated'
+            else:
+                rating = 'unrated'
 
             durationregex = re.compile('PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?', re.I)
             matches = durationregex.findall(t['contentDetails']['duration'])[0]
