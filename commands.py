@@ -387,7 +387,7 @@ class commands:
         try:
             t = requests.get(
                 'https://www.googleapis.com/customsearch/v1',
-                params=dict(q=event.params, cx=self.config['googleengine'], key=self.config['googleKey'], safe='off')
+                params=dict(q=event.params, cx=self.config['googleengine'], key=self.config['googleKey'], safe='off', searchType='image')
                 ).json()['items'][0]
             self.send_message(
                 event.respond,
