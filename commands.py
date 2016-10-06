@@ -221,18 +221,6 @@ class commands:
         randjurThread = threading.Thread(target=findImages, kwargs=dict(irc=self, count=count, respond=event.respond, clientID=self.config['imgurKey']))
         randjurThread.start()
 
-    def command_help(self, event):
-        '''Usage: ~help <command> The fuck do you think it does?'''
-        documented_commands = { x[8:]: getattr(self, x).__doc__ for x in dir(self) if callable(getattr(self,x)) and x.startswith('command_') and getattr(self,x).__doc__ != None 
-            and ( ( event.respond not in self.config['sfwchans'].split(',') ) or ( not hasattr( getattr(self,x), 'nsfw' ) ) ) }
-
-        if len(event.params) < 1:
-            self.send_message(event.respond, "Currently supported commands: %s" % ', '.join(documented_commands.keys()))
-        elif event.params in documented_commands:
-            self.send_message(event.respond, documented_commands[event.params])
-        else:
-            self.send_message(event.respond, "Unsupported command")
-
     def command_wolf(self, event):
         '''Usage: ~wolf <query> Searches wolfram alpha for your query'''
         try:

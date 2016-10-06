@@ -3,6 +3,10 @@ berry
 
 Berry Punch IRC bot
 
+Custom commands can be added in custom_commands.py
+Any commands defined in custom_commands.py will override built in commands from commands.py
+Example commands can be found in custom_commands.py
+
 Requires:
 
 lxml http://lxml.de/installation.html
