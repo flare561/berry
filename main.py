@@ -7,8 +7,8 @@ class berry(bot.SimpleBot):
   def command_help(self, event):
     '''Usage: ~help <command> The fuck do you think it does?'''
     #Get commands with documentation
-    documented_commands = {x[8:]:event.cmds[x].__doc__ for x in event.cmds if event.cmds[x].__doc__ != None
-        and ( ( event.respond not in self.config['sfwchans'].split(',') ) or ( not hasattr(event.cmds[x], 'nsfw' ) ) )}
+    documented_commands = {x[8:]:self.cmds[x].__doc__ for x in self.cmds if self.cmds[x].__doc__ != None
+        and ( ( event.respond not in self.config['sfwchans'].split(',') ) or ( not hasattr(self.cmds[x], 'nsfw' ) ) )}
 
     #If no params, send list of commands
     if len(event.params) < 1:
@@ -52,7 +52,7 @@ class berry(bot.SimpleBot):
             cmds.update({x:getattr(self,x) for x in dir(self) if x.startswith('command_') and callable(getattr(self, x))})
             cmds.update({x:getattr(cust_cmd,x) for x in dir(cust_cmd) if x.startswith('command_') and callable(getattr(cust_cmd, x))})
 
-            event.cmds = cmds
+            self.cmds = cmds
 
           event.command=event.message.split(' ')[0]
           try:   event.params=event.message.split(' ',1)[1]
