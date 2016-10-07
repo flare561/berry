@@ -32,32 +32,33 @@ class berry(bot.SimpleBot):
           self.join_channel(event.params[0])
         if event.command in ['PRIVMSG']:
           #Reload config and commands.
-          if os.stat('config.json').st_mtime > self.lastloadconf:
+          if os.stat('config.json').st_mtime > self.lastloadconf or os.stat('commands.py').st_mtime > self.lastloadcommands or os.stat('custom_commands.py').st_mtime > self.lastloadcustomcommands:
+            #Reloading
             self.config = loadconf('config.json')
-          if os.stat('commands.py').st_mtime > self.lastloadcommands:
             reload(commands)
-          if os.stat('custom_commands.py').st_mtime > self.lastloadcustomcommands:
             reload(custom_commands)
+
+            #Create objects for commands and custom_commands
+            cmd = commands.commands(self.send_message, self.send_action, self.config)
+            cust_cmd = custom_commands.custom_commands(self.send_message, self.send_action, self.config)
+
+            #Get all regexes from all files, overwriting ones in commands and self with those in custom_commands
+            regexes = {x:getattr(cmd,x) for x in dir(cmd) if x.startswith('regex_') and callable(getattr(cmd, x))}
+            regexes.update({x:getattr(self,x) for x in dir(self) if x.startswith('regex_') and callable(getattr(self, x))})
+            regexes.update({x:getattr(cust_cmd,x) for x in dir(cust_cmd) if x.startswith('regex_') and callable(getattr(cust_cmd, x))})
+
+            #Get all commands from all files, overwriting ones in commands and self with those in custom_commands
+            cmds = {x:getattr(cmd,x) for x in dir(cmd) if x.startswith('command_') and callable(getattr(cmd, x))}
+            cmds.update({x:getattr(self,x) for x in dir(self) if x.startswith('command_') and callable(getattr(self, x))})
+            cmds.update({x:getattr(cust_cmd,x) for x in dir(cust_cmd) if x.startswith('command_') and callable(getattr(cust_cmd, x))})
+
+            event.cmds = cmds
 
           event.command=event.message.split(' ')[0]
           try:   event.params=event.message.split(' ',1)[1]
           except:event.params=''
 
-          #Create objects for commands and custom_commands
-          cmd = commands.commands(self.send_message, self.send_action, self.config)
-          cust_cmd = custom_commands.custom_commands(self.send_message, self.send_action, self.config)
-
-          #Get all regexes from all files, overwriting ones in commands and self with those in custom_commands
-          regexes = {x:getattr(cmd,x) for x in dir(cmd) if x.startswith('regex_') and callable(getattr(cmd, x))}
-          regexes.update({x:getattr(self,x) for x in dir(self) if x.startswith('regex_') and callable(getattr(self, x))})
-          regexes.update({x:getattr(cust_cmd,x) for x in dir(cust_cmd) if x.startswith('regex_') and callable(getattr(cust_cmd, x))})
-
-          #Get all commands from all files, overwriting ones in commands and self with those in custom_commands
-          cmds = {x:getattr(cmd,x) for x in dir(cmd) if x.startswith('command_') and callable(getattr(cmd, x))}
-          cmds.update({x:getattr(self,x) for x in dir(self) if x.startswith('command_') and callable(getattr(self, x))})
-          cmds.update({x:getattr(cust_cmd,x) for x in dir(cust_cmd) if x.startswith('command_') and callable(getattr(cust_cmd, x))})
-
-          event.cmds = cmds
+          
 
           #Execute regexes
           for regex in regexes:
@@ -101,8 +102,8 @@ if __name__ == "__main__":
   s=berry(config['nick'].encode('ascii', 'replace'))
   s.connect(config['server'].encode('ascii', 'replace'), channel=config['channels'].encode('ascii', 'replace'), use_ssl=False)
   s.config = config
-  s.lastloadconf = os.stat('config.json').st_mtime
-  s.lastloadcommands = os.stat('commands.py').st_mtime
-  s.lastloadcustomcommands = os.stat('custom_commands.py').st_mtime
+  s.lastloadconf = 0
+  s.lastloadcommands = 0
+  s.lastloadcustomcommands = 0
   print 'starting'
   s.start()
