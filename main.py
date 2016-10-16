@@ -42,15 +42,19 @@ class berry(bot.SimpleBot):
             cmd = commands.commands(self.send_message, self.send_action, self.config)
             cust_cmd = custom_commands.custom_commands(self.send_message, self.send_action, self.config)
 
+            #Method to get all callable objects with a given prefix from a given object
+            def get_methods(obj, prefix):
+              return {x:getattr(obj,x) for x in dir(obj) if x.startswith(prefix) and callable(getattr(obj, x))}
+
             #Get all regexes from all files, overwriting ones in commands and self with those in custom_commands
-            regexes = {x:getattr(cmd,x) for x in dir(cmd) if x.startswith('regex_') and callable(getattr(cmd, x))}
-            regexes.update({x:getattr(self,x) for x in dir(self) if x.startswith('regex_') and callable(getattr(self, x))})
-            regexes.update({x:getattr(cust_cmd,x) for x in dir(cust_cmd) if x.startswith('regex_') and callable(getattr(cust_cmd, x))})
+            regexes = get_methods(cmd, 'regex_')
+            regexes.update(get_methods(self, 'regex_'))
+            regexes.update(get_methods(cust_cmd, 'regex_'))
 
             #Get all commands from all files, overwriting ones in commands and self with those in custom_commands
-            cmds = {x:getattr(cmd,x) for x in dir(cmd) if x.startswith('command_') and callable(getattr(cmd, x))}
-            cmds.update({x:getattr(self,x) for x in dir(self) if x.startswith('command_') and callable(getattr(self, x))})
-            cmds.update({x:getattr(cust_cmd,x) for x in dir(cust_cmd) if x.startswith('command_') and callable(getattr(cust_cmd, x))})
+            cmds = get_methods(cmd, 'command_')
+            cmds.update(get_methods(self, 'command_'))
+            cmds.update(get_methods(cust_cmd, 'command_'))
 
             self.cmds = cmds
 
