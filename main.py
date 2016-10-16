@@ -20,7 +20,50 @@ class berry(bot.SimpleBot):
     else:
         self.send_message(event.respond, "Unsupported command")
 
-  
+  def reload_commands(self):
+    #Reloading
+    self.config = loadconf('config.json')
+    reload(commands)
+    reload(custom_commands)
+
+    #Create objects for commands and custom_commands
+    cmd = commands.commands(self.send_message, self.send_action, self.config)
+    cust_cmd = custom_commands.custom_commands(self.send_message, self.send_action, self.config)
+
+    #Method to get all callable objects with a given prefix from a given object
+    def get_methods(obj, prefix):
+      return {x:getattr(obj,x) for x in dir(obj) if x.startswith(prefix) and callable(getattr(obj, x))}
+
+    #Get all regexes from all files, overwriting ones in commands and self with those in custom_commands
+    self.regexes = get_methods(cmd, 'regex_')
+    self.regexes.update(get_methods(self, 'regex_'))
+    self.regexes.update(get_methods(cust_cmd, 'regex_'))
+
+    #Get all commands from all files, overwriting ones in commands and self with those in custom_commands
+    self.cmds = get_methods(cmd, 'command_')
+    self.cmds.update(get_methods(self, 'command_'))
+    self.cmds.update(get_methods(cust_cmd, 'command_'))
+
+  def privmsg(self,event):
+    #Reload config and commands.
+    if os.stat('config.json').st_mtime > self.lastloadconf or os.stat('commands.py').st_mtime > self.lastloadcommands or os.stat('custom_commands.py').st_mtime > self.lastloadcustomcommands:
+      self.reload_commands()
+
+    event.command = event.message.split(' ')[0]
+    try:
+      event.params = event.message.split(' ', 1)[1]
+    except:
+      event.params = ''
+    
+    #Execute regexes
+    for regex in self.regexes:
+      self.regexes[regex](event)
+        
+    #Execute command
+    if event.command[0] in self.config['prefixes'].split() and 'command_%s' % event.command[1:].lower() in self.cmds:
+      comm = self.cmds['command_%s' % event.command[1:].lower()]
+      if not ( event.respond in self.config['sfwchans'].split(',') and hasattr(comm, 'nsfw') ):
+        comm(event)
 
   def on_any(self,event):
     try:
@@ -31,48 +74,7 @@ class berry(bot.SimpleBot):
         if event.command == "INVITE":
           self.join_channel(event.params[0])
         if event.command in ['PRIVMSG']:
-          #Reload config and commands.
-          if os.stat('config.json').st_mtime > self.lastloadconf or os.stat('commands.py').st_mtime > self.lastloadcommands or os.stat('custom_commands.py').st_mtime > self.lastloadcustomcommands:
-            #Reloading
-            self.config = loadconf('config.json')
-            reload(commands)
-            reload(custom_commands)
-
-            #Create objects for commands and custom_commands
-            cmd = commands.commands(self.send_message, self.send_action, self.config)
-            cust_cmd = custom_commands.custom_commands(self.send_message, self.send_action, self.config)
-
-            #Method to get all callable objects with a given prefix from a given object
-            def get_methods(obj, prefix):
-              return {x:getattr(obj,x) for x in dir(obj) if x.startswith(prefix) and callable(getattr(obj, x))}
-
-            #Get all regexes from all files, overwriting ones in commands and self with those in custom_commands
-            regexes = get_methods(cmd, 'regex_')
-            regexes.update(get_methods(self, 'regex_'))
-            regexes.update(get_methods(cust_cmd, 'regex_'))
-
-            #Get all commands from all files, overwriting ones in commands and self with those in custom_commands
-            cmds = get_methods(cmd, 'command_')
-            cmds.update(get_methods(self, 'command_'))
-            cmds.update(get_methods(cust_cmd, 'command_'))
-
-            self.cmds = cmds
-
-          event.command=event.message.split(' ')[0]
-          try:   event.params=event.message.split(' ',1)[1]
-          except:event.params=''
-
-          
-
-          #Execute regexes
-          for regex in regexes:
-            regexes[regex](event)
-          
-          #Execute command
-          if event.command[0] in self.config['prefixes'].split() and 'command_%s' % event.command[1:].lower() in cmds:
-            comm = cmds['command_%s' % event.command[1:].lower()]
-            if not ( event.respond in self.config['sfwchans'].split(',') and hasattr(comm, 'nsfw') ):
-              comm(event)
+          self.privmsg(event)
 
     except:
       print "ERROR",str(sys.exc_info())
