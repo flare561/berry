@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-import HTMLParser,re,json,random,requests,datetime,socket,os,sys,oembed,urllib2,urllib,threading,urlparse,sys,traceback;
+import HTMLParser,re,json,random,requests,datetime,socket,os,sys,oembed,urllib2,urllib,threading,urlparse,sys,traceback,time,datetime,os,commands,functools,lxml.html
 from ircutils import format
 import lxml.etree as etree
-import lxml.html
 import wikipedia as wiki
 from time import strftime
 from datetime import tzinfo,timedelta
-import time,datetime,os,commands,functools
 
 def register(tag, value):
     def wrapped(fn):
