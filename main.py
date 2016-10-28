@@ -1,6 +1,6 @@
-import sys;import traceback;import json;from ircutils import bot
+import sys, traceback, json, time, datetime, os, commands, custom_commands
+from ircutils import bot
 from datetime import tzinfo,timedelta
-import time,datetime,os,commands,custom_commands
 
 
 class berry(bot.SimpleBot):
