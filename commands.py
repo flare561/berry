@@ -155,6 +155,31 @@ class commands:
             raise
 
     @register('nsfw', True)
+    def command_randgel(self,event):
+        '''Usage: ~randgel <tags> Used to search gelbooru.com for a random picture with the given tags'''
+        try:
+            j=requests.get("http://gelbooru.com/index.php",
+                params=dict(
+                    page="dapi",
+                    q="index",
+                    json="1",
+                    s="post",
+                    limit="100",
+                    tags=event.params
+                )).json()
+            if (len(j) > 0):
+                self.send_message(
+                    event.respond,
+                    u'http://gelbooru.com/index.php?page=post&s=view&id={}'.format(
+                        random.choice(j)[u'id']
+                    ).encode('utf-8','replace'))
+            else:
+                self.send_message(event.respond, "No Results")
+        except:
+            self.send_message(event.respond, "An error occurred while fetching your post.")
+            raise
+
+    @register('nsfw', True)
     def command_clop(self, event):
         '''Usage: ~clop <optional extra tags> Searches e621 for a random image with the tags rating:e and my_little_pony'''
         event.params +=  ' rating:e my_little_pony'
