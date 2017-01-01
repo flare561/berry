@@ -4,6 +4,12 @@ from datetime import tzinfo,timedelta
 
 
 class berry(bot.SimpleBot):
+  def __init__(self, config):
+        nick=config['nick'].encode('ascii', 'replace')
+        bot.SimpleBot.__init__(self, nick)
+        self.config=config
+        self.banned_words=set()
+        self.checking_for_banned_words=0
   def command_help(self, event):
     '''Usage: ~help <command> The fuck do you think it does?'''
     #Get commands with documentation
@@ -27,7 +33,7 @@ class berry(bot.SimpleBot):
     reload(custom_commands)
 
     #Create objects for commands and custom_commands
-    cmd = commands.commands(self.send_message, self.send_action, self.config)
+    cmd = commands.commands(self.send_message, self.send_action, self.banned_words, self.config)
     cust_cmd = custom_commands.custom_commands(self.send_message, self.send_action, self.config)
 
     #Method to get all callable objects with a given prefix from a given object
@@ -58,7 +64,7 @@ class berry(bot.SimpleBot):
     #Execute regexes
     for regex in self.regexes:
       self.regexes[regex](event)
-        
+      
     #Execute command
     if event.command[0] in self.config['prefixes'].split() and 'command_%s' % event.command[1:].lower() in self.cmds:
       comm = self.cmds['command_%s' % event.command[1:].lower()]
@@ -71,8 +77,29 @@ class berry(bot.SimpleBot):
       event.respond = event.target if event.target != self.nickname else event.source
       
       if not event.source == self.nickname:
-        if event.command == "INVITE":
+        if event.command == 'INVITE':
           self.join_channel(event.params[0])
+          
+        #after joining a channel, send mode g command to check for banned words
+        if event.command == "RPL_ENDOFNAMES":
+            channel=event.params[0]
+            self.checking_for_banned_words+=1
+            self.execute("MODE",channel,"g")
+            
+        #take banned words from server messages
+        if is_int(event.command) and self.checking_for_banned_words>0: 
+            if len(event.params)==4 and event.params[0] in config['channels'].split(',') and is_int(event.params[3]):
+                self.banned_words.add(event.params[1])
+            if len(event.params)==2 and event.params[1]=='End of channel spamfilter list':
+                self.checking_for_banned_words-=1
+                
+        #update banned word list when someone uses mode +/-g
+        if event.command == 'MODE' and len(event.params)>=2:
+            if event.params[0]=='+g':
+                self.banned_words.add(event.params[1])
+            if event.params[0]=='-g' and event.params[1] in self.banned_words:
+                self.banned_words.remove(event.params[1])
+                
         if event.command in ['PRIVMSG']:
           self.privmsg(event)
 
@@ -102,12 +129,18 @@ def loadconf(filename):
     with open(filename, 'w') as conffile:
       json.dump(defaultConf,conffile, sort_keys=True, indent=4, separators=(',',': '))
       return defaultConf
+      
+def is_int(s):
+    try:
+        int(s)
+    except ValueError:
+        return False
+    return True
 
 if __name__ == "__main__":
   config = loadconf("config.json")
-  s=berry(config['nick'].encode('ascii', 'replace'))
+  s=berry(config)
   s.connect(config['server'].encode('ascii', 'replace'), channel=config['channels'].encode('ascii', 'replace'), use_ssl=False)
-  s.config = config
   s.lastloadconf = 0
   s.lastloadcommands = 0
   s.lastloadcustomcommands = 0

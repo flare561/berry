@@ -3,6 +3,7 @@ import HTMLParser,re,json,random,requests,datetime,socket,os,sys,oembed,urllib2,
 from ircutils import format
 import lxml.etree as etree
 import wikipedia as wiki
+import re
 from time import strftime
 from datetime import tzinfo,timedelta
 
@@ -15,12 +16,28 @@ def register(tag, value):
         return wrapped_f
     return wrapped
 
+def is_str_allowed(str,bannedwords):
+    for pattern in bannedwords:
+        escapedv=re.escape(pattern)
+        escapedv=escapedv.replace('\\*','.*')
+        matches=re.search(escapedv,str)
+        if matches:
+            return False
+    return True
+    
+def is_all_str_allowed(strs,bannedwords):
+    for str in strs:
+        if not is_str_allowed(str,bannedwords):
+            return False
+    return True
+    
 class commands:
-    def __init__(self, send_message, send_action, config):
+    def __init__(self, send_message, send_action, banned_words, config):
         self.send_message = send_message
         self.config = config
         self.send_action = send_action
-
+        self.banned_words=banned_words
+        
     def regex_yt(self, event):
         ytmatch=re.compile(
             "https?:\/\/(?:[0-9A-Z-]+\.)?(?:youtu\.be\/|youtube\.com\S*[^\w\-\s"
@@ -121,7 +138,11 @@ class commands:
             t = requests.get(
                 'https://www.googleapis.com/customsearch/v1',
                 params=dict(q=event.params, cx=self.config['googleengine'], key=self.config['googleKey'], safe='off')
-                ).json()['items'][0]
+                ).json()
+            index=0
+            while(len(t['items'])>index+1 and not is_all_str_allowed([t['items'][index]['title'],t['items'][index]['link']],self.banned_words)):
+                index+=1
+            t=t['items'][index]
             self.send_message(
                 event.respond,
                 u'{}: {}'.format(
@@ -399,7 +420,11 @@ class commands:
             t = requests.get(
                 'https://www.googleapis.com/customsearch/v1',
                 params=dict(q=event.params, cx=self.config['googleengine'], key=self.config['googleKey'], safe='off', searchType='image')
-                ).json()['items'][0]
+                ).json()
+            index=0
+            while(len(t['items'])>index+1 and not is_all_str_allowed([t['items'][index]['title'],t['items'][index]['link']],self.banned_words)):
+                index+=1
+            t=t['items'][index]
             self.send_message(
                 event.respond,
                 u'{}: {}'.format(
