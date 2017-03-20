@@ -314,10 +314,14 @@ class commands:
     def command_imdb(self,event):
         '''Usage: ~imdb <movie title> Provides basic information of a given movie, if applicable.'''
         try:
+            if resp['Type']=='series':
+                MoS=str(resp['Year'])[0:4]+"-"+str(resp['Year'][5:])
+            else:
+                MoS=resp['Year']
             imresp = requests.get("http://www.omdbapi.com/?t={}".format(event.params)).json()
-            print("Year: {} | IMDB Rating: {} | Metascore Rating: {} | Runtime: {} | Plot: \x031,1{}...\x03 | http://www.imdb.com/title/{}".format(imresp['Year'],imresp['imdbRating'],imresp['Metascore'],imresp['Runtime'],imresp['Plot'][:199],imresp['imdbID']))
+            self.send_message(event.respond,"Year: {} | IMDB Rating: {} | Metascore Rating: {} | Runtime: {} | Plot: \x031,1{}...\x03 | http://www.imdb.com/title/{}".format("{}".format(MoS),resp['imdbRating'],resp['Metascore'],resp['Runtime'],resp['Plot'][:199],resp['imdbID']))
         except:
-            print("Movie not found! Try checking your spelling?")
+            self.send_message(event.respond,"Movie not found! Try checking your spelling?")
     
     def command_test(self, event):
         '''Usage: ~test Used to verify the bot is responding to messages'''
