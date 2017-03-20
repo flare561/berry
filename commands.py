@@ -548,21 +548,6 @@ class commands:
             self.send_message(event.respond, "No results")
             raise
 
-    def command_tpb(self, event):
-        '''Usage: ~tpb <query> Used to search the pirate bay for the most seeded entry for a given query'''
-        try:
-            tpb = requests.get("https://oldpiratebay.org/search.php?q={}&Torrent_sort=seeders.desc".format(event.params), verify=False).text
-            tpbHTML = lxml.html.fromstring(tpb)
-            tpbHTML.make_links_absolute("http://oldpiratebay.org")
-            links = tpbHTML.iterlinks()
-            while True:
-                currentLink = next(links)[2]
-                if currentLink.startswith("http://oldpiratebay.org/torrent/"):
-                    self.send_message(event.respond, currentLink)
-                    break
-        except:
-            self.send_message(event.respond, "No results, or TPB is down")
-
     def command_mal(self, event):
         '''Usage: ~mal <query> Searches My Anime List for a given anime using a custom google search'''
         try:
