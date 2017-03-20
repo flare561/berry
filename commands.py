@@ -310,7 +310,15 @@ class commands:
         '''Usage: ~define <word> Gets the definition of a word from wolfram alpha'''
         event.params = 'define ' + event.params
         self.command_wolf(event)
-
+    
+    def command_imdb(self,event):
+        '''Usage: ~imdb <movie title> Provides basic information of a given movie, if applicable.'''
+        try:
+            imresp = requests.get("http://www.omdbapi.com/?t={}".format(event.params)).json()
+            print("Year: {} | IMDB Rating: {} | Metascore Rating: {} | Runtime: {} | Plot: \x031,1{}...\x03 | http://www.imdb.com/title/{}".format(imresp['Year'],imresp['imdbRating'],imresp['Metascore'],imresp['Runtime'],imresp['Plot'][:199],imresp['imdbID']))
+        except:
+            print("Movie not found! Try checking your spelling?")
+    
     def command_test(self, event):
         '''Usage: ~test Used to verify the bot is responding to messages'''
         possibleAnswers=[
