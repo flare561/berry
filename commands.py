@@ -314,8 +314,13 @@ class commands:
     def command_imdb(self,event):
         '''Usage: ~imdb <movie title> Provides basic information of a given movie, if applicable.'''
         try:
-            imresp = requests.get("http://www.omdbapi.com/?t={}".format(event.params)).json()
-            self.send_message(event.respond,"Year: {} | IMDB Rating: {} | Metascore Rating: {} | Runtime: {} | Plot: \x031,1{}...\x03 | http://www.imdb.com/title/{}".format(imresp['Year'],imresp['imdbRating'],imresp['Metascore'],imresp['Runtime'],imresp['Plot'][:199],imresp['imdbID']))
+            resp = requests.get("http://www.omdbapi.com/?t={}".format(event.params)).json()
+            if resp['Type']=='series':
+                MoS=str(resp['Year'])[0:4]+"-"+str(resp['Year'][5:])
+            else:
+                MoS=resp['Year']
+            self.send_message(event.respond,"Year: {} | IMDB Rating: {} | Metascore Rating: {} | Runtime: {} | Plot: \x031,1{}...\x03 | http://www.imdb.com/title/{}".format("{}".format(MoS),resp['imdbRating'],resp['Metascore'],resp['Runtime'],resp['Plot'][:199],resp['imdbID']))
+
         except:
             self.send_message(event.respond,"Movie not found! Try checking your spelling?")
     
