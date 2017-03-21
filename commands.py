@@ -315,7 +315,7 @@ class commands:
         '''Usage: ~imdb <movie title> Provides basic information of a given movie, if applicable.'''
         try:
             resp = requests.get("http://www.omdbapi.com/?t={}".format(event.params)).json()
-            self.send_message(event.respond,u"Year: {} | IMDB Rating: {} | Metascore Rating: {} | Runtime: {} | Plot: \x031,1{}...\x03 | http://www.imdb.com/title/{}".format(resp['Year'],resp['imdbRating'],resp['Metascore'],resp['Runtime'],resp['Plot'][:199],resp['imdbID'])).encode('utf-8','replace')
+            self.send_message(event.respond,u"Year: {} | IMDB Rating: {} | Metascore Rating: {} | Runtime: {} | Plot: \x031,1{}...\x03 | http://www.imdb.com/title/{}".format(resp['Year'],resp['imdbRating'],resp['Metascore'],resp['Runtime'],resp['Plot'][:199],resp['imdbID']).encode('utf-8','replace'))
 
         except:
             self.send_message(event.respond,"Movie not found! Try checking your spelling?")
