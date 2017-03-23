@@ -68,6 +68,8 @@ class commands:
 
                     if (dislikes > 0):
                         rating = str( int((likes / (likes+dislikes)) * 100)) + '%'
+                    elif dislikes==0 and likes==0:
+                        rating = 'unrated'
                     else:
                         rating = "100%"
                 else:
