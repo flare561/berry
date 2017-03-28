@@ -6,7 +6,7 @@ import wikipedia as wiki
 import re
 from time import strftime
 from datetime import tzinfo,timedelta
-import dateutil.parser
+import arrow
 
 def register(tag, value):
     def wrapped(fn):
@@ -31,18 +31,6 @@ def is_all_str_allowed(strs,bannedwords):
         if not is_str_allowed(str,bannedwords):
             return False
     return True
-
-ZERO = timedelta(0)
-
-class UTC(tzinfo):
-    def utcoffset(self, dt):
-	return ZERO
-    def tzname(self, dt):
-	return "UTC"
-    def dst(self, dt):
-	return ZERO
-
-utc = UTC()
 	
 class commands:
     def __init__(self, send_message, send_action, banned_words, config):
@@ -73,20 +61,7 @@ class commands:
                 title = t['snippet']['title']
                 uploader = t['snippet']['channelTitle']
                 viewcount = t['statistics']['viewCount']
-		publishedtime = t['snippet']['publishedAt']
-
-        	timenow = datetime.datetime.now(utc)
-        	timediff = timenow - dateutil.parser.parse(publishedtime)
-        	timediff_s = timediff.seconds - (3600 * 2)
-        	timediff_d = divmod(timediff_s, 86400)
-        	timediff_h = divmod(timediff_s, 3600)
-        	timediff_m = divmod(timediff_s, 60)
-        	if (timediff_s >= 86400):
-        	    timediff_p = str(timediff_d[0]) + " days ago"
-        	elif (timediff_s >= 3600):
-        	    timediff_p = str(timediff_h[0]) + " hours ago"
-        	else:
-        	    timediff_p = str(timediff_m[0]) + " minutes ago" 
+		timediff = arrow.get(t['snippet']['publishedAt']).humanize()
 
                 if t['statistics'].has_key('likeCount') and t['statistics'].has_key('dislikeCount'):
                     likes = float(t['statistics']['likeCount'])
@@ -109,7 +84,7 @@ class commands:
                 seconds = int(matches[2]) if matches[2] != '' else 0
                 duration=str(datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds))
     
-                self.send_message(event.respond, u'{} | {} | {} | {} | {} | {}'.format(title, uploader, viewcount, timediff_p, rating, duration).encode('utf-8', 'replace'))
+                self.send_message(event.respond, u'{} | {} | {} | {} | {} | {}'.format(title, uploader, viewcount, timediff, rating, duration).encode('utf-8', 'replace'))
             except:
                 raise
 
@@ -135,20 +110,8 @@ class commands:
             title = t['snippet']['title']
             uploader = t['snippet']['channelTitle']
             viewcount = t['statistics']['viewCount']
-            publishedtime = t['snippet']['publishedAt']
+            timediff = arrow.get(t['snippet']['publishedAt']).humanize()
 
-            timenow = datetime.datetime.now(utc)
-            timediff = timenow - dateutil.parser.parse(publishedtime)
-            timediff_s = timediff.seconds - (3600 * 2)
-            timediff_d = divmod(timediff_s, 86400)
-            timediff_h = divmod(timediff_s, 3600)
-            timediff_m = divmod(timediff_s, 60)
-            if (timediff_s >= 86400):
-                timediff_p = str(timediff_d[0]) + " days ago"
-            elif (timediff_s >= 3600):
-                timediff_p = str(timediff_h[0]) + " hours ago"
-            else:
-                timediff_p = str(timediff_m[0]) + " minutes ago"
 
             if t['statistics'].has_key('likeCount') and t['statistics'].has_key('dislikeCount'):
                     likes = float(t['statistics']['likeCount'])
@@ -169,7 +132,7 @@ class commands:
             seconds = int(matches[2]) if matches[2] != '' else 0
             duration=str(datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds))
 
-            self.send_message(event.respond, u'https://youtu.be/{} > {} | {} | {} | {} | {} | {}'.format(vidid, title, uploader, viewcount, timediff_p, rating, duration).encode('utf-8', 'replace'))
+            self.send_message(event.respond, u'https://youtu.be/{} > {} | {} | {} | {} | {} | {}'.format(vidid, title, uploader, viewcount, timediff, rating, duration).encode('utf-8', 'replace'))
 
         except:
             self.send_message(event.respond,"No results")
