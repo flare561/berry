@@ -659,17 +659,17 @@ class commands:
     def command_derpi(self,event):
         '''Usage: ~derpi <query> Searches derpibooru for a query, tags are comma separated.'''
         sess=requests.Session()
-        page=lxml.html.fromstring(sess.get('https://derpiboo.ru/filters', verify=False).text)
+        page=lxml.html.fromstring(sess.get('https://derpibooru.org/filters', verify=False).text)
         authenticitytoken=page.xpath('//meta[@name="csrf-token"]')[0].attrib['content']
         body=dict()
         body['authenticity_token']=authenticitytoken
         body['_method']='patch'
-        sess.post('https://derpiboo.ru/filters/select?id=56027', data=body, headers=dict(Referer='https://derpiboo.ru/filters'))
-        results=sess.get('https://derpiboo.ru/search.json', data=dict(q=event.params)).json()['search']
+        sess.post('https://derpibooru.org/filters/select?id=56027', data=body, headers=dict(Referer='https://derpiboo.ru/filters'))
+        results=sess.get('https://derpibooru.org/search.json', data=dict(q=event.params)).json()['search']
         if len(results) > 0:
             choice=random.choice(results)
             idNum=choice['id_number']
-            self.send_message(event.respond, 'https://derpiboo.ru/%s'%idNum)
+            self.send_message(event.respond, 'https://derpibooru.org/%s'%idNum)
         else:
             self.send_message(event.respond, 'No results')
 
