@@ -659,9 +659,8 @@ class commands:
 
     def command_derpi(self,event):
         '''Usage: ~derpi <query> Searches derpibooru for a query, tags are comma separated.'''
-        requests.packages.urllib3.disable_warnings()
         sess=requests.Session()
-        page=lxml.html.fromstring(sess.get('https://derpibooru.org/filters', verify=False).text)
+        page=lxml.html.fromstring(sess.get('https://derpibooru.org/filters').text)
         authenticitytoken=page.xpath('//meta[@name="csrf-token"]')[0].attrib['content']
         body=dict()
         body['authenticity_token']=authenticitytoken
