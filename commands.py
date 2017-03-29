@@ -25,13 +25,13 @@ def is_str_allowed(str,bannedwords):
         if matches:
             return False
     return True
-    
+
 def is_all_str_allowed(strs,bannedwords):
     for str in strs:
         if not is_str_allowed(str,bannedwords):
             return False
     return True
-	
+
 class commands:
     def __init__(self, send_message, send_action, banned_words, config):
         self.send_message = send_message
@@ -61,7 +61,7 @@ class commands:
                 title = t['snippet']['title']
                 uploader = t['snippet']['channelTitle']
                 viewcount = t['statistics']['viewCount']
-		timediff = arrow.get(t['snippet']['publishedAt']).humanize()
+        timediff = arrow.get(t['snippet']['publishedAt']).humanize()
 
                 if t['statistics'].has_key('likeCount') and t['statistics'].has_key('dislikeCount'):
                     likes = float(t['statistics']['likeCount'])
@@ -173,16 +173,16 @@ class commands:
                 try:
                     selection=random.choice(j)
                     if selection['artist']!=[]:
-		    	artist=" & ".join(selection['artist'])
-		    else:
-			artist='N/A'
+            	artist=" & ".join(selection['artist'])
+           else:
+                artist='N/A'
                     if selection['rating']=='e':
                         rating='Explicit'
                     elif selection['rating']=='s':
                         rating='Safe'
                     else:
                         rating='Questionable'
-		    self.send_message(event.respond,u'http://e621.net/post/show/{0[id]} | Artist(s): {1} | Score: {0[score]} | Rating: {2}'.format(selection,artist,rating).encode('utf-8','replace'))
+            self.send_message(event.respond,u'http://e621.net/post/show/{0[id]} | Artist(s): {1} | Score: {0[score]} | Rating: {2}'.format(selection,artist,rating).encode('utf-8','replace'))
                 except:
                     self.send_message(event.respond, "An error occurred while fetching your post.")
             else:
@@ -508,6 +508,7 @@ class commands:
                     'Reddit probably shat itself, try again or whatever.'
                     )
             raise
+
     def regex_e621(self,event):
         e621match = re.compile('https?:\/\/e621\.net\/post\/show\/\d{2,7}',re.I)
         res=e621match.findall(event.message)
@@ -515,9 +516,9 @@ class commands:
             select = link +'.json'
             selection=requests.get(select).json()
             if selection['artist']!=[]:
-		artist=" & ".join(selection['artist'])
-	    else:
-		artist='N/A'
+                artist=" & ".join(selection['artist'])
+            else:
+                artist='N/A'
             if selection['rating']=='e':
                 rating='Explicit'
             elif selection['rating']=='s':
@@ -525,7 +526,7 @@ class commands:
             else:
                 rating='Questionable'
             self.send_message(event.respond,u'Artist(s): {1} | Score: {0[score]} | Rating: {2}'.format(selection,artist,rating).encode('utf-8','replace'))
-	
+
     def regex_reddit(self,event):
         if not event.command.lower()[1:] == 'rs':
             srmatch=re.compile('(?<!\S)/(r|u)/(\w+(?:\+\w+)*(?:/\S+)*)', re.I)
@@ -658,6 +659,7 @@ class commands:
 
     def command_derpi(self,event):
         '''Usage: ~derpi <query> Searches derpibooru for a query, tags are comma separated.'''
+        requests.packages.urllib3.disable_warnings()
         sess=requests.Session()
         page=lxml.html.fromstring(sess.get('https://derpibooru.org/filters', verify=False).text)
         authenticitytoken=page.xpath('//meta[@name="csrf-token"]')[0].attrib['content']
@@ -665,13 +667,15 @@ class commands:
         body['authenticity_token']=authenticitytoken
         body['_method']='patch'
         sess.post('https://derpibooru.org/filters/select?id=56027', data=body, headers=dict(Referer='https://derpiboo.ru/filters'))
+        if event.params == "":
+            event.params = "*"
         results=sess.get('https://derpibooru.org/search.json', data=dict(q=event.params)).json()['search']
         if len(results) > 0:
             choice=random.choice(results)
             idNum=choice['id']
-            self.send_message(event.respond, 'https://derpibooru.org/%s'%idNum)
+            self.send_message(event.respond, ('https://derpibooru.org/%s'%idNum).encode("utf-8", "replace"))
         else:
-            self.send_message(event.respond, 'No results')
+            self.send_message(event.respond, 'No results'.encode("utf-8", "replace"))
 
     def command_pony(self,event):
         '''Usage: ~pony Gives time until next episode of mlp'''
