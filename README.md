@@ -19,6 +19,8 @@ python-oembed https://github.com/abarmat/python-oembed
 
 wikipedia https://github.com/goldsmith/Wikipedia
 
+arrow https://pypi.python.org/pypi/arrow
+
 and
 
 IRCUtils https://pypi.python.org/pypi/ircutils
