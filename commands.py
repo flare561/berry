@@ -172,14 +172,17 @@ class commands:
             if (len(j) > 0):
                 try:
                     selection=random.choice(j)
-                    artist=" & ".join(selection['artist'])
+                    if selection['artist']!=[]:
+		    	artist=" & ".join(selection['artist'])
+		    else:
+			artist='N/A'
                     if selection['rating']=='e':
                         rating='Explicit'
                     elif selection['rating']=='s':
                         rating='Safe'
                     else:
                         rating='Questionable'
-		    self.send_message(event.respond,u'http://e621.net/post/show/{0[id]} | Artist: {1} | Score: {0[score]} | Rating: {2}'.format(selection,artist,rating).encode('utf-8','replace'))
+		    self.send_message(event.respond,u'http://e621.net/post/show/{0[id]} | Artist(s): {1} | Score: {0[score]} | Rating: {2}'.format(selection,artist,rating).encode('utf-8','replace'))
                 except:
                     self.send_message(event.respond, "An error occurred while fetching your post.")
             else:
@@ -511,7 +514,10 @@ class commands:
         for link in res:
             select = link +'.json'
             selection=requests.get(select).json()
-            artist=" & ".join(selection['artist'])
+            if selection['artist']!=[]:
+		artist=" & ".join(selection['artist'])
+	    else:
+		artist='N/A'
             if selection['rating']=='e':
                 rating='Explicit'
             elif selection['rating']=='s':
