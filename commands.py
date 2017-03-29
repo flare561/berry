@@ -170,11 +170,18 @@ class commands:
                     tags=event.params
                 )).json()
             if (len(j) > 0):
-                self.send_message(
-                    event.respond,
-                    u'http://e621.net/post/show/{}'.format(
-                        random.choice(j)[u'id']
-                    ).encode('utf-8','replace'))
+                try:
+                    selection=random.choice(j)
+                    artist=str(selection['artist'])[2:-2]
+                    if selection['rating']=='e':
+                        rating='Explicit'
+                    elif selection['rating']=='s':
+                        rating='Safe'
+                    else:
+                        rating='Questionable'
+		    self.send_message(event.respond,u'http://e621.net/post/show/{0[id]} | Artist: {1} | Score: {0[score]} | Rating: {2}'.format(selection,artist,rating).encode('utf-8','replace'))
+                except:
+                    self.send_message(event.respond, "An error occurred while fetching your post.")
             else:
                 self.send_message(event.respond, "No Results")
         except:
