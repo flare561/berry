@@ -172,7 +172,7 @@ class commands:
             if (len(j) > 0):
                 try:
                     selection=random.choice(j)
-                    artist=str(selection['artist'])[2:-2]
+                    artist=" & ".join(selection['artist'])
                     if selection['rating']=='e':
                         rating='Explicit'
                     elif selection['rating']=='s':
@@ -505,7 +505,21 @@ class commands:
                     'Reddit probably shat itself, try again or whatever.'
                     )
             raise
-
+    def regex_e621(self,event):
+        e621match = re.compile('https?:\/\/e621\.net\/post\/show\/\d{2,7}',re.I)
+        res=e621match.findall(event.message)
+        for link in res:
+            select = link +'.json'
+            selection=requests.get(select).json()
+            artist=" & ".join(selection['artist'])
+            if selection['rating']=='e':
+                rating='Explicit'
+            elif selection['rating']=='s':
+                rating='Safe'
+            else:
+                rating='Questionable'
+            self.send_message(event.respond,u'Artist(s): {1} | Score: {0[score]} | Rating: {2}'.format(selection,artist,rating).encode('utf-8','replace'))
+	
     def regex_reddit(self,event):
         if not event.command.lower()[1:] == 'rs':
             srmatch=re.compile('(?<!\S)/(r|u)/(\w+(?:\+\w+)*(?:/\S+)*)', re.I)
