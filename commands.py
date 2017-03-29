@@ -668,7 +668,7 @@ class commands:
         results=sess.get('https://derpibooru.org/search.json', data=dict(q=event.params)).json()['search']
         if len(results) > 0:
             choice=random.choice(results)
-            idNum=choice['id_number']
+            idNum=choice['id']
             self.send_message(event.respond, 'https://derpibooru.org/%s'%idNum)
         else:
             self.send_message(event.respond, 'No results')
