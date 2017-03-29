@@ -61,7 +61,7 @@ class commands:
                 title = t['snippet']['title']
                 uploader = t['snippet']['channelTitle']
                 viewcount = t['statistics']['viewCount']
-        timediff = arrow.get(t['snippet']['publishedAt']).humanize()
+                timediff = arrow.get(t['snippet']['publishedAt']).humanize()
 
                 if t['statistics'].has_key('likeCount') and t['statistics'].has_key('dislikeCount'):
                     likes = float(t['statistics']['likeCount'])
