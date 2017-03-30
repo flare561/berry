@@ -83,7 +83,8 @@ class commands:
                 minutes = int(matches[1]) if matches[1] != '' else 0
                 seconds = int(matches[2]) if matches[2] != '' else 0
                 duration=str(datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds))
-    
+                
+                viewcount=format(int(viewcount),',')
                 self.send_message(event.respond, u'{} | {} | {} | {} | {} | {}'.format(title, uploader, viewcount, timediff, rating, duration).encode('utf-8', 'replace'))
             except:
                 raise
@@ -131,7 +132,8 @@ class commands:
             minutes = int(matches[1]) if matches[1] != '' else 0
             seconds = int(matches[2]) if matches[2] != '' else 0
             duration=str(datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds))
-
+            viewcount=format(int(viewcount),',')
+            
             self.send_message(event.respond, u'https://youtu.be/{} > {} | {} | {} | {} | {} | {}'.format(vidid, title, uploader, viewcount, timediff, rating, duration).encode('utf-8', 'replace'))
 
         except:
