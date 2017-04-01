@@ -295,16 +295,18 @@ class commands:
             d=x.xpath('//pod[@primary="true"]/subpod/plaintext')
     
             results=[o.text.replace('\n', '').encode('utf-8', 'replace') for o in d]
+            
+            search_url = "http://www.wolframalpha.com/input/?i={}".format(urllib.quote(event.params, ''))
     
             if len(results) < 1:
                 responseStr = "No results available, try the query page:"
             else:
                 responseStr = '; '.join(results)
     
-            if len(responseStr) > 384:
-                responseStr = responseStr[:384] + "..."
+            if (len(responseStr) + len(search_url)) > 390:
+                responseStr = responseStr[:(390-len(search_url)] + "..."
     
-            responseStr += " http://www.wolframalpha.com/input/?i={}".format(urllib.quote(event.params, ''))
+            responseStr += " " + search_url
     
             self.send_message(
                 event.respond,
