@@ -266,7 +266,7 @@ class commands:
             return
     
         try:
-            rep = requests.get("https://translate.yandex.net/api/v1.5/tr.json/translate?key={}&text={}&lang={}-{}&format=plain".format(key,urllib.parse.quote_plus(' '.join(toTrans[2:])),LangFrom,LangTo)).json()
+            rep = requests.get("https://translate.yandex.net/api/v1.5/tr.json/translate?key={}&text={}&lang={}-{}&format=plain".format(key,urllib.quote_plus(' '.join(toTrans[2:])),LangFrom,LangTo)).json()
             text = ' '.join(rep['text'])
             if len(text)>397:
                 text=text[0:396]+'...'
