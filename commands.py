@@ -330,7 +330,7 @@ class commands:
                 responseStr = '; '.join(results)
     
             if (len(responseStr) + len(search_url)) > 390:
-                responseStr = responseStr[:(390-len(search_url)] + "..."
+                responseStr = responseStr[:(390-len(search_url))] + "..."
     
             responseStr += " " + search_url
     
