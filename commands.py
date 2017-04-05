@@ -249,8 +249,32 @@ class commands:
         self.send_message(
             event.respond,
             u'http://imgur.com/a/{}'.format(album).encode('utf-8', 'replace'))
+   
+    def command_translate(self,event):
+        '''Usage: ~translate <LanguageFrom> <LanguageTo> translates a string of text between languages.'''
+        toTrans = event.params.split()
+        toTrans[0]=toTrans[0].lower()
+        toTrans[1]=toTrans[1].lower()
+        langs = {'afrikaans':'af' ,'albanian':'sq' ,'amharic':'am' ,'arabic':'ar' ,'armenian':'hy' ,'azerbaijan':'az' ,'bashkir':'ba' ,'basque':'eu' ,'belarusian':'be' ,'bengali':'bn' ,'bosnian':'bs' ,'bulgarian':'bg' ,'catalan':'ca' ,'cebuano':'ceb' ,'chinese':'zh' ,'croatian':'hr' ,'czech':'cs' ,'danish':'da' ,'dutch':'nl' ,'english':'en' ,'esperanto':'eo' ,'estonian':'et' ,'finnish':'fi' ,'french':'fr' ,'galician':'gl' ,'georgian':'ka' ,'german':'de' ,'greek':'el' ,'gujarati':'gu' ,'haitian':'ht' ,'hebrew':'he' ,'hill mari':'mrj' ,'hindi':'hi' ,'hungarian':'hu' ,'icelandic':'is' ,'indonesian':'id' ,'irish':'ga' ,'italian':'it' ,'japanese':'ja' ,'javanese':'jv' ,'kannada':'kn' ,'kazakh':'kk' ,'korean':'ko' ,'kyrgyz':'ky' ,'latin':'la' ,'latvian':'lv' ,'lithuanian':'lt' ,'luxembourgish':'lb' ,'macedonian':'mk' ,'malagasy':'mg' ,'malay':'ms' ,'malayalam':'ml' ,'maltese':'mt' ,'maori':'mi' ,'marathi':'mr' ,'mari':'mhr' ,'mongolian':'mn' ,'nepali':'ne' ,'norwegian':'no' ,'papiamento':'pap' ,'persian':'fa' ,'polish':'pl' ,'portuguese':'pt' ,'punjabi':'pa' ,'romanian':'ro' ,'russian':'ru' ,'scottish':'gd' ,'serbian':'sr' ,'sinhala':'si' ,'slovakian':'sk' ,'slovenian':'sl' ,'spanish':'es' ,'sundanese':'su' ,'swahili':'sw' ,'swedish':'sv' ,'tagalog':'tl' ,'tajik':'tg' ,'tamil':'ta' ,'tatar':'tt' ,'telugu':'te' ,'thai':'th' ,'turkish':'tr' ,'udmurt':'udm' ,'ukrainian':'uk' ,'urdu':'ur' ,'uzbek':'uz' ,'vietnamese':'vi' ,'welsh':'cy' ,'xhosa':'xh' ,'yiddish':'yi'}
+        key='trnsl.1.1.20170403T165802Z.a214e2a67d20b0e6.ad95773f56547cd48cba8ecbd9dd1db0aa056c0f'
+    
+        try:
+            LangFrom = langs[toTrans[0]] if toTrans[0] not in langs.values() else toTrans[0]
+            LangTo = langs[toTrans[1]] if toTrans[1] not in langs.values() else toTrans[1]
+        except:
+            self.send_message(event.respond, 'Invalid language!')
+            return
+    
+        try:
+            rep = requests.get("https://translate.yandex.net/api/v1.5/tr.json/translate?key={}&text={}&lang={}-{}&format=plain".format(key,urllib.parse.quote_plus(' '.join(toTrans[2:])),LangFrom,LangTo)).json()
+            text = ' '.join(rep['text'])
+            if len(text)>397:
+                text=text[0:396]+'...'
+            self.send_message(event.respond, text.encode('utf-8','replace'))
+        except:
+            self.send_message(event.respond, 'Translation unsuccessful! Maybe the service is down?')
 
-
+        
     def command_truerandjur(self, event):
         '''Usage: ~truerandjur <number> Used to post random imgur pictures, from randomly generated IDs, takes a little while to find images so be patient, <number> defines the number of results with a max of 10'''
         count = 1
