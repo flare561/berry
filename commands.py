@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import HTMLParser,re,json,random,requests,datetime,socket,os,sys,oembed,urllib2,urllib,threading,urlparse,sys,traceback,time,datetime,os,commands,functools,lxml.html
-from ircutils import format
+from ircutils import format as ircformat
 import lxml.etree as etree
 import wikipedia as wiki
 import re
