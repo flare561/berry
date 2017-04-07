@@ -184,7 +184,7 @@ class commands:
                         rating='Safe'
                     else:
                         rating='Questionable'
-                    self.send_message(event.respond,u'http://e621.net/post/show/{0[id]} | Artist(s): {1} | Score: {0[score]} | Rating: {2}'.format(selection,artist,rating).encode('utf-8','replace'))
+                    self.send_message(event.respond,u'http://e621.net/post/show/{0[id]} | Artist(s): {1} | Score: {0[score]} | Rating: {2} | Post Date: {3}'.format(selection,artist,rating,arrow.get(selection['created_at']['s']).format('YYYY-MM-DD')).encode('utf-8','replace'))
                 except:
                     self.send_message(event.respond, "An error occurred while fetching your post.")
             else:
@@ -553,7 +553,7 @@ class commands:
                 rating='Safe'
             else:
                 rating='Questionable'
-            self.send_message(event.respond,u'Artist(s): {1} | Score: {0[score]} | Rating: {2}'.format(selection,artist,rating).encode('utf-8','replace'))
+            self.send_message(event.respond,u'Artist(s): {1} | Score: {0[score]} | Rating: {2} | Post Date: {3}'.format(selection,artist,rating,arrow.get(selection['created_at']['s']).format('YYYY-MM-DD')).encode('utf-8','replace'))
 
     def regex_reddit(self,event):
         if not event.command.lower()[1:] == 'rs':
