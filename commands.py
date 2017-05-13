@@ -538,7 +538,7 @@ class commands:
                 event.respond,
                 'Select: {}'.format(random.choice(event.params.split(' '))))
         else:
-            self.command_flip(event)
+            self.send_message(event.respond, "Invalid parameters. Please include arguements.")
 
     def command_flip(self, event):
         '''Usage: ~flip Used to flip a coin, responds with heads or tails'''
