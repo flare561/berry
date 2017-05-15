@@ -582,21 +582,53 @@ class commands:
                     str(random.randint(1, dieSize)) for x in range(numDice)
                 ])))
 
-    def command_ud(self, event):
-        '''Usage: ~ud <query> Used to search Urban Dictionary for the first definition of a word'''
+    def ud(self, event, sort=None):
         try:
-            j = requests.get(
-                "http://api.urbandictionary.com/v0/define",
-                params=dict(term=event.params)).json()[u'list']
-            if (len(j) > 0):
-                self.send_message(event.respond, j[0][u'definition'].replace(
-                    '\r', '').replace('\n', ' ').encode('UTF-8', 'replace'))
-            else:
-                self.send_message(event.respond, "No Results")
+            rank = max(1, int(event.params.split('  ')[-1]))
+        except ValueError:
+            rank = 1
+        
+        index = rank - 1
+
+
+        def calc_score(json):
+            total = json.get('thumbs_up', 0) + json.get('thumbs_down', 0)
+            return ((json.get('thumbs_up', 0) * 100) // total) if total > 0 else 0
+
+        if sort is None:
+            sort = calc_score
+
+        try:
+            word = event.params.split('  ')[0]
+            k = requests.get("http://api.urbandictionary.com/v0/define",
+                params = dict(term=word)
+            ).json()[u'list']
+            k.sort(key=sort, reverse=True)
+            k = k[index]
+            definition = re.sub(r'[\r\n]', '', k['definition'].encode('UTF-8', 'replace')
+            if (len(definition) > 380):
+                definition = "{}...".format(definition[:380])
+            response = "#{}: {} | Score: {}/{} {}% | {}".format(
+                rank,
+                definition,
+                k['thumbs_up'],
+                k['thumbs_down'],
+                str(calc_score(k)),
+                k['permalink']
+            )
+            self.send_message(event.respond, response)
         except:
-            self.send_message(event.respond,
-                              "An error occurred while fetching your post.")
+            self.send_message(event.respond, "An error occurred while fetching your post, or there are no results.")
             raise
+    
+    def command_ud(self, event):
+        '''Usage: ~ud <query>\s\s<int n> Used to search Urban Dictionary for the first (or nth) definition of a word, using flat upvote rank style. Note: a double space is required between parameters'''
+        self.ud(event, sort=lambda x: x.get('thumbs_up', 0))
+
+
+    def command_udr(self, event):
+        '''Usage: ~udr <query>\s\s<int n> Used to search Urban Dictionary for the first (or nth) definition of a word, using ratio (upvotes/downvotes) rank style. Note: a double space is required between parameters'''
+        self.ud(event)
 
     def command_isup(self, event):
         '''Usage: ~isup <site> used to check if a given website is up using isup.me'''
