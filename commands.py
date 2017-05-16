@@ -504,19 +504,26 @@ class commands:
         self.command_wolf(event)
 
     def command_imdb(self, event):
-        '''Usage: ~imdb <movie title> Provides basic information of a given movie, if applicable.'''
-        try:
-            resp = requests.get(
-                "http://www.omdbapi.com/?t={}".format(event.params)).json()
-            self.send_message(
+    '''Usage: ~imdb <movie title> Provides basic information of a given movie, if applicable.'''
+    t = requests.get(
+                'https://www.googleapis.com/customsearch/v1',
+                params=dict(
+                    q='site:imdb.com {}'.format(event.params),
+                    cx=self.config['googleengine'],
+                    key=self.config['googleKey'],
+                    safe='off')).json()
+    movie_id = t['items'][0]['link'][-10:-1]
+    try:
+        resp = requests.get(
+                "http://www.omdbapi.com/?i={}&apikey=b6bc9ea".format(movie_id)).json()
+        self.send_message(
                 event.respond,
                 u"Year: {} | IMDB Rating: {} | Metascore Rating: {} | Runtime: {} | Plot: \x031,1{}...\x03 | http://www.imdb.com/title/{}".
                 format(resp['Year'], resp['imdbRating'], resp['Metascore'],
                        resp['Runtime'], resp['Plot'][:199],
                        resp['imdbID']).encode('utf-8', 'replace'))
-
-        except:
-            self.send_message(event.respond,
+    except:
+        self.send_message(event.respond,
                               "Movie not found! Try checking your spelling?")
 
     def command_test(self, event):
