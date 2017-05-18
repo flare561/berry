@@ -869,24 +869,23 @@ class commands:
     def command_wiki(self, event):
         '''Usage: ~wiki <query> Searches wikipedia for a given query'''
         try:
-            responseStr = wiki.page(event.params).summary.replace('\n', ' ')
-            urllen = 381 - len(wiki.page(event.params).url)
+            page = wiki.page(event.params)
+            responseStr = page.summary.replace('\n', ' ')
+            url = page.url
+            urllen = 381 - len(url)
             if len(responseStr) > urllen:
-                responseStr = responseStr[:urllen] + "... | " + wiki.page(event.params).url
+                responseStr = responseStr[:urllen] + "... | " + url
             self.send_message(event.respond,
                               responseStr.encode('utf-8', 'replace'))
         except wiki.exceptions.DisambiguationError as e:
             responseStr = str(e).replace('\n', ', ')
-            urllen = 381 - len(wiki.page(event.params).url)
-            if len(responseStr) > urllen:
-                responseStr = responseStr[:urllen] + "... | " + wiki.page(event.params).url
             self.send_message(event.respond, responseStr)
         except:
             self.send_message(event.respond, "No results")
             raise
 
     def command_wimg(self, event):
-        '''Usage: ~wimg <query> Links the first image result from wikipedia for a given query'''
+        '''Usage: ~wimg <query> Searches wikipedia for the first image of a given query'''
         try:
             link = wiki.page(event.params).images[1]
             self.send_message(event.respond,
@@ -897,6 +896,7 @@ class commands:
         except:
             self.send_message(event.respond, "No results")
             raise
+
 
     def command_feels(self, event):
         self.send_message(event.respond,
