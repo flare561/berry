@@ -870,16 +870,17 @@ class commands:
         '''Usage: ~wiki <query> Searches wikipedia for a given query'''
         try:
             page = wiki.page(event.params)
-            responseStr = page.summary.replace('\n', ' ')
+            summary = page.summary.replace('\n', ' ')
             url = page.url
-            urllen = 381 - len(url)
-            if len(responseStr) > urllen:
-                responseStr = responseStr[:urllen] + "... | " + url
-            self.send_message(event.respond,
-                              responseStr.encode('utf-8', 'replace'))
+            maxlen = 381 - len(url)
+            resp = u"{}... | {}".format(summary[:maxlen], url)
+            self.send_message(event.respond, resp)
         except wiki.exceptions.DisambiguationError as e:
-            responseStr = str(e).replace('\n', ', ')
-            self.send_message(event.respond, responseStr)
+            url = "https://en.wikipedia.org/wiki/%s" % urllib.quote_plus("_".join(event.params.split()))
+            maxlen = 381 - len(url)
+            options = u", ".join(e.options)
+            options = u"{}... | {}".format(options[:maxlen], url)
+            self.send_message(event.respond, options)
         except:
             self.send_message(event.respond, "No results")
             raise
@@ -891,8 +892,8 @@ class commands:
             self.send_message(event.respond,
                 link.encode('utf-8', 'replace'))
         except wiki.exceptions.DisambiguationError as e:
-            response = str(e).replace('\n', ', ')
-            self.send_message(event.respond, response)
+            options = u", ".join(e.options)
+            self.send_message(event.respond, options)
         except:
             self.send_message(event.respond, "No results")
             raise
