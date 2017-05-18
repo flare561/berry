@@ -19,6 +19,12 @@ class berry(bot.SimpleBot):
         self.banned_words = set()
         self.checking_for_banned_words = 0
 
+    def send_message(self, to, message):
+        super(berry, self).send_message(to, message.encode('utf-8', 'replace'))
+
+    def send_action(self, to, message):
+        super(berry, self).send_action(to, message.encode('utf-8', 'replace'))
+
     def command_help(self, event):
         '''Usage: ~help <command> The fuck do you think it does?'''
         # Get commands with documentation
