@@ -615,7 +615,7 @@ class commands:
             ).json()[u'list']
             k.sort(key=sort, reverse=True)
             k = k[index]
-            definition = re.sub(r'[\r\n]', '', k['definition'].encode('UTF-8', 'replace'))
+            definition = re.sub(r'[\r\n]', ' ', k['definition'].encode('UTF-8', 'replace'))
             if (len(definition) > 380):
                 definition = "{}...".format(definition[:380])
             response = "#{}: {} | Score: {}/{} {}% | {}".format(
