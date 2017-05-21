@@ -961,8 +961,8 @@ class commands:
     def command_fwt(self, event):
         '''Usage: ~fwt <text> repeats text in full width and adds spaces for A E S T H E T I C S'''
         self.send_action(event.respond, (u" ".join([
-            unichr(ord(x) + 65248) if 64 < ord(x) < 91 else x
-            for x in event.params.upper()
+            unichr(ord(x) + 65248) if 32 < ord(x) < 127 else x
+            for x in event.param
         ])).encode('utf-8', 'replace'))
 
     @register('nsfw', True)
