@@ -295,6 +295,11 @@ class commands:
                           u'http://imgur.com/a/{}'.format(album).encode(
                               'utf-8', 'replace'))
 
+        
+    def command_git(self,event):
+        '''Usage: Links to the repository for lazy fucks'''
+        self.send_message(event.respond, 'https://github.com/flare561/berry')
+        
     def command_translate(self, event):
         '''Usage: ~translate <LanguageFrom> <LanguageTo> translates a string of text between languages.'''
         toTrans = event.params.split()
