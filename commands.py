@@ -301,9 +301,11 @@ class commands:
         self.send_message(event.respond, 'https://github.com/flare561/berry')
         
     def command_translate(self, event):
-        '''Usage: ~translate <LanguageFrom> <LanguageTo> translates a string of text between languages.'''
+        '''Usage: ~translate <LanguageFrom> <LanguageTo> translates a string of text between languages. Alternate usage is ~translate list, which allows you to view currently available languages.'''
         toTrans = event.params.split()
         toTrans[0] = toTrans[0].lower()
+        if toTrans[0] == 'list':
+            self.send_message(event.respond, 'Here is a list of currently available languages: https://pastebin.com/j7JWk9xC')
         toTrans[1] = toTrans[1].lower()
         langs = {
             'afrikaans': 'af',
