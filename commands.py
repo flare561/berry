@@ -554,9 +554,12 @@ class commands:
     def command_select(self, event):
         '''Usage: ~select <args> Used to select a random word from a given list'''
         if len(event.params) > 0:
+            selection = event.params.split(' ')
+            while '' in selection:
+                selection.remove('')
             self.send_message(
                 event.respond,
-                'Select: {}'.format(random.choice(event.params.split(' '))))
+                'Select: {}'.format(random.choice(selection)))
         else:
             self.send_message(event.respond, "Invalid parameters. Please include arguements.")
 
