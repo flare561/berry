@@ -524,9 +524,9 @@ class commands:
         '''Usage: ~define <word> Gets the definition of a word from wolfram alpha'''
         event.params = 'define ' + event.params
         self.command_wolf(event)
-
+'''
     def command_imdb(self, event):
-        '''Usage: ~imdb <movie title> Provides basic information of a given movie, if applicable.'''
+        Usage: ~imdb <movie title> Provides basic information of a given movie, if applicable.
         t = requests.get(
                     'https://www.googleapis.com/customsearch/v1',
                     params=dict(
@@ -550,7 +550,7 @@ class commands:
         except:
             self.send_message(event.respond,
                               "Movie not found! Try checking your spelling?")
-
+'''
     def command_test(self, event):
         '''Usage: ~test Used to verify the bot is responding to messages'''
         possibleAnswers = [
