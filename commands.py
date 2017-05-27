@@ -298,7 +298,7 @@ class commands:
         
     def command_git(self,event):
             '''Usage: Links to the repository for lazy fucks. ~git <arg> will link to the line for that command, if applicable.'''
-            if event.params == '': 
+            if not event.params: 
                 self.send_message(event.respond, 'https://github.com/flare561/berry')
             else:
                 try:
