@@ -303,10 +303,10 @@ class commands:
             else:
                 try:
                     code = requests.get("https://raw.githubusercontent.com/flare561/berry/master/commands.py").text
-                    if 'def command_{}'.format(event.params) in code:
-                        for i, line in enumerate(code.split("\n")):
-                            if "def command_{}".format(event.params) in line:
-                                self.send_message(event.respond, 'https://github.com/flare561/berry/blob/master/commands.py#L{}'.format(i+1))
+                    for i, line in enumerate(code.split("\n")):
+                        if "def command_{}".format(event.params) in line:
+                            self.send_message(event.respond, 'https://github.com/flare561/berry/blob/master/commands.py#L{}'.format(i+1))
+                            break
                     else:
                         self.send_message(event.respond, 'Command not found! Try checking your spelling?')
                 except:
