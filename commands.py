@@ -297,8 +297,20 @@ class commands:
 
         
     def command_git(self,event):
-        '''Usage: Links to the repository for lazy fucks'''
-        self.send_message(event.respond, 'https://github.com/flare561/berry')
+            '''Usage: Links to the repository for lazy fucks. ~git <arg> will link to the line for that command, if applicable.'''
+            if event.params == '': 
+                self.send_message(event.respond, 'https://github.com/flare561/berry')
+            else:
+                try:
+                    code = requests.get("https://raw.githubusercontent.com/flare561/berry/master/commands.py").text
+                    if 'def command_{}'.format(event.params) in code:
+                        for i, line in enumerate(code.split("\n")):
+                            if "def command_{}".format(event.params) in line:
+                                self.send_message(event.respond, 'https://github.com/flare561/berry/blob/master/commands.py#L{}'.format(i+1))
+                    else:
+                        self.send_message(event.respond, 'Command not found! Try checking your spelling?')
+                except:
+                    self.send_message(event.respond, 'Command not found! Maybe github is down?')
         
     def command_translate(self, event):
         '''Usage: ~translate <LanguageFrom> <LanguageTo> translates a string of text between languages. Alternate usage is ~translate list, which allows you to view currently available languages.'''
