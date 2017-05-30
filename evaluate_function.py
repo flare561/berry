@@ -20,7 +20,8 @@ functions = {
     'max': Function('max', max, arity=2),
     'cos': Function('cos', math.cos, arity=1),
     'sin': Function('sin', math.sin, arity=1),
-    'tan': Function('tan', math.tan, arity=1)
+    'tan': Function('tan', math.tan, arity=1),
+    'pi': Function('pi', lambda: math.pi, arity=0)
     }
 
 
@@ -31,11 +32,12 @@ def shunting_yard(equation):
         if item in operators:
             op = operators[item]
             while (stack and
-                    (stack[-1] != '(' and
-                        (op.associativity == 'left' and
-                            stack[-1].precedence >= op.precedence) or
-                        (op.associativity == 'right' and
-                            stack[-1].precedence > op.precedence))):
+                   ((type(stack[-1]) is Operator and
+                    (op.associativity == 'left' and
+                     stack[-1].precedence >= op.precedence) or
+                    (op.associativity == 'right' and
+                     stack[-1].precedence > op.precedence)) or
+                    type(stack[-1]) is Function)):
                 yield stack.pop()
             stack.append(op)
         elif item == ',':
@@ -72,10 +74,13 @@ def evaluate(parsed_equation):
             a = stack.pop()
             stack.append(item.function(a, b))
         elif type(item) is Function:
-            params = stack[-item.arity:]
-            del stack[-item.arity:]
-            if len(params) != item.arity:
-                raise ValueError("Inappropriate number of function arguments")
+            if item.arity > 0:
+                params = stack[-item.arity:]
+                del stack[-item.arity:]
+                if len(params) != item.arity:
+                    raise ValueError("Inappropriate number of function arguments")
+            else:
+                params = []
             stack.append(item.function(*params))
         else:
             stack.append(item)
