@@ -217,3 +217,4 @@ config.ini
 userlists/
 .idea/
 config.json
+.mypy_cache

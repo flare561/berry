@@ -597,7 +597,7 @@ class commands:
             rank = max(1, int(event.params.split('  ')[-1]))
         except ValueError:
             rank = 1
-        
+
         index = rank - 1
 
 
