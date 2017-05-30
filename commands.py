@@ -295,10 +295,29 @@ class commands:
                           u'http://imgur.com/a/{}'.format(album).encode(
                               'utf-8', 'replace'))
 
+        
+    def command_git(self,event):
+            '''Usage: Links to the repository for lazy fucks. ~git <arg> will link to the line for that command, if applicable.'''
+            if not event.params: 
+                self.send_message(event.respond, 'https://github.com/flare561/berry')
+            else:
+                try:
+                    code = requests.get("https://raw.githubusercontent.com/flare561/berry/master/commands.py").text
+                    for i, line in enumerate(code.split("\n")):
+                        if "def command_{}".format(event.params) in line:
+                            self.send_message(event.respond, 'https://github.com/flare561/berry/blob/master/commands.py#L{}'.format(i+1))
+                            break
+                    else:
+                        self.send_message(event.respond, 'Command not found! Try checking your spelling?')
+                except:
+                    self.send_message(event.respond, 'Command not found! Maybe github is down?')
+        
     def command_translate(self, event):
-        '''Usage: ~translate <LanguageFrom> <LanguageTo> translates a string of text between languages.'''
+        '''Usage: ~translate <LanguageFrom> <LanguageTo> translates a string of text between languages. Alternate usage is ~translate list, which allows you to view currently available languages.'''
         toTrans = event.params.split()
         toTrans[0] = toTrans[0].lower()
+        if toTrans[0] == 'list':
+            self.send_message(event.respond, 'Here is a list of currently available languages: https://pastebin.com/j7JWk9xC')
         toTrans[1] = toTrans[1].lower()
         langs = {
             'afrikaans': 'af',
@@ -313,6 +332,7 @@ class commands:
             'bengali': 'bn',
             'bosnian': 'bs',
             'bulgarian': 'bg',
+            'burmese': 'my',
             'catalan': 'ca',
             'cebuano': 'ceb',
             'chinese': 'zh',
@@ -343,8 +363,10 @@ class commands:
             'javanese': 'jv',
             'kannada': 'kn',
             'kazakh': 'kk',
+            'khmer': 'km',
             'korean': 'ko',
             'kyrgyz': 'ky',
+            'laotian': 'lo',
             'latin': 'la',
             'latvian': 'lv',
             'lithuanian': 'lt',
@@ -544,9 +566,10 @@ class commands:
     def command_select(self, event):
         '''Usage: ~select <args> Used to select a random word from a given list'''
         if len(event.params) > 0:
+            selection = [x for x in event.params.split(' ') if x != '']
             self.send_message(
                 event.respond,
-                'Select: {}'.format(random.choice(event.params.split(' '))))
+                'Select: {}'.format(random.choice(selection)))
         else:
             self.send_message(event.respond, "Invalid parameters. Please include arguements.")
 
