@@ -5,22 +5,29 @@ import re
 
 Operator = namedtuple('Operator', ['name', 'function', 'associativity', 'precedence'])
 Function = namedtuple('Function', ['name', 'function', 'arity'])
-reg = re.compile('''((?:[0-9.]+)|(?:[a-zA-Z]+)|(?:\+|\-|\/|\*|\^|\(|\)|,))''')
+reg = re.compile('''((?:[0-9.]+)|(?:[a-zA-Z]+)|(?:\+|\-|\/|\*|\^|\(|\)|,|%))''')
 
 operators = {
     '+': Operator('+', lambda a, b: a + b, associativity='left', precedence=2),
     '-': Operator('-', lambda a, b: a - b, associativity='left', precedence=2),
     '*': Operator('*', lambda a, b: a * b, associativity='left', precedence=3),
     '/': Operator('/', lambda a, b: a / b, associativity='left', precedence=3),
-    '^': Operator('^', lambda a, b: a ** b, associativity='right', precedence=4)
+    '^': Operator('^', lambda a, b: a ** b, associativity='right', precedence=4),
+    '%': Operator('%', lambda a, b: a % b, associativity='left', precedence=3)
     }
 
 functions = {
     'min': Function('min', min, arity=2),
     'max': Function('max', max, arity=2),
-    'cos': Function('cos', math.cos, arity=1),
+    'sqrt': Function('sqrt', math.sqrt, arity=1),
+    'floor': Function('floor', math.floor, arity=1),
+    'ceil': Function('ceil', math.ceil, arity=1),
     'sin': Function('sin', math.sin, arity=1),
+    'cos': Function('cos', math.cos, arity=1),
     'tan': Function('tan', math.tan, arity=1),
+    'asin': Function('asin', math.asin, arity=1),
+    'acos': Function('acos', math.acos, arity=1),
+    'atan': Function('atan', math.atan, arity=1),
     'pi': Function('pi', lambda: math.pi, arity=0)
     }
 
