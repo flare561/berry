@@ -37,7 +37,7 @@ def parse_infix(equation):
     prev = None
     for match in matches:
         try:
-            if float(match) < 0 and float(prev):
+            if float(match) < 0 and prev is not None and float(prev):
                 yield '+'
         except ValueError:
             pass
