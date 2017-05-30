@@ -16,6 +16,8 @@ import re
 import arrow
 import string
 from urlparse import urlparse
+from evaluate_function import solve_equation
+
 
 def register(tag, value):
     def wrapped(fn):
@@ -44,6 +46,8 @@ def is_all_str_allowed(strs, bannedwords):
         if not is_str_allowed(str, bannedwords):
             return False
     return True
+
+
 
 
 class commands:
@@ -996,3 +1000,11 @@ class commands:
             yiff.replace('$target', event.params.strip()).replace(
                 '$user', 'pwny').replace('$nick', self.config['nick']).replace(
                     '$channel', event.respond)).encode('utf-8', 'replace'))
+
+    def command_math(self, event):
+        '''Usage: ~math <equation> solves a math equation with support for basic functions'''
+        try:
+            result = solve_equation(event.params)
+        except ValueError as e:
+            result = e
+        self.send_message(event.respond, str(result))
