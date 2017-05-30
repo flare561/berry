@@ -5,7 +5,7 @@ import re
 
 Operator = namedtuple('Operator', ['name', 'function', 'associativity', 'precedence'])
 Function = namedtuple('Function', ['name', 'function', 'arity'])
-reg = re.compile('''((?:[0-9.]+)|(?:[a-zA-Z]+)|(?:\+|\-|\/|\*|\^|\(|\)|,|%))''')
+reg = re.compile('''((?:-?[0-9.]+)|(?:[a-zA-Z]+)|(?:\+|\-|\/|\*|\^|\(|\)|,|%))''')
 
 operators = {
     '+': Operator('+', lambda a, b: a + b, associativity='left', precedence=2),
@@ -32,10 +32,22 @@ functions = {
     }
 
 
-def shunting_yard(equation):
+def parse_infix(equation):
     matches = reg.findall(equation)
+    prev = None
+    for match in matches:
+        try:
+            if float(match) < 0 and float(prev):
+                yield '+'
+        except ValueError:
+            pass
+        prev = match
+        yield match
+
+
+def shunting_yard(equation):
     stack = []
-    for item in matches:
+    for item in equation:
         if item in operators:
             op = operators[item]
             while (stack and
@@ -97,5 +109,6 @@ def evaluate(parsed_equation):
 
 
 def solve_equation(input_equation):
-    parsed_equation = shunting_yard(input_equation)
-    return evaluate(parsed_equation)
+    parsed_infix = parse_infix(input_equation)
+    parsed_postfix = shunting_yard(parsed_infix)
+    return evaluate(parsed_postfix)
