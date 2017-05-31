@@ -1000,6 +1000,6 @@ class commands:
         '''Usage: ~math <equation> solves a math equation with support for basic functions'''
         try:
             result = solve_equation(event.params)
-        except (ValueError, ZeroDivisionError) as e:
-            result = e
-        self.send_message(event.respond, str(result))
+            self.send_message(event.respond, str(result))
+        except (ValueError, ZeroDivisionError, IndexError) as e:
+            self.command_wolf(event)
