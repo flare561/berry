@@ -48,8 +48,6 @@ def is_all_str_allowed(strs, bannedwords):
     return True
 
 
-
-
 class commands:
     def __init__(self, send_message, send_action, banned_words, config):
         self.send_message = send_message
@@ -299,10 +297,9 @@ class commands:
                           u'http://imgur.com/a/{}'.format(album).encode(
                               'utf-8', 'replace'))
 
-        
-    def command_git(self,event):
+    def command_git(self, event):
             '''Usage: Links to the repository for lazy fucks. ~git <arg> will link to the line for that command, if applicable.'''
-            if not event.params: 
+            if not event.params:
                 self.send_message(event.respond, 'https://github.com/flare561/berry')
             else:
                 try:
@@ -315,7 +312,7 @@ class commands:
                         self.send_message(event.respond, 'Command not found! Try checking your spelling?')
                 except:
                     self.send_message(event.respond, 'Command not found! Maybe github is down?')
-        
+
     def command_translate(self, event):
         '''Usage: ~translate <LanguageFrom> <LanguageTo> translates a string of text between languages. Alternate usage is ~translate list, which allows you to view currently available languages.'''
         toTrans = event.params.split()
@@ -627,7 +624,6 @@ class commands:
 
         index = rank - 1
 
-
         def calc_score(json):
             total = json.get('thumbs_up', 0) + json.get('thumbs_down', 0)
             return ((json.get('thumbs_up', 0) * 100) // total) if total > 0 else 0
@@ -638,8 +634,8 @@ class commands:
         try:
             word = event.params.split('  ')[0]
             k = requests.get("http://api.urbandictionary.com/v0/define",
-                params = dict(term=word)
-            ).json()[u'list']
+                             params=dict(term=word)
+                             ).json()[u'list']
             k.sort(key=sort, reverse=True)
             k = k[index]
             definition = re.sub(r'[\r\n]', ' ', k['definition'].encode('UTF-8', 'replace'))
@@ -657,11 +653,10 @@ class commands:
         except:
             self.send_message(event.respond, "An error occurred while fetching your post, or there are no results.")
             raise
-    
+
     def command_ud(self, event):
         '''Usage: ~ud <query>\s\s<int n> Used to search Urban Dictionary for the first (or nth) definition of a word, using flat upvote rank style. Note: a double space is required between parameters'''
         self.ud(event, sort=lambda x: x.get('thumbs_up', 0))
-
 
     def command_udr(self, event):
         '''Usage: ~udr <query>\s\s<int n> Used to search Urban Dictionary for the first (or nth) definition of a word, using ratio (upvotes/downvotes) rank style. Note: a double space is required between parameters'''
