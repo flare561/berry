@@ -980,6 +980,13 @@ class commands:
             self.send_message(event.respond,
                               "The show is on hiatus until later this year.")
 
+    def regex_fwt(self, event):
+        fwtre = re.compile(r'~(.*?)~')
+	input = event.params
+        for match in fwtre.findall(input):
+            event.params = match
+            self.command_fwt(event)
+
     def command_fwt(self, event):
         '''Usage: ~fwt <text> repeats text in full width and adds spaces for A E S T H E T I C S'''
         self.send_action(event.respond, (u" ".join([
