@@ -247,7 +247,7 @@ class commands:
         '''Usage: ~randgel <tags> Used to search gelbooru.com for a random picture with the given tags'''
         try:
             j = requests.get(
-                "http://gelbooru.com/index.php",
+                "httsp://gelbooru.com/index.php",
                 params=dict(
                     page="dapi",
                     q="index",
@@ -258,7 +258,7 @@ class commands:
             if (len(j) > 0):
                 self.send_message(
                     event.respond,
-                    u'http://gelbooru.com/index.php?page=post&s=view&id={}'.
+                    u'https://gelbooru.com/index.php?page=post&s=view&id={}'.
                     format(random.choice(j)[u'id']).encode('utf-8', 'replace'))
             else:
                 self.send_message(event.respond, "No Results")
