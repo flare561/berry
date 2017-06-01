@@ -981,10 +981,9 @@ class commands:
                               "The show is on hiatus until later this year.")
 
     def regex_fwt(self, event):
-        fwtre = re.compile(r'~(.*?)~')
-	input = event.params
-        for match in fwtre.findall(input):
-            event.params = match
+        fwtre = re.findall(r'`(.*?)`', event.message)
+        if fwtre:
+            event.params = ''.join(fwtre)
             self.command_fwt(event)
 
     def command_fwt(self, event):

@@ -20,14 +20,14 @@ class berry(bot.SimpleBot):
         self.checking_for_banned_words = 0
 
     def send_message(self, to, message):
-	try:
-	    super(berry, self).send_message(to, message.encode('utf-8', 'replace'))
+        try:
+            super(berry, self).send_message(to, message.encode('utf-8', 'replace'))
         except UnicodeDecodeError:
             super(berry, self).send_message(to, message.decode('utf-8').encode('utf-8', 'replace'))
 
     def send_action(self, to, message):
-	try:
-	    super(berry, self).send_action(to, message.encode('utf-8', 'replace'))
+        try:
+            super(berry, self).send_action(to, message.encode('utf-8', 'replace'))
         except UnicodeDecodeError:
             super(berry, self).send_action(to, message.decode('utf-8').encode('utf-8', 'replace'))
 
