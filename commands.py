@@ -1007,5 +1007,5 @@ class commands:
         try:
             result = solve_equation(event.params)
             self.send_message(event.respond, str(result))
-        except (ValueError, ZeroDivisionError, IndexError) as e:
+        except Exception:
             self.command_wolf(event)
