@@ -58,6 +58,9 @@ class berry(bot.SimpleBot):
         self.config = loadconf('config.json')
         reload(commands)
         reload(custom_commands)
+        self.lastloadconf = os.stat('config.json').st_mtime
+        self.lastloadcommands = os.stat('commands.py').st_mtime
+        self.lastloadcustomcommands = os.stat('custom_commands.py').st_mtime
 
         # Create objects for commands and custom_commands
         cmd = commands.commands(self.send_message, self.send_action,
