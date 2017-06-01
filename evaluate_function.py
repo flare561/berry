@@ -28,7 +28,10 @@ functions = {
     'asin': Function('asin', math.asin, arity=1),
     'acos': Function('acos', math.acos, arity=1),
     'atan': Function('atan', math.atan, arity=1),
-    'pi': Function('pi', lambda: math.pi, arity=0)
+    'pi': Function('pi', lambda: math.pi, arity=0),
+    'e': Function('e', lambda: math.e, arity=0),
+    'ln': Function('ln', math.log, arity=1),
+    'log': Function('log', math.log10, arity=1)
     }
 
 
