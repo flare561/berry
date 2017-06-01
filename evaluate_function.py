@@ -55,10 +55,10 @@ def shunting_yard(equation):
             op = operators[item]
             while (stack and
                    ((type(stack[-1]) is Operator and
-                    (op.associativity == 'left' and
+                    ((op.associativity == 'left' and
                      stack[-1].precedence >= op.precedence) or
                     (op.associativity == 'right' and
-                     stack[-1].precedence > op.precedence)) or
+                     stack[-1].precedence > op.precedence))) or
                     type(stack[-1]) is Function)):
                 yield stack.pop()
             stack.append(op)
