@@ -1009,3 +1009,43 @@ class commands:
             self.send_message(event.respond, str(result))
         except Exception:
             self.command_wolf(event)
+
+    def command_inflate(self, event):
+        '''Usage: ~inflate <yearfrom> <yearto> <cost> inflates money by year'''
+        class InflationCache(dict):
+            @staticmethod
+            def fetch_inflation(fromyear, toyear):
+                resp = requests.get('https://data.bls.gov/cgi-bin/cpicalc.pl',
+                                    params={
+                                        'cost1': '1',
+                                        'year1': '%s01' % fromyear,
+                                        'year2': '%s01' % toyear
+                                    })
+                if not resp.ok:
+                    raise IOError('Response from service not ok')
+                html = lxml.html.fromstring(resp.text)
+                val = html.xpath('//span[@id="answer"]/text()')
+                if not val:
+                    raise ValueError('Web service returned no data')
+                return float(val[0][1:])
+
+            def __missing__(self, key):
+                if type(key) != tuple or len(key) != 2:
+                    raise KeyError('key must be a tuple of two dates')
+                fromyear, toyear = key
+                self[key] = type(self).fetch_inflation(fromyear, toyear)
+                return self[key]
+
+        if not hasattr(self, 'inflation_cache'):
+            self.inflation_cache = InflationCache()
+        try:
+            fromyear, toyear, cost = event.params.split()
+            cost = float(cost)
+            newcost = cost * self.inflation_cache[fromyear, toyear]
+            self.send_message(
+                    event.respond,
+                    '${:.2f} in {} would be worth ${:.2f} in {}'.format(
+                        cost, fromyear, newcost, toyear))
+        except Exception as e:
+            self.send_message(event.respond, "Error: {}".format(e))
+            raise
