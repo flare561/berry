@@ -204,7 +204,12 @@ class commands:
         except:
             self.send_message(event.respond, "No results")
             raise
-
+    
+    def command_tvtropes(self, event):
+        '''Usage: ~tvtropes <terms> Searches TvTropes for a given trope.'''
+        event.params = 'site:tvtropes.org ' + event.params
+        self.command_g(event)
+            
     @register('nsfw', True)
     def command_rande621(self, event):
         '''Usage: ~rande621 <tags> Used to search e621.net for a random picture with the given tags'''
@@ -1011,7 +1016,7 @@ class commands:
             self.command_wolf(event)
 
     def command_inflate(self, event):
-        '''Usage: ~inflate <yearfrom> <yearto> <cost> inflates money by year'''
+        '''Usage: ~inflate <yearfrom> <yearto> <cost> Finds in/deflated cost of money. Only available for USD.'''
         class InflationCache(dict):
             @staticmethod
             def fetch_inflation(fromyear, toyear):
