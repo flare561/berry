@@ -1016,7 +1016,7 @@ class commands:
             self.command_wolf(event)
 
     def command_inflate(self, event):
-        '''Usage: ~inflate <yearfrom> <yearto> <cost> Finds in/deflated cost of money. Only available for USD.'''
+        '''Usage: ~inflate <yearfrom> <yearto> <cost> Finds in/deflated cost of money. Only available for USD in years 1913 onwards'''
         class InflationCache(dict):
             @staticmethod
             def fetch_inflation(fromyear, toyear):
@@ -1031,7 +1031,7 @@ class commands:
                 html = lxml.html.fromstring(resp.text)
                 val = html.xpath('//span[@id="answer"]/text()')
                 if not val:
-                    raise ValueError('Web service returned no data')
+                    raise ValueError('Make sure your chosen year is in the correct range (1913-present)')
                 return float(val[0][1:])
 
             def __missing__(self, key):
