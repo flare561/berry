@@ -247,7 +247,7 @@ class commands:
         '''Usage: ~randgel <tags> Used to search gelbooru.com for a random picture with the given tags'''
         try:
             j = requests.get(
-                "httsp://gelbooru.com/index.php",
+                "https://gelbooru.com/index.php",
                 params=dict(
                     page="dapi",
                     q="index",
