@@ -204,7 +204,12 @@ class commands:
         except:
             self.send_message(event.respond, "No results")
             raise
-
+    
+    def command_tvtropes(self, event):
+        '''Usage: ~tvtropes <terms> Searches TvTropes for a given trope.'''
+        event.params = 'site:tvtropes.org ' + event.params
+        self.command_g(event)
+            
     @register('nsfw', True)
     def command_rande621(self, event):
         '''Usage: ~rande621 <tags> Used to search e621.net for a random picture with the given tags'''
@@ -1011,7 +1016,7 @@ class commands:
             self.command_wolf(event)
 
     def command_inflate(self, event):
-        '''Usage: ~inflate <yearfrom> <yearto> <cost> inflates money by year'''
+        '''Usage: ~inflate <yearfrom> <yearto> <cost> Finds in/deflated cost of money. Only available for USD in years 1913 onwards'''
         class InflationCache(dict):
             @staticmethod
             def fetch_inflation(fromyear, toyear):
@@ -1026,7 +1031,7 @@ class commands:
                 html = lxml.html.fromstring(resp.text)
                 val = html.xpath('//span[@id="answer"]/text()')
                 if not val:
-                    raise ValueError('Web service returned no data')
+                    raise ValueError('Make sure your chosen year is in the correct range (1913-present)')
                 return float(val[0][1:])
 
             def __missing__(self, key):
