@@ -21,6 +21,8 @@ wikipedia https://github.com/goldsmith/Wikipedia
 
 arrow https://pypi.python.org/pypi/arrow
 
+romkan https://github.com/soimort/python-romkan
+
 and
 
 IRCUtils https://pypi.python.org/pypi/ircutils

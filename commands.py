@@ -15,6 +15,7 @@ import wikipedia as wiki
 import re
 import arrow
 import string
+import romkan
 from urlparse import urlparse
 from evaluate_function import solve_equation
 
@@ -318,7 +319,13 @@ class commands:
                 except:
                     self.send_message(event.respond, 'Command not found! Maybe github is down?')
 
-    def command_translate(self, event):
+    def command_romaji(self, event):
+        '''Usage: ~romaji <arg> displays romaji for a given Japanese symbolic parameter.'''
+        param = unicode(event.params, "utf-8")
+        resp = romkan.to_roma(param)
+        self.send_message(event.respond, resp)
+
+    def command_tr(self, event):
         '''Usage: ~translate <LanguageFrom> <LanguageTo> translates a string of text between languages. Alternate usage is ~translate list, which allows you to view currently available languages.'''
         toTrans = event.params.split()
         toTrans[0] = toTrans[0].lower()
