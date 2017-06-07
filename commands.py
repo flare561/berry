@@ -818,51 +818,6 @@ class commands:
             self.send_message(event.respond,
                               "You must give a valid host name to look up")
 
-    def command_trakt(self, event):
-        '''Usage: ~trakt <query> Searches trakt for movies, and tv shows'''
-        try:
-            sess = requests.Session()
-            headers = dict()
-            headers['Content-Type'] = 'application/json'
-            headers['trakt-api-version'] = 2
-            headers['trakt-api-key'] = self.config['traktKey']
-            sess.headers.update(headers)
-            resp = sess.get(
-                'https://api-v2launch.trakt.tv/search',
-                params=dict(query=event.params, type='movie,show')).json()[0]
-            if 'show' in resp:
-                apiurl = 'https://api-v2launch.trakt.tv/shows/%s?extended=full' % resp[
-                    'show']['ids']['slug']
-                url = 'https://trakt.tv/shows/%s' % resp['show']['ids']['slug']
-            elif 'movie' in resp:
-                apiurl = 'https://api-v2launch.trakt.tv/movies/%s?extended=full' % resp[
-                    'movie']['ids']['slug']
-                url = 'https://trakt.tv/movies/%s' % resp['movie']['ids'][
-                    'slug']
-            else:
-                self.send_message(event.respond, "No results")
-                return
-            j = sess.get(apiurl).json()
-            out = []
-            if 'title' in j:
-                out.append(j['title'])
-            if 'genres' in j:
-                out.append(', '.join(j['genres'][:3]))
-            if 'overview' in j:
-                out.append(j['overview'][:100] + '...')
-            if 'rating' in j:
-                out.append(str(j['rating']))
-            if 'year' in j:
-                out.append(str(j['year']))
-            out.append(url)
-
-            self.send_message(event.respond, (' | '.join(out)).encode(
-                'utf-8', 'replace'))
-
-        except:
-            self.send_message(event.respond, "No results")
-            raise
-
     def command_mal(self, event):
         '''Usage: ~mal <query> Searches My Anime List for a given anime using a custom google search'''
         try:
