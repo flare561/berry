@@ -542,20 +542,31 @@ class commands:
                         safe='off')).json()
         path = urlparse(t['items'][0]['link']).path
         movie_id = filter(bool, path.split('/'))[-1]
+        headers = dict()
+        headers['Content-type'] = 'application/json'
+        headers['trakt-api-key'] = self.config['traktKey']
+        headers['trakt-api-version'] = '2'
         try:
             resp = requests.get(
-                    "http://www.omdbapi.com/?i={}&apikey=b6bc9ea".format(
-                        movie_id
-                     )).json()
+                    "https://api.trakt.tv/search/imdb/{}".format(movie_id),
+                    params=dict(extended='full'),
+                    headers=headers).json()[0]
+            if resp.has_key('movie'):
+                resp = resp['movie']
+            elif resp.has_key('show'):
+                resp = resp['show']
+            else:
+                raise ValueError()
             self.send_message(
                     event.respond,
-                    u"Year: {} | IMDB Rating: {} | Metascore Rating: {} | Runtime: {} | Plot: \x031,1{}...\x03 | http://www.imdb.com/title/{}".
-                    format(resp['Year'], resp['imdbRating'], resp['Metascore'],
-                           resp['Runtime'], resp['Plot'][:199],
-                           resp['imdbID']).encode('utf-8', 'replace'))
+                    u"Year: {} | Rating: {:.2f} | Runtime: {} | Plot: \x031,1{}...\x03 | http://www.imdb.com/title/{}".
+                    format(resp['year'], resp['rating'],
+                           resp['runtime'], resp['overview'][:199],
+                           movie_id).encode('utf-8', 'replace'))
         except:
             self.send_message(event.respond,
                               "Movie not found! Try checking your spelling?")
+            raise
 
     def command_test(self, event):
         '''Usage: ~test Used to verify the bot is responding to messages'''
