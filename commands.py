@@ -325,7 +325,7 @@ class commands:
         resp = romkan.to_roma(param)
         self.send_message(event.respond, resp)
 
-    def command_translate(self, event):
+    def command_tr(self, event):
         '''Usage: ~translate <LanguageFrom> <LanguageTo> translates a string of text between languages. Alternate usage is ~translate list, which allows you to view currently available languages.'''
         toTrans = event.params.split()
         toTrans[0] = toTrans[0].lower()
@@ -452,10 +452,6 @@ class commands:
             self.send_message(
                 event.respond,
                 'Translation unsuccessful! Maybe the service is down?')
-
-    def command_tr(self, event):
-        '''Usage: short form for ~translate (see ~help translate)'''
-        self.command_translate(event)
 
     def command_truerandjur(self, event):
         '''Usage: ~truerandjur <number> Used to post random imgur pictures, from randomly generated IDs, takes a little while to find images so be patient, <number> defines the number of results with a max of 10'''
