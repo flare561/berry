@@ -769,7 +769,7 @@ class commands:
             raise
 
     def regex_gelbooru(self, event):
-        gelmatch = re.compile('https?:\/\/gelbooru\.com\/index\.php\?page=post&s=view&id=\d{1,7}', re.I)
+        gelmatch = re.compile('https?:\/\/gelbooru\.com\/index\.php\?page=post&s=view&id=(\d{1,7})', re.I)
         id_match = re.compile('[0-9].*')
         id_list = []
         res = gelmatch.findall(event.message) #
