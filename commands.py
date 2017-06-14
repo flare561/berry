@@ -768,6 +768,35 @@ class commands:
                 'Reddit probably shat itself, try again or whatever.')
             raise
 
+    def regex_gelbooru(self, event):
+        gelmatch = re.compile('https?:\/\/gelbooru\.com\/index\.php\?page=post&s=view&id=\d{1,7}', re.I)
+        id_match = re.compile('[0-9].*')
+        id_list = []
+        res = gelmatch.findall(event.message) #
+        for i in range(len(res)):
+            id_list.append(id_match.findall(res[i])[0])
+        for i in range(len(id_list)):
+            j = requests.get(
+                "https://gelbooru.com/index.php",
+                params=dict(
+                    page="dapi",
+                    q="index",
+                    json="1",
+                    s="post",
+                    id=id_list[i])).json()
+            select = random.choice(j)
+            if select[u'rating'] == 's':
+                rating = 'Safe'
+            elif select[u'rating'] == 'q':
+                rating = 'Questionable'
+            else:
+                rating = 'Explicit'
+            self.send_message(
+                    event.respond,
+                    u'Owner: {} | Rating: {} | Score: {}'.
+                    format(select[u'owner'], rating, select[u'score']).encode('utf-8', 'replace'))
+            
+            
     def regex_e621(self, event):
         e621match = re.compile('https?:\/\/e621\.net\/post\/show\/\d{2,7}',
                                re.I)
