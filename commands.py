@@ -262,10 +262,17 @@ class commands:
                     limit="100",
                     tags=event.params)).json()
             if (len(j) > 0):
+                select = random.choice(j)
+                if select[u'rating'] == 's':
+                    rating = 'Safe'
+                elif select[u'rating'] == 'q':
+                    rating = 'Questionable'
+                else:
+                    rating = 'Explicit'
                 self.send_message(
                     event.respond,
-                    u'https://gelbooru.com/index.php?page=post&s=view&id={}'.
-                    format(random.choice(j)[u'id']).encode('utf-8', 'replace'))
+                    u'https://gelbooru.com/index.php?page=post&s=view&id={} | Owner: {} | Rating: {} | Score: {}'.
+                    format(select[u'id'], select[u'owner'], rating, select[u'score']).encode('utf-8', 'replace'))
             else:
                 self.send_message(event.respond, "No Results")
         except:
