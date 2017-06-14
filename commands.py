@@ -770,12 +770,8 @@ class commands:
 
     def regex_gelbooru(self, event):
         gelmatch = re.compile('https?:\/\/gelbooru\.com\/index\.php\?page=post&s=view&id=(\d{1,7})', re.I)
-        id_match = re.compile('[0-9].*')
-        id_list = []
-        res = gelmatch.findall(event.message) #
+        res = gelmatch.findall(event.message) 
         for i in range(len(res)):
-            id_list.append(id_match.findall(res[i])[0])
-        for i in range(len(id_list)):
             j = requests.get(
                 "https://gelbooru.com/index.php",
                 params=dict(
@@ -783,7 +779,7 @@ class commands:
                     q="index",
                     json="1",
                     s="post",
-                    id=id_list[i])).json()
+                    id=res[i])).json()
             select = random.choice(j)
             if select[u'rating'] == 's':
                 rating = 'Safe'
@@ -794,7 +790,7 @@ class commands:
             self.send_message(
                     event.respond,
                     u'Owner: {} | Rating: {} | Score: {}'.
-                    format(select[u'owner'], rating, select[u'score']).encode('utf-8', 'replace'))
+                    format(select[u'owner'], rating, select[u'score']).encode('utf-8', 'replace'))  
             
             
     def regex_e621(self, event):
