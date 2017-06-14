@@ -771,7 +771,7 @@ class commands:
     def regex_gelbooru(self, event):
         gelmatch = re.compile('https?:\/\/gelbooru\.com\/index\.php\?page=post&s=view&id=(\d{1,7})', re.I)
         res = gelmatch.findall(event.message) 
-        for i in range(len(res)):
+        for match in res:
             j = requests.get(
                 "https://gelbooru.com/index.php",
                 params=dict(
@@ -779,7 +779,7 @@ class commands:
                     q="index",
                     json="1",
                     s="post",
-                    id=res[i])).json()
+                    id=match)).json()
             select = random.choice(j)
             if select[u'rating'] == 's':
                 rating = 'Safe'
