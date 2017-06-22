@@ -326,11 +326,25 @@ class commands:
                 except:
                     self.send_message(event.respond, 'Command not found! Maybe github is down?')
 
-    def command_romaji(self, event):
-        '''Usage: ~romaji <arg> displays romaji for a given Japanese symbolic parameter.'''
-        param = unicode(event.params, "utf-8")
-        resp = romkan.to_roma(param)
-        self.send_message(event.respond, resp)
+    def command_ja(self, event):
+        '''Usage: ~ja <k/h/r> <arg> displays katakana/hiragana/romaji for a given argument, converting between romaji and kana'''
+        args = event.params.split(' ')
+        try:
+            dest = args[0].lower()
+            phrase = ' '.join(args[1:])
+            if dest == 'k':
+                resp = romkan.to_katakana(phrase)
+            elif dest == 'h':
+                resp = romkan.to_hiragana(phrase)
+            elif dest == 'r':
+                temp = unicode(phrase, "utf-8")
+                resp = romkan.to_roma(temp)
+            else:
+            	raise
+            self.send_message(event.respond, resp)
+        except:
+            self.send_message(event.respond, 'Invalid input, please check syntax.')
+            raise
 
     def command_tr(self, event):
         '''Usage: ~translate <LanguageFrom> <LanguageTo> translates a string of text between languages. Alternate usage is ~translate list, which allows you to view currently available languages.'''
@@ -916,20 +930,6 @@ class commands:
         except:
             self.send_message(event.respond, "No results")
             raise
-
-    def command_wimg(self, event):
-        '''Usage: ~wimg <query> Searches wikipedia for the first image of a given query'''
-        try:
-            link = wiki.page(event.params).images[1]
-            self.send_message(event.respond,
-                link.encode('utf-8', 'replace'))
-        except wiki.exceptions.DisambiguationError as e:
-            options = u", ".join(e.options)
-            self.send_message(event.respond, options)
-        except:
-            self.send_message(event.respond, "No results")
-            raise
-
 
     def command_feels(self, event):
         self.send_message(event.respond,
