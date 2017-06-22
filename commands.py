@@ -328,19 +328,17 @@ class commands:
 
     def command_ja(self, event):
         '''Usage: ~ja <k/h/r> <arg> displays katakana/hiragana/romaji for a given argument, converting between romaji and kana'''
-        args = event.params.split(' ')
         try:
-            dest = args[0].lower()
-            phrase = ' '.join(args[1:])
+            dest, phrase = event.params.split(' ', 1)
+            dest = dest.lower()
             if dest == 'k':
                 resp = romkan.to_katakana(phrase)
             elif dest == 'h':
                 resp = romkan.to_hiragana(phrase)
             elif dest == 'r':
-                temp = unicode(phrase, "utf-8")
-                resp = romkan.to_roma(temp)
+                resp = romkan.to_roma(phrase.decode('utf-8'))
             else:
-            	raise
+                raise
             self.send_message(event.respond, resp)
         except:
             self.send_message(event.respond, 'Invalid input, please check syntax.')
