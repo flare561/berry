@@ -344,6 +344,10 @@ class commands:
             self.send_message(event.respond, 'Invalid input, please check syntax.')
             raise
 
+    def command_translate(self, event):
+        '''Usage: Just use the right fucking command.'''
+        self.command_tr(event)
+            
     def command_tr(self, event):
         '''Usage: ~translate <LanguageFrom> <LanguageTo> translates a string of text between languages. Alternate usage is ~translate list, which allows you to view currently available languages.'''
         toTrans = event.params.split()
