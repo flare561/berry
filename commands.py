@@ -959,7 +959,7 @@ class commands:
             event.params = "*"
         results = sess.get(
             'https://derpibooru.org/search.json',
-            data=dict(q=event.params)).json()['search']
+            data=dict(q=event.params, filter_id='56027')).json()['search']
         if len(results) > 0:
             choice = random.choice(results)
             idNum = choice['id']
