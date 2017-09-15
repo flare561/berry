@@ -530,7 +530,7 @@ class commands:
             d = x.xpath('//pod[@primary="true"]/subpod/plaintext')
 
             results = [
-                o.text.replace('\n', '').encode('utf-8', 'replace') for o in d
+                o.text.replace('\n', ' ').encode('utf-8', 'replace') for o in d
             ]
 
             search_url = "http://www.wolframalpha.com/input/?i={}".format(
