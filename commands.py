@@ -564,43 +564,46 @@ class commands:
 
     def command_imdb(self, event):
         '''Usage: ~imdb <movie title> Provides basic information of a given movie, if applicable.'''
-	movie = event.params
-	link = requests.get('http://www.imdb.com/find?ref_=nv_sr_fn&q={}&s=all'.format(movie)).text
-		
-	parsed = html.fromstring(link)
 	try:
-		movie_link = 'http://www.imdb.com{}'.format(parsed.xpath('//*[@class="result_text"]/a/@href')[0])
+		t = requests.get(
+						'https://www.googleapis.com/customsearch/v1',
+						params=dict(
+							q='site:imdb.com {}'.format(event.params),
+							cx=self.config['googleengine'],
+							key=self.config['googleKey'],
+							safe='off')).json()
+		link = requests.get(t['items'][0]['link']).text
+		
+		parsed = html.fromstring(link)
+		
+		def xpath(page, expr, process=lambda x: x.text, index=0):
+			try:
+				return process(page.xpath(expr)[index])
+			except IndexError:
+				return None
+			
+		
+		year = xpath(parsed, '//*[@id="titleYear"]/a') or \
+			xpath(parsed, '//span[@class="parentDate"]', lambda x: x.text[1:-1]) or \
+			xpath(parsed, '//a[@title="See more release dates"]', lambda x: x.text[11:-2])
+		
+		rating = xpath(parsed, '//meta[@itemprop="contentRating"]/@content', lambda x: x) or \
+				'Not Rated'
+		
+		length = xpath(parsed, '//time[@itemprop="duration"]', index=1) or \
+				'None'
+		
+		score = xpath(parsed, '//span[@itemprop="ratingValue"]') or \
+				'Needs 5 ratings'
+		
+		movie_summary = parsed.xpath('//div[@class="summary_text"]')[0].text.strip()
+		if not movie_summary:
+			movie_summary = 'No summary available'
+		self.send_message(event.respond, u"Year: {} | Rating: {} | Length: {} | Score: {} | Summary: {} | {}"
+		.format(year,rating,length,score,movie_summary,t['items'][0]['link']).encode('utf-8', 'replace'))
 	except:
-		print('Movie not found! Check your spelling?')
+		self.send_message(event.respond, 'No results! Check your spelling?')
 		
-	movie_page = requests.get(movie_link).text
-	parsed = html.fromstring(movie_page)
-	
-	def xpath(page, expr, process=lambda x: x.text, index=0):
-		try:
-			return process(page.xpath(expr)[index])
-		except IndexError:
-			return None
-		
-	
-	year = xpath(parsed, '//*[@id="titleYear"]/a') or \
-		xpath(parsed, '//span[@class="parentDate"]', lambda x: x.text[1:-1]) or \
-		xpath(parsed, '//a[@title="See more release dates"]', lambda x: x.text[11:-2])
-	
-	rating = xpath(parsed, '//meta[@itemprop="contentRating"]/@content', lambda x: x) or \
-			'Not Rated'
-	
-	length = xpath(parsed, '//time[@itemprop="duration"]', index=1) or \
-			'None'
-	
-	score = xpath(parsed, '//span[@itemprop="ratingValue"]') or \
-			'Needs 5 ratings'
-	
-	movie_summary = parsed.xpath('//div[@class="summary_text"]')[0].text.strip()
-		
-	self.send_message(event.respond, u"Year: {} | Rating: {} | Length: {} | Score: {} | Summary: {} | {}"
-    .format(year,rating,length,score,movie_summary,movie_link).encode('utf-8', 'replace'))
-
     def command_test(self, event):
         '''Usage: ~test Used to verify the bot is responding to messages'''
         possibleAnswers = [
