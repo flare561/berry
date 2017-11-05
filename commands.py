@@ -11,6 +11,7 @@ import threading
 import functools
 import lxml.html
 import lxml.etree as etree
+from lxml import html
 import wikipedia as wiki
 import re
 import arrow
@@ -563,40 +564,42 @@ class commands:
 
     def command_imdb(self, event):
         '''Usage: ~imdb <movie title> Provides basic information of a given movie, if applicable.'''
-        t = requests.get(
-                    'https://www.googleapis.com/customsearch/v1',
-                    params=dict(
-                        q='site:imdb.com {}'.format(event.params),
-                        cx=self.config['googleengine'],
-                        key=self.config['googleKey'],
-                        safe='off')).json()
-        path = urlparse(t['items'][0]['link']).path
-        movie_id = filter(bool, path.split('/'))[-1]
-        headers = dict()
-        headers['Content-type'] = 'application/json'
-        headers['trakt-api-key'] = self.config['traktKey']
-        headers['trakt-api-version'] = '2'
-        try:
-            resp = requests.get(
-                    "https://api.trakt.tv/search/imdb/{}".format(movie_id),
-                    params=dict(extended='full'),
-                    headers=headers).json()[0]
-            if resp.has_key('movie'):
-                resp = resp['movie']
-            elif resp.has_key('show'):
-                resp = resp['show']
-            else:
-                raise ValueError()
-            self.send_message(
-                    event.respond,
-                    u"Year: {} | Rating: {:.2f} | Runtime: {} | Plot: \x031,1{}...\x03 | http://www.imdb.com/title/{}".
-                    format(resp['year'], resp['rating'],
-                           resp['runtime'], resp['overview'][:199],
-                           movie_id).encode('utf-8', 'replace'))
-        except:
-            self.send_message(event.respond,
-                              "Movie not found! Try checking your spelling?")
-            raise
+	movie = event.params
+	link = requests.get('http://www.imdb.com/find?ref_=nv_sr_fn&q={}&s=all'.format(movie)).text
+		
+	parsed = html.fromstring(link)
+	try:
+		movie_link = 'http://www.imdb.com{}'.format(parsed.xpath('//*[@class="result_text"]/a/@href')[0])
+	except:
+		print('Movie not found! Check your spelling?')
+		
+	movie_page = requests.get(movie_link).text
+	parsed = html.fromstring(movie_page)
+	
+	def xpath(page, expr, process=lambda x: x.text, index=0):
+		try:
+			return process(page.xpath(expr)[index])
+		except IndexError:
+			return None
+		
+	
+	year = xpath(parsed, '//*[@id="titleYear"]/a') or \
+		xpath(parsed, '//span[@class="parentDate"]', lambda x: x.text[1:-1]) or \
+		xpath(parsed, '//a[@title="See more release dates"]', lambda x: x.text[11:-2])
+	
+	rating = xpath(parsed, '//meta[@itemprop="contentRating"]/@content', lambda x: x) or \
+			'Not Rated'
+	
+	length = xpath(parsed, '//time[@itemprop="duration"]', index=1) or \
+			'None'
+	
+	score = xpath(parsed, '//span[@itemprop="ratingValue"]') or \
+			'Needs 5 ratings'
+	
+	movie_summary = parsed.xpath('//div[@class="summary_text"]')[0].text.strip()
+		
+	self.send_message(event.respond, u"Year: {} | Rating: {} | Length: {} | Score: {} | Summary: {} | {}"
+    .format(year,rating,length,score,movie_summary,movie_link).encode('utf-8', 'replace'))
 
     def command_test(self, event):
         '''Usage: ~test Used to verify the bot is responding to messages'''
