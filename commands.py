@@ -217,8 +217,9 @@ class commands:
         '''Usage: ~rande621 <tags> Used to search e621.net for a random picture with the given tags'''
         try:
             j = requests.get(
-                "http://e621.net/post/index.json",
-                params=dict(limit="100", tags=event.params)).json()
+                "https://e621.net/post/index.json",
+                params=dict(limit="100", tags=event.params),
+                headers={'User-Agent': 'Raribot IRC Bot github.com/flare561/berry'}).json()
             if (len(j) > 0):
                 try:
                     selection = random.choice(j)
