@@ -351,7 +351,7 @@ class commands:
         self.command_tr(event)
             
     def command_tr(self, event):
-        '''Usage: ~translate <LanguageFrom> <LanguageTo> translates a string of text between languages. Alternate usage is ~translate list, which allows you to view currently available languages.'''
+        '''Usage: ~tr <LanguageFrom> <LanguageTo> translates a string of text between languages. Alternate usage is ~translate list, which allows you to view currently available languages.'''
         toTrans = event.params.split()
         toTrans[0] = toTrans[0].lower()
         if toTrans[0] == 'list':
