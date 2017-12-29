@@ -351,7 +351,7 @@ class commands:
         self.command_tr(event)
             
     def command_tr(self, event):
-        '''Usage: ~translate <LanguageFrom> <LanguageTo> translates a string of text between languages. Alternate usage is ~translate list, which allows you to view currently available languages.'''
+        '''Usage: ~tr <LanguageFrom> <LanguageTo> translates a string of text between languages. Alternate usage is ~translate list, which allows you to view currently available languages.'''
         toTrans = event.params.split()
         toTrans[0] = toTrans[0].lower()
         if toTrans[0] == 'list':
@@ -1030,41 +1030,13 @@ class commands:
             self.command_wolf(event)
 
     def command_inflate(self, event):
-        '''Usage: ~inflate <yearfrom> <yearto> <cost> Finds in/deflated cost of money. Only available for USD in years 1913 onwards'''
-        class InflationCache(dict):
-            @staticmethod
-            def fetch_inflation(fromyear, toyear):
-                resp = requests.get('https://data.bls.gov/cgi-bin/cpicalc.pl',
-                                    params={
-                                        'cost1': '1',
-                                        'year1': '%s01' % fromyear,
-                                        'year2': '%s01' % toyear
-                                    })
-                if not resp.ok:
-                    raise IOError('Response from service not ok')
-                html = lxml.html.fromstring(resp.text)
-                val = html.xpath('//span[@id="answer"]/text()')
-                if not val:
-                    raise ValueError('Make sure your chosen year is in the correct range (1913-present)')
-                return float(val[0][1:])
-
-            def __missing__(self, key):
-                if type(key) != tuple or len(key) != 2:
-                    raise KeyError('key must be a tuple of two dates')
-                fromyear, toyear = key
-                self[key] = type(self).fetch_inflation(fromyear, toyear)
-                return self[key]
-
-        if not hasattr(self, 'inflation_cache'):
-            self.inflation_cache = InflationCache()
+        '''Usage: ~inflate <yearfrom> <yearto> <cost> Finds in/deflated cost of money. Only available for USD in years 1665 to 2018.'''
         try:
-            fromyear, toyear, cost = event.params.split()
-            cost = float(cost)
-            newcost = cost * self.inflation_cache[fromyear, toyear]
-            self.send_message(
-                    event.respond,
-                    '${:.2f} in {} would be worth ${:.2f} in {}'.format(
-                        cost, fromyear, newcost, toyear))
-        except Exception as e:
-            self.send_message(event.respond, "Error: {}".format(e))
-            raise
+            start,end,amount = event.params.split()
+            amount = float(amount)
+            r = requests.get('http://www.in2013dollars.com/{}-dollars-in-{}?amount={}'.format(start,end,amount)).text
+            parsed = html.fromstring(r)
+            adjusted = parsed.xpath('//*[@class="highlighted-amount"]')[1].text
+            self.send_message(event.respond, '${} in {} would be worth {} in {}'.format(amount,start,adjusted,end))
+        except:
+            self.send_message(event.respond, 'An error has occured, please double-check your input')
