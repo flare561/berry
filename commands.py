@@ -794,25 +794,20 @@ class commands:
         gelmatch = re.compile('https?:\/\/gelbooru\.com\/index\.php\?page=post&s=view&id=(\d{1,7})', re.I)
         res = gelmatch.findall(event.message) 
         for match in res:
-            j = requests.get(
+            resp = requests.get(
                 "https://gelbooru.com/index.php",
                 params=dict(
-                    page="dapi",
-                    q="index",
-                    json="1",
-                    s="post",
-                    id=match)).json()
-            select = random.choice(j)
-            if select[u'rating'] == 's':
-                rating = 'Safe'
-            elif select[u'rating'] == 'q':
-                rating = 'Questionable'
-            else:
-                rating = 'Explicit'
+                    page="post",
+                    s="view",
+                    id=match)).text
+            page = html.fromstring(resp)
+            rating = page.xpath("//li[starts-with(text(), 'Rating:')]/text()")[0]
+            artist = " ".join(page.xpath("//li[@class='tag-type-artist']/a[2]/text()")) or "None"
+            score = page.xpath("//li[starts-with(text(), 'Score:')]/span/text()")[0]
             self.send_message(
-                    event.respond,
-                    u'Owner: {} | Rating: {} | Score: {}'.
-                    format(select[u'owner'], rating, select[u'score']).encode('utf-8', 'replace'))  
+                event.respond,
+                u'Artist: {} | {} | Score: {}'.
+                format(artist, rating, score).encode('utf-8', 'replace'))
             
             
     def regex_e621(self, event):
