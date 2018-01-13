@@ -254,27 +254,26 @@ class commands:
     def command_randgel(self, event):
         '''Usage: ~randgel <tags> Used to search gelbooru.com for a random picture with the given tags'''
         try:
-            j = requests.get(
+            resp = requests.get(
                 "https://gelbooru.com/index.php",
                 params=dict(
-                    page="dapi",
-                    q="index",
-                    json="1",
-                    s="post",
-                    limit="100",
-                    tags=event.params)).json()
-            if (len(j) > 0):
-                select = random.choice(j)
-                if select[u'rating'] == 's':
-                    rating = 'Safe'
-                elif select[u'rating'] == 'q':
-                    rating = 'Questionable'
-                else:
-                    rating = 'Explicit'
+                    page="post",
+                    s="list",
+                    tags=event.params)).text
+            page = html.fromstring(resp)
+            links = ["https:" + x for x in 
+                     page.xpath("//div[@class='thumbnail-preview']//a[@href]/@href")]
+            if (len(links) > 0):
+                select = random.choice(links)
+                resp = requests.get(select).text
+                page = html.fromstring(resp)
+                rating = page.xpath("//li[starts-with(text(), 'Rating:')]/text()")[0]
+                artist = " ".join(page.xpath("//li[@class='tag-type-artist']/a[2]/text()")) or "None"
+                score = page.xpath("//li[starts-with(text(), 'Score:')]/span/text()")[0]
                 self.send_message(
                     event.respond,
-                    u'https://gelbooru.com/index.php?page=post&s=view&id={} | Owner: {} | Rating: {} | Score: {}'.
-                    format(select[u'id'], select[u'owner'], rating, select[u'score']).encode('utf-8', 'replace'))
+                    u'{} | Artist: {} | {} | Score: {}'.
+                    format(select, artist, rating, score).encode('utf-8', 'replace'))
             else:
                 self.send_message(event.respond, "No Results")
         except:
