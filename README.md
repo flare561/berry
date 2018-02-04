@@ -23,6 +23,8 @@ arrow https://pypi.python.org/pypi/arrow
 
 romkan https://github.com/soimort/python-romkan
 
+googletrans https://pypi.python.org/pypi/googletrans
+
 and
 
 IRCUtils https://pypi.python.org/pypi/ircutils
