@@ -354,11 +354,12 @@ class commands:
         '''Usage: ~tr <languageTo> <phrase> The bot will auto-detect the language of the targeted text.'''
         try:
             translator = Translator()
-            translated = translator.translate(event.params[2:],dest=event.params[:2])
-            text = 'Translated from {}: {}'.format(translated.src,translated.text)
+            phrase = event.params.split() 
+            translated = translator.translate(' '.join(phrase[1:]),dest= phrase[0])
+            text = 'Translated from {}: {}'.format(translated.src,translated.text.encode('utf-8', 'replace'))
             if len(text) > 397:
                 text = text[0:396] + '...'
-            self.send_message(event.respond, text.encode('utf-8', 'replace'))
+            self.send_message(event.respond, text)
         except:
             self.send_message(
                 event.respond,
