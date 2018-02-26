@@ -364,7 +364,22 @@ class commands:
             self.send_message(
                 event.respond,
                 'Translation unsuccessful! Maybe the service is down?')
-
+	
+    def command_trs(self, event):
+        '''Usage: It's like ~tr, but more specific. Use it by doing ~trs <languageFrom> <languageTo> <phrase>'''
+        try:
+            translator = Translator()
+            phrase = event.params.split() 
+            translated = translator.translate(' '.join(phrase[2:]),dest=phrase[1],src=phrase[0])
+            text = 'Translated from {} to {}: {}'.format(translated.src,translated.dest,translated.text.encode('utf-8', 'replace'))
+            if len(text) > 397:
+                text = text[0:396] + '...'
+            self.send_message(event.respond, text)
+        except:
+            self.send_message(
+                event.respond,
+                'Translation unsuccessful! Maybe the service is down?')
+	
     def command_truerandjur(self, event):
         '''Usage: ~truerandjur <number> Used to post random imgur pictures, from randomly generated IDs, takes a little while to find images so be patient, <number> defines the number of results with a max of 10'''
         count = 1
