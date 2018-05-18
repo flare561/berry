@@ -808,6 +808,35 @@ class commands:
             self.send_message(event.respond, 'No results'.encode(
                 "utf-8", "replace"))
 
+    def command_sderpi(self, event):
+        '''Usage: ~sderpi <query> Searches derpibooru for a query, sorted by score, tags are comma separated.'''
+        sess = requests.Session()
+        page = lxml.html.fromstring(
+            sess.get('https://derpibooru.org/filters').text)
+        authenticitytoken = page.xpath('//meta[@name="csrf-token"]')[0].attrib[
+            'content']
+        body = dict()
+        body['authenticity_token'] = authenticitytoken
+        body['_method'] = 'patch'
+        sess.post(
+            'https://derpibooru.org/filters/select?id=56027',
+            data=body,
+            headers=dict(Referer='https://derpiboo.ru/filters'))
+        if event.params == "":
+            event.params = "*"
+        results = sess.get(
+            'https://derpibooru.org/search.json',
+            data=dict(q=event.params, filter_id='56027', sf='score', sd='desc')).json()['search']
+        if len(results) > 0:
+            choice = random.choice(results)
+            idNum = choice['id']
+            self.send_message(event.respond,
+                              ('https://derpibooru.org/%s' % idNum).encode(
+                                  "utf-8", "replace"))
+        else:
+            self.send_message(event.respond, 'No results'.encode(
+                "utf-8", "replace"))
+
     def command_pony(self, event):
         '''Usage: ~pony Gives time until next episode of mlp'''
         now = datetime.datetime.utcnow()
