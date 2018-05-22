@@ -186,6 +186,24 @@ class commands:
             self.send_message(event.respond, "No results")
             raise
 
+    def command_randdev(self, event):
+        '''Usage: ~randdev Returns a random image from Deviant Art'''
+        try:
+            for _ in range(10):
+                search_for = ''.join(random.choice(string.ascii_lowercase) for _ in range(3))
+                source = requests.get('https://www.deviantart.com/newest/?q={}'.format(search_for)).text
+                if 'Sorry, we found no relevant results.' not in source:
+                    break
+            if event.params != '':
+                search_for = event.params
+                source = requests.get('https://www.deviantart.com/newest/?q={}'.format(search_for)).text
+            parsed = html.fromstring(source)
+            results = parsed.xpath('//*[@id="page-1-results"]//*[@data-super-alt and @href]')
+            final = random.choice(results)
+            self.send_message(event.respond, '{} | {}'.format(final.attrib['data-super-alt'], final.attrib['href']))
+        except:
+            self.send_message(event.respond, 'Something is a little fucky wucky!')
+
     def command_g(self, event):
         '''Usage: ~g <terms> Used to search google with the given terms'''
         try:
