@@ -251,6 +251,25 @@ class commands:
                               "An error occurred while fetching your post.")
             raise
 
+    def command_randdev(self, event):
+        '''Usage: ~randdev Returns a random image from Deviant Art'''
+        try:
+            if event.params != '':
+                search_for = event.params
+                source = requests.get('https://www.deviantart.com/newest/?q={}'.format(search_for)).text
+            else:
+                for _ in range(10):
+                    search_for = ''.join(random.choice(string.ascii_lowercase) for _ in range(3))
+                    source = requests.get('https://www.deviantart.com/newest/?q={}'.format(search_for)).text
+                    if 'Sorry, we found no relevant results.' not in source:
+                        break
+            parsed = html.fromstring(source)
+            results = parsed.xpath('//*[@id="page-1-results"]//*[@data-super-alt and @href]')
+            final = random.choice(results)
+            self.send_message(event.respond, '{} | {}'.format(final.attrib['data-super-alt'], final.attrib['href']))
+        except:
+            self.send_message(event.respond, 'Something is a little fucky wucky!')
+
     @register('nsfw', True)
     def command_randgel(self, event):
         '''Usage: ~randgel <tags> Used to search gelbooru.com for a random picture with the given tags'''
