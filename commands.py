@@ -578,12 +578,12 @@ class commands:
                     searchType='image')).json()
             index = 0
             while (len(t['items']) > index + 1 and not is_all_str_allowed([
-                    t['items'][index]['title'], t['items'][index]['link']
+                    t['items'][index]['link']
             ], self.banned_words)):
                 index += 1
             t = t['items'][index]
-            self.send_message(event.respond, u'{}: {}'.format(
-                t['title'], t['link']).encode('utf-8', 'replace'))
+            self.send_message(event.respond, u'{}'.format(
+                t['link']).encode('utf-8', 'replace'))
         except:
             self.send_message(event.respond, "No results")
             raise
