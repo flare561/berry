@@ -9,24 +9,10 @@ Any commands defined in custom_commands.py will override built in commands from 
 
 Example commands can be found in custom_commands.py
 
-Requires:
+#Installation:
 
-lxml http://lxml.de/installation.html
-
-requests http://docs.python-requests.org/en/latest/
-
-python-oembed https://github.com/abarmat/python-oembed
-
-wikipedia https://github.com/goldsmith/Wikipedia
-
-arrow https://pypi.python.org/pypi/arrow
-
-romkan https://github.com/soimort/python-romkan
-
-googletrans https://pypi.python.org/pypi/googletrans
-
-and
-
-IRCUtils https://pypi.python.org/pypi/ircutils
-
-As well as Python 2.7
+##With pipenv
+    git clone https://github.com/flare561/berry.git
+    cd berry
+    pipenv install
+    pipenv run python main.py
