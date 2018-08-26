@@ -633,7 +633,7 @@ class commands:
                 headers=headers).json()[u'data'][u'children']
             if len(j) > 0:
                 self.send_message(event.respond,
-                                  u'https://reddit.com{} - {}'.format(
+                                  u'https://old.reddit.com{} - {}'.format(
                                       j[0][u'data'][u'permalink'],
                                       HTMLParser.HTMLParser().unescape(
                                           j[0][u'data'][u'title'])).encode(
@@ -705,11 +705,11 @@ class commands:
             links = []
             if len(subrootmatches) > 0:
                 links.append(
-                    "https://reddit.com/r/{}".format('+'.join(subrootmatches)))
+                    "https://old.reddit.com/r/{}".format('+'.join(subrootmatches)))
             for link in suburlmatches:
-                links.append("https://reddit.com/r/{}".format(link))
+                links.append("https://old.reddit.com/r/{}".format(link))
             for link in usermatches:
-                links.append("https://reddit.com/u/{}".format(link))
+                links.append("https://old.reddit.com/u/{}".format(link))
             if len(links) > 0:
                 self.send_message(event.respond, ' '.join(links))
 
