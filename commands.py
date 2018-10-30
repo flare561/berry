@@ -281,7 +281,7 @@ class commands:
                     s="list",
                     tags=event.params)).text
             page = html.fromstring(resp)
-            links = ["https:" + x for x in 
+            links = ["https://gelbooru.com/" + x for x in 
                      page.xpath("//div[@class='thumbnail-preview']//a[@href]/@href")]
             if (len(links) > 0):
                 select = random.choice(links)
@@ -374,6 +374,7 @@ class commands:
             self.send_message(
                 event.respond,
                 'Translation unsuccessful! Maybe the service is down?')
+            raise
 
     def command_wolf(self, event):
         '''Usage: ~wolf <query> Searches wolfram alpha for your query'''

@@ -12,6 +12,7 @@ arrow = "*"
 romkan = "*"
 googletrans = "*"
 ircutils = "*"
+googletranslate = "*"
 
 [dev-packages]
 
