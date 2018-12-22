@@ -609,43 +609,27 @@ class commands:
             raise
 
     def command_rs(self, event):
-        '''Usage: ~rs <terms> Used to search for results on reddit, can narrow down to sub or user with /u/<user> or /r/<subreddit>'''
+        '''Usage: ~rsearch <submission/comment> <subreddit> <author> <query> Subreddit and Author are optional, replace with 'any' if not needed.'''
+        init = event.params.split()
+        print(init)
+        search_type, query, subreddit, author = init[0],' '.join(init[3:]),init[1],init[2]
+        subreddit = '' if subreddit == 'any' else subreddit
+        author = '' if author == 'any' else author
         try:
-            query = event.params
-            # allow searching by /r/subreddit
-            srmatch = re.compile('/(r|u)/(\w+(?:\+\w+)*(?:/\S+)*)', re.I)
-            srmatches = srmatch.findall(event.params)
-            submatches = [s[1] for s in srmatches if s[0] == 'r']
-            usermatches = [s[1] for s in srmatches if s[0] == 'u']
-            terms = []
-            if len(submatches) > 0:
-                terms.append("subreddit:{}".format(submatches[0]))
-            if len(usermatches) > 0:
-                terms.append("author:{}".format(usermatches[0]))
-            if len(terms) > 0:
-                query = srmatch.sub("", query)
-                query = query.rstrip().lstrip()
-            terms.append(query)
-            headers = dict()
-            headers['User-Agent'] = "Berry Punch IRC Bot"
-            j = requests.get(
-                'https://www.reddit.com/search.json',
-                params=dict(limit="1", q=' '.join(terms)),
-                headers=headers).json()[u'data'][u'children']
-            if len(j) > 0:
-                self.send_message(event.respond,
-                                  u'https://old.reddit.com{} - {}'.format(
-                                      j[0][u'data'][u'permalink'],
-                                      HTMLParser.HTMLParser().unescape(
-                                          j[0][u'data'][u'title'])).encode(
-                                              'utf-8', 'replace'))
-            else:
-                self.send_message(event.respond, 'No results.')
+            a = requests.get('https://api.pushshift.io/reddit/search/{}/?q={}&subreddit={}&author={}&size=50'.format(search_type,query,subreddit,author).strip('')).json()
         except:
-            self.send_message(
-                event.respond,
-                'Reddit probably shat itself, try again or whatever.')
+            self.send_message(event.respond, 'you broke something try again')
+        if len(a['data']) == 0:
+            self.send_message(event.respond, 'There were no results for your search')
             raise
+        selection = random.choice(a['data'])
+        if search_type == 'submission':
+            permalink = 'https://old.reddit.com/{}'.format(selection["id"])
+            self.send_message(event.respond, '{}: {} | {}'.format(selection['author'], selection['title'].encode('utf-8', 'replace')[:500-len(selection['title'])],permalink))
+        else:
+            selection['link_id'] = selection['link_id'][3:]
+            permalink = 'https://old.reddit.com/r/{subreddit}/comments/{link_id}//{id}'.format(**selection)
+            self.send_message(event.respond, '{}: {} | {}'.format(selection['author'], selection['body'].encode('utf-8', 'replace')[:500-len(selection['body'])],permalink))
 
     def regex_gelbooru(self, event):
         gelmatch = re.compile('https?:\/\/gelbooru\.com\/index\.php\?page=post&s=view&id=(\d{1,7})', re.I)
