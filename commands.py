@@ -901,6 +901,6 @@ class commands:
             r = requests.get('http://www.in2013dollars.com/{}-dollars-in-{}?amount={}'.format(start,end,amount)).text
             parsed = html.fromstring(r)
             adjusted = parsed.xpath('//*[@class="highlighted-amount"]')[1].text
-            self.send_message(event.respond, '${} in {} would be worth {} in {}'.format(amount,start,adjusted,end))
+            self.send_message(event.respond, '${:,.2f} in {} would be worth {} in {}'.format(amount,start,adjusted,end))
         except:
             self.send_message(event.respond, 'An error has occured, please double-check your input')
