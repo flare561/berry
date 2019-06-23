@@ -274,31 +274,42 @@ class commands:
     def command_randgel(self, event):
         '''Usage: ~randgel <tags> Used to search gelbooru.com for a random picture with the given tags'''
         try:
-            resp = requests.get(
-                "https://gelbooru.com/index.php",
-                params=dict(
-                    page="post",
-                    s="list",
-                    tags=event.params)).text
-            page = html.fromstring(resp)
-            links = ["https:" + x for x in 
-                     page.xpath("//div[@class='thumbnail-preview']//a[@href]/@href")]
-            if (len(links) > 0):
-                select = random.choice(links)
-                resp = requests.get(select).text
-                page = html.fromstring(resp)
-                rating = page.xpath("//li[starts-with(text(), 'Rating:')]/text()")[0]
-                artist = " ".join(page.xpath("//li[@class='tag-type-artist']/a[2]/text()")) or "None"
-                score = page.xpath("//li[starts-with(text(), 'Score:')]/span/text()")[0]
+            ratings = {'e': 'Explicit',
+                       's': 'Safe',
+                       'q': 'Questionable'}
+            params = dict(
+                page='dapi',
+                s='post',
+                q='index',
+                json='1',
+                limit='100',
+                api_key=self.config['gel_key'],
+                user_id=self.config['gel_user'],
+                tags=event.params)
+            resp = requests.get('https://gelbooru.com/index.php', params=params).json()
+            if len(resp) > 0:
+                select = random.choice(resp)
+                response = []
+                response.append('https://gelbooru.com/index.php?page=post&s=view&id=%s' % select[u'id'])
+                params['s'] = 'tag'
+                params['names'] = select[u'tags']
+                del params['tags']
+                resp = requests.get('https://gelbooru.com/index.php', params=params).json()
+                for tag in resp:
+                    if tag[u'type'].lower() == 'artist':
+                        response.append('Artist: %s' % tag[u'tag'])
+                        break
+                response.append('Rating: %s' % ratings[select[u'rating']])
+                response.append('Score: %s' % select[u'score'])
+                if 'loli' in select[u'tags'] or 'shota' in select[u'tags']:
+                    response.append('Direct: %s' % select[u'file_url'])
                 self.send_message(
-                    event.respond,
-                    u'{} | Artist: {} | {} | Score: {}'.
-                    format(select, artist, rating, score).encode('utf-8', 'replace'))
+                    event.respond, " | ".join(response).encode('utf-8', 'replace'))
             else:
-                self.send_message(event.respond, "No Results")
+                self.send_message(event.respond, 'No Results')
         except:
             self.send_message(event.respond,
-                              "An error occurred while fetching your post.")
+                              'An error occurred while fetching your post.')
             raise
 
     @register('nsfw', True)
@@ -635,21 +646,35 @@ class commands:
         gelmatch = re.compile('https?:\/\/gelbooru\.com\/index\.php\?page=post&s=view&id=(\d{1,7})', re.I)
         res = gelmatch.findall(event.message) 
         for match in res:
-            resp = requests.get(
-                "https://gelbooru.com/index.php",
-                params=dict(
-                    page="post",
-                    s="view",
-                    id=match)).text
-            page = html.fromstring(resp)
-            rating = page.xpath("//li[starts-with(text(), 'Rating:')]/text()")[0]
-            artist = " ".join(page.xpath("//li[@class='tag-type-artist']/a[2]/text()")) or "None"
-            score = page.xpath("//li[starts-with(text(), 'Score:')]/span/text()")[0]
+            ratings = {'e': 'Explicit',
+                       's': 'Safe',
+                       'q': 'Questionable'}
+            params = dict(
+                page='dapi',
+                s='post',
+                q='index',
+                json='1',
+                limit='100',
+                api_key=self.config['gel_key'],
+                user_id=self.config['gel_user'],
+                id=match)
+            resp = requests.get("https://gelbooru.com/index.php", params=params).json()
+            select = resp[0]
+            params['s'] = 'tag'
+            params['names'] = select[u'tags']
+            del params['id']
+            resp = requests.get('https://gelbooru.com/index.php', params=params).json()
+            response = []
+            for tag in resp:
+                if tag[u'type'].lower() == 'artist':
+                    response.append('Artist: %s' % tag[u'tag'])
+                    break
+            response.append('Rating: %s' % ratings[select[u'rating']])
+            response.append('Score: %s' % select[u'score'])
+            if 'loli' in select[u'tags'] or 'shota' in select[u'tags']:
+                response.append('Direct: %s' % select[u'file_url'])
             self.send_message(
-                event.respond,
-                u'Artist: {} | {} | Score: {}'.
-                format(artist, rating, score).encode('utf-8', 'replace'))
-            
+                event.respond, " | ".join(response).encode('utf-8', 'replace'))
             
     def regex_e621(self, event):
         e621match = re.compile('https?:\/\/e621\.net\/post\/show\/\d{2,7}',

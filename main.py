@@ -165,6 +165,8 @@ def loadconf(filename):
             server='127.0.0.1',
             channels='#bottest',
             imgurKey='',
+            gel_key='',
+            gel_id='',
             wolframKey='',
             prefixes='~ . !',
             traktKey='',
