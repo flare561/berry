@@ -283,10 +283,12 @@ class commands:
                 q='index',
                 json='1',
                 limit='100',
-                api_key=self.config['gel_key'],
-                user_id=self.config['gel_user'],
+                api_key="anonymous",
+                user_id="9455",
                 tags=event.params)
-            resp = requests.get('https://gelbooru.com/index.php', params=params).json()
+            resp = requests.get('https://gelbooru.com/index.php',
+                                params=params,
+                                cookies={"fringeBenefits":"yep"}).json()
             if len(resp) > 0:
                 select = random.choice(resp)
                 response = []
@@ -294,7 +296,9 @@ class commands:
                 params['s'] = 'tag'
                 params['names'] = select[u'tags']
                 del params['tags']
-                resp = requests.get('https://gelbooru.com/index.php', params=params).json()
+                resp = requests.get('https://gelbooru.com/index.php',
+                                    params=params,
+                                    cookies={"fringeBenefits":"yep"}).json()
                 for tag in resp:
                     if tag[u'type'].lower() == 'artist':
                         response.append('Artist: %s' % tag[u'tag'])
@@ -655,15 +659,19 @@ class commands:
                 q='index',
                 json='1',
                 limit='100',
-                api_key=self.config['gel_key'],
-                user_id=self.config['gel_user'],
+                api_key="anonymous",
+                user_id="9455",
                 id=match)
-            resp = requests.get("https://gelbooru.com/index.php", params=params).json()
+            resp = requests.get("https://gelbooru.com/index.php",
+                                params=params,
+                                cookies={"fringeBenefits":"yep"}).json()
             select = resp[0]
             params['s'] = 'tag'
             params['names'] = select[u'tags']
             del params['id']
-            resp = requests.get('https://gelbooru.com/index.php', params=params).json()
+            resp = requests.get('https://gelbooru.com/index.php',
+                                params=params,
+                                cookies={"fringeBenefits":"yep"}).json()
             response = []
             for tag in resp:
                 if tag[u'type'].lower() == 'artist':
