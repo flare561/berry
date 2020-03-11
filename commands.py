@@ -218,14 +218,14 @@ class commands:
         '''Usage: ~rande621 <tags> Used to search e621.net for a random picture with the given tags'''
         try:
             j = requests.get(
-                "https://e621.net/post/index.json",
+                "https://e621.net/posts.json",
                 params=dict(limit="100", tags=event.params),
-                headers={'User-Agent': 'Raribot IRC Bot github.com/flare561/berry'}).json()
+                headers={'User-Agent': 'Raribot IRC Bot github.com/flare561/berry'}).json()['posts']
             if (len(j) > 0):
                 try:
                     selection = random.choice(j)
-                    if selection['artist'] != []:
-                        artist = " & ".join(selection['artist'])
+                    if selection['tags']['artist'] != []:
+                        artist = " & ".join(selection['tags']['artist'])
                     else:
                         artist = 'N/A'
                     if selection['rating'] == 'e':
@@ -236,14 +236,15 @@ class commands:
                         rating = 'Questionable'
                     self.send_message(
                         event.respond,
-                        u'http://e621.net/post/show/{0[id]} | Artist(s): {1} | Score: {0[score]} | Rating: {2} | Post Date: {3}'.
+                        u'http://e621.net/post/show/{0[id]} | Artist(s): {1} | Score: {0[score][total]} | Rating: {2} | Post Date: {3}'.
                         format(selection, artist, rating,
-                               arrow.get(selection['created_at']['s']).format(
+                               arrow.get(selection['created_at']).format(
                                    'YYYY-MM-DD')).encode('utf-8', 'replace'))
                 except:
                     self.send_message(
                         event.respond,
                         "An error occurred while fetching your post.")
+                    raise
             else:
                 self.send_message(event.respond, "No Results")
         except:
@@ -685,14 +686,14 @@ class commands:
                 event.respond, " | ".join(response).encode('utf-8', 'replace'))
             
     def regex_e621(self, event):
-        e621match = re.compile('https?:\/\/e621\.net\/post\/show\/\d{2,7}',
+        e621match = re.compile('https?:\/\/e621\.net\/posts?\/(?:show\/)?(\d{2,7})',
                                re.I)
         res = e621match.findall(event.message)
         for link in res:
-            select = link + '.json'
-            selection = requests.get(select).json()
-            if selection['artist'] != []:
-                artist = " & ".join(selection['artist'])
+            select = "https://e621.net/posts/{}.json".format(link)
+            selection = requests.get(select).json()['post']
+            if selection['tags']['artist'] != []:
+                artist = " & ".join(selection['tags']['artist'])
             else:
                 artist = 'N/A'
             if selection['rating'] == 'e':
@@ -703,9 +704,9 @@ class commands:
                 rating = 'Questionable'
             self.send_message(
                 event.respond,
-                u'Artist(s): {1} | Score: {0[score]} | Rating: {2} | Post Date: {3}'.
+                u'Artist(s): {1} | Score: {0[score][total]} | Rating: {2} | Post Date: {3}'.
                 format(selection, artist, rating,
-                       arrow.get(selection['created_at']['s']).format(
+                       arrow.get(selection['created_at']).format(
                            'YYYY-MM-DD')).encode('utf-8', 'replace'))
 
     def regex_reddit(self, event):
