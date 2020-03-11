@@ -236,7 +236,7 @@ class commands:
                         rating = 'Questionable'
                     self.send_message(
                         event.respond,
-                        u'http://e621.net/post/show/{0[id]} | Artist(s): {1} | Score: {0[score][total]} | Rating: {2} | Post Date: {3}'.
+                        u'http://e621.net/posts/{0[id]} | Artist(s): {1} | Score: {0[score][total]} | Rating: {2} | Post Date: {3}'.
                         format(selection, artist, rating,
                                arrow.get(selection['created_at']).format(
                                    'YYYY-MM-DD')).encode('utf-8', 'replace'))
