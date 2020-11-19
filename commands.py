@@ -80,7 +80,8 @@ class commands:
                         'items/snippet/publishedAt',
                         maxResults='1',
                         key=self.config['googleKey'],
-                        id=x)).json()['items'][0]
+                        id=x))
+                t = t.json()['items'][0]
 
                 title = t['snippet']['title']
                 uploader = t['snippet']['channelTitle']
@@ -131,6 +132,7 @@ class commands:
                     safeSearch='none',
                     maxResults='1',
                     key=self.config['googleKey'],
+                    type='video',
                     q=event.params)).json()
             vidid = j['items'][0]['id']['videoId']
 
