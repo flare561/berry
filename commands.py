@@ -104,13 +104,17 @@ class commands:
                 durationregex = re.compile(
                     'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?', re.I)
                 matches = durationregex.findall(
-                    t['contentDetails']['duration'])[0]
-                hours = int(matches[0]) if matches[0] != '' else 0
-                minutes = int(matches[1]) if matches[1] != '' else 0
-                seconds = int(matches[2]) if matches[2] != '' else 0
-                duration = str(
-                    datetime.timedelta(
-                        hours=hours, minutes=minutes, seconds=seconds))
+                    t['contentDetails']['duration'])
+                if matches:
+                    matches = matches[0]
+                    hours = int(matches[0]) if matches[0] != '' else 0
+                    minutes = int(matches[1]) if matches[1] != '' else 0
+                    seconds = int(matches[2]) if matches[2] != '' else 0
+                    duration = str(
+                        datetime.timedelta(
+                            hours=hours, minutes=minutes, seconds=seconds))
+                else:
+                    duration = 'Ongoing'
 
                 viewcount = format(int(viewcount), ',')
                 self.send_message(event.respond,
