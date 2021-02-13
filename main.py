@@ -193,10 +193,21 @@ def is_int(s):
 if __name__ == "__main__":
     config = loadconf("config.json")
     s = berry(config)
+    password = config.get('password')
+    if password:
+        password = password.encode('ascii', 'replace')
+    port = config.get('port')
+    if port:
+        port = int(port)
+    ssl = False
+    if config.get('ssl'):
+        ssl = True
+
     s.connect(
-        config['server'].encode('ascii', 'replace'),
+        config['server'].encode('ascii', 'replace'), port=port,
         channel=config['channels'].encode('ascii', 'replace'),
-        use_ssl=False)
+        use_ssl=ssl, password=password
+        )
     s.lastloadconf = 0
     s.lastloadcommands = 0
     s.lastloadcustomcommands = 0
